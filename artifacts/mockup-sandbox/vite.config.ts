@@ -5,27 +5,15 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { mockupPreviewPlugin } from "./mockupPreviewPlugin";
 
-const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
-}
-
+// PORT and BASE_PATH are always provided by Replit.
+// Fallbacks are provided so the project also runs locally via `vite dev`.
+const rawPort = process.env.PORT ?? "5173";
 const port = Number(rawPort);
-
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+const basePath = process.env.BASE_PATH ?? "/";
 
 export default defineConfig({
   base: basePath,
@@ -51,6 +39,8 @@ export default defineConfig({
     },
   },
   root: path.resolve(import.meta.dirname),
+  // publicDir is explicitly set so both Replit and local dev serve /public correctly
+  publicDir: path.resolve(import.meta.dirname, "public"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
@@ -60,6 +50,8 @@ export default defineConfig({
     host: "0.0.0.0",
     allowedHosts: true,
     fs: {
+      // strict: true is the default — keeping it safe.
+      // Files in public/ are always served regardless of this setting.
       strict: true,
     },
   },

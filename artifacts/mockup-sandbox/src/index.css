@@ -3,11 +3,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   ABF BRAND DESIGN SYSTEM
+   Akhere Book Foundation — Stage 1
+   ============================================================ */
+
 @theme inline {
+  /* --- Radius --- */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* --- Color tokens (mapped to HSL vars) --- */
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-card: hsl(var(--card));
@@ -27,11 +35,6 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-  --color-chart-1: hsl(var(--chart-1));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-5: hsl(var(--chart-5));
   --color-sidebar: hsl(var(--sidebar));
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar-primary: hsl(var(--sidebar-primary));
@@ -41,12 +44,25 @@
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
+  /* ABF Brand Colors */
+  --color-abf-green: #2d6a2d;
+  --color-abf-green-light: #3a8a3a;
+  --color-abf-lime: #8dc63f;
+  --color-abf-lime-light: #a8d060;
+  --color-abf-gold: #f5a623;
+  --color-abf-earth: #a0522d;
+  --color-abf-dark: #1a2218;
+  --color-abf-charcoal: #2c3424;
+  --color-abf-cream: #f8f5ee;
+  --color-abf-warm-white: #fafaf7;
+
+  /* --- Type scale --- */
   --text-xs: 0.75rem;
   --text-xs--line-height: calc(1 / 0.75);
   --text-sm: 0.875rem;
   --text-sm--line-height: calc(1.25 / 0.875);
   --text-base: 1rem;
-  --text-base--line-height: calc(1.5 / 1);
+  --text-base--line-height: calc(1.6 / 1);
   --text-lg: 1.125rem;
   --text-lg--line-height: calc(1.75 / 1.125);
   --text-xl: 1.25rem;
@@ -58,128 +74,543 @@
   --text-4xl: 2.25rem;
   --text-4xl--line-height: calc(2.5 / 2.25);
   --text-5xl: 3rem;
-  --text-5xl--line-height: 1;
+  --text-5xl--line-height: 1.1;
   --text-6xl: 3.75rem;
-  --text-6xl--line-height: 1;
+  --text-6xl--line-height: 1.05;
   --text-7xl: 4.5rem;
   --text-7xl--line-height: 1;
-  --text-8xl: 6rem;
-  --text-8xl--line-height: 1;
-  --text-9xl: 8rem;
-  --text-9xl--line-height: 1;
 }
 
-/* LIGHT MODE - Default theme with placeholder values */
+/* ============================================================
+   ABF LIGHT MODE — BRAND TOKENS
+   ============================================================ */
 :root {
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
+  --button-outline: rgba(0, 0, 0, 0.1);
+  --badge-outline: rgba(0, 0, 0, 0.05);
   --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(0, 0, 0, 0.03);
+  --elevate-2: rgba(0, 0, 0, 0.07);
 
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
+  /* Base palette — ABF Green as primary */
+  --background: 60 20% 97%;
+  --foreground: 120 20% 10%;
 
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
   --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
-  --sidebar: 0 0% 98%;
-  --sidebar-foreground: 240 5.3% 26.1%;
-  --sidebar-primary: 240 5.9% 10%;
-  --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 240 4.8% 95.9%;
-  --sidebar-accent-foreground: 240 5.9% 10%;
-  --sidebar-border: 220 13% 91%;
-  --sidebar-ring: 240 5.9% 10%;
+  --card-foreground: 120 20% 10%;
 
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
-  --radius: .5rem;
+  --popover: 0 0% 100%;
+  --popover-foreground: 120 20% 10%;
+
+  /* Primary = ABF Forest Green */
+  --primary: 120 43% 30%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary = ABF Lime */
+  --secondary: 90 52% 50%;
+  --secondary-foreground: 120 40% 12%;
+
+  --muted: 60 15% 93%;
+  --muted-foreground: 120 10% 40%;
+
+  /* Accent = ABF Gold */
+  --accent: 38 92% 54%;
+  --accent-foreground: 120 40% 12%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 120 10% 88%;
+  --input: 120 10% 90%;
+  --ring: 120 43% 30%;
+
+  --sidebar: 120 20% 96%;
+  --sidebar-foreground: 120 20% 15%;
+  --sidebar-primary: 120 43% 30%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 90 52% 50%;
+  --sidebar-accent-foreground: 120 40% 12%;
+  --sidebar-border: 120 10% 88%;
+  --sidebar-ring: 120 43% 30%;
+
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --font-serif: 'Lora', Georgia, serif;
+  --font-mono: 'JetBrains Mono', Menlo, monospace;
+  --radius: 0.625rem;
   --spacing: 0.25rem;
 }
 
-/* DARK MODE */
-.dark {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
-  --opaque-button-border-intensity: 9;
-
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
-
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-  --sidebar: 240 5.9% 10%;
-  --sidebar-foreground: 240 4.8% 95.9%;
-  --sidebar-primary: 224.3 76.3% 48%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 240 3.7% 15.9%;
-  --sidebar-accent-foreground: 240 4.8% 95.9%;
-  --sidebar-border: 240 3.7% 15.9%;
-  --sidebar-ring: 240 4.9% 83.9%;
-}
-
+/* ============================================================
+   BASE LAYER
+   ============================================================ */
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    font-family: var(--font-sans);
+    @apply antialiased bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
   }
 }
 
+/* ============================================================
+   ABF COMPONENT UTILITIES
+   ============================================================ */
 @layer utilities {
-  /* Hide ugly search cancel button in Chrome */
+
+  /* Scrollbar */
   input[type="search"]::-webkit-search-cancel-button {
     @apply hidden;
   }
 
-  /* Placeholder styling for contentEditable div */
-  [contenteditable][data-placeholder]:empty::before {
-    content: attr(data-placeholder);
-    color: hsl(var(--muted-foreground));
-    pointer-events: none;
+  /* Carousel no-select */
+  .abf-carousel {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* ABF Section heading accent underline */
+  .abf-section-title {
+    position: relative;
+    display: inline-block;
+  }
+  .abf-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 48px;
+    height: 4px;
+    background: #8dc63f;
+    border-radius: 2px;
+  }
+  .abf-section-title-center::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Glass card */
+  .abf-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  /* Green gradient background */
+  .abf-bg-green-gradient {
+    background: linear-gradient(135deg, #1a3d1a 0%, #2d6a2d 50%, #3a8a3a 100%);
+  }
+
+  /* Lime gradient */
+  .abf-bg-lime-gradient {
+    background: linear-gradient(135deg, #6baa20 0%, #8dc63f 100%);
+  }
+
+  /* Cream section */
+  .abf-bg-cream {
+    background-color: #f8f5ee;
+  }
+
+  /* Warm white */
+  .abf-bg-warm {
+    background-color: #fafaf7;
+  }
+
+  /* Hero overlay */
+  .abf-hero-overlay {
+    background: linear-gradient(
+      to right,
+      rgba(26, 61, 26, 0.88) 0%,
+      rgba(26, 61, 26, 0.72) 50%,
+      rgba(26, 61, 26, 0.35) 100%
+    );
+  }
+
+  /* Trust badge card */
+  .abf-trust-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e8f0e8;
+    padding: 1.5rem;
+    box-shadow: 0 2px 16px rgba(45, 106, 45, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .abf-trust-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(45, 106, 45, 0.12);
+  }
+
+  /* Stat card */
+  .abf-stat-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e8f0e8;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 2px 16px rgba(45, 106, 45, 0.06);
+    text-align: center;
+  }
+
+  /* Content card hover */
+  .abf-content-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border: 1px solid #f0f0ec;
+    cursor: pointer;
+  }
+  .abf-content-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(45, 106, 45, 0.14);
+  }
+
+  /* Primary button */
+  .abf-btn-primary {
+    background: #2d6a2d;
+    color: white;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    padding: 0.875rem 2rem;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+  .abf-btn-primary:hover {
+    background: #1a3d1a;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(45, 106, 45, 0.35);
+  }
+  .abf-btn-primary:active {
+    transform: translateY(0);
+  }
+
+  /* Secondary button (outlined) */
+  .abf-btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.75);
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    padding: 0.8125rem 2rem;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+  .abf-btn-secondary:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: white;
+    transform: translateY(-1px);
+  }
+
+  /* Gold donate button */
+  .abf-btn-donate {
+    background: linear-gradient(135deg, #f5a623 0%, #f0920a 100%);
+    color: #1a2218;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    padding: 0.8125rem 1.75rem;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+  .abf-btn-donate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(245, 166, 35, 0.4);
+  }
+
+  /* Lime outline btn */
+  .abf-btn-lime {
+    background: #8dc63f;
+    color: #1a2218;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.01em;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+  .abf-btn-lime:hover {
+    background: #6baa20;
+    transform: translateY(-1px);
+  }
+
+  /* Nav link */
+  .abf-nav-link {
+    font-weight: 500;
+    font-size: 0.9375rem;
+    color: #2c3424;
+    transition: color 0.15s ease;
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .abf-nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #8dc63f;
+    border-radius: 1px;
+    transition: width 0.2s ease;
+  }
+  .abf-nav-link:hover {
+    color: #2d6a2d;
+  }
+  .abf-nav-link:hover::after {
+    width: 100%;
+  }
+  .abf-nav-link.active {
+    color: #2d6a2d;
+    font-weight: 600;
+  }
+  .abf-nav-link.active::after {
+    width: 100%;
+  }
+
+  /* Amount button */
+  .abf-amount-btn {
+    border: 2px solid #dde8dd;
+    border-radius: 10px;
+    background: white;
+    color: #2c3424;
+    font-weight: 600;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .abf-amount-btn:hover {
+    border-color: #2d6a2d;
+    color: #2d6a2d;
+  }
+  .abf-amount-btn.selected {
+    background: #2d6a2d;
+    border-color: #2d6a2d;
+    color: white;
+  }
+
+  /* Frequency btn */
+  .abf-freq-btn {
+    border: 2px solid #dde8dd;
+    border-radius: 9999px;
+    background: white;
+    color: #2c3424;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .abf-freq-btn:hover {
+    border-color: #2d6a2d;
+    color: #2d6a2d;
+  }
+  .abf-freq-btn.selected {
+    background: #8dc63f;
+    border-color: #8dc63f;
+    color: #1a2218;
+    font-weight: 600;
+  }
+
+  /* Category checkbox */
+  .abf-category-chip {
+    border: 2px solid #dde8dd;
+    border-radius: 9999px;
+    background: white;
+    color: #2c3424;
+    font-weight: 500;
+    padding: 0.4rem 1rem;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    user-select: none;
+  }
+  .abf-category-chip:hover {
+    border-color: #8dc63f;
+  }
+  .abf-category-chip.selected {
+    background: #8dc63f;
+    border-color: #8dc63f;
+    color: #1a2218;
+    font-weight: 600;
+  }
+
+  /* Smooth scroll container for carousels */
+  .abf-scroll-container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .abf-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Team card */
+  .abf-team-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(45, 106, 45, 0.08);
+    border: 1px solid #eef3ee;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .abf-team-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(45, 106, 45, 0.14);
+  }
+
+  /* Partner card */
+  .abf-partner-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e8f0e8;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s ease;
+    min-width: 200px;
+    white-space: nowrap;
+  }
+  .abf-partner-card:hover {
+    box-shadow: 0 4px 20px rgba(45,106,45,0.1);
+  }
+
+  /* Hide scrollbar for WebKit */
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* Modal overlay */
+  .abf-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 34, 24, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+  }
+
+  /* Animated entrance */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes slideDown {
+    from { transform: translateY(-12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .abf-animate-slide-up {
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .abf-animate-slide-down {
+    animation: slideDown 0.25s ease;
+  }
+  .abf-animate-fade {
+    animation: fadeIn 0.25s ease;
+  }
+
+  /* Dot indicator */
+  .abf-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccd8cc;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+  .abf-dot.active {
+    background: #2d6a2d;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  /* Divider accent */
+  .abf-divider {
+    height: 4px;
+    width: 48px;
+    background: linear-gradient(to right, #8dc63f, #2d6a2d);
+    border-radius: 2px;
+  }
+
+  /* WhatsApp button */
+  .abf-btn-whatsapp {
+    background: #25d366;
+    color: white;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 1rem 2rem;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .abf-btn-whatsapp:hover {
+    background: #1da851;
+    transform: translateY(-1px);
   }
 }
