@@ -1,9 +1,26 @@
-[build]
-  base = "artifacts/mockup-sandbox"
-  command = "pnpm run build"
-  publish = "dist"
+# ─── Netlify Build Configuration — Akhere Book Foundation ─────────────────
+# Production workflow: GitHub → Netlify → Supabase
+# Application root:   artifacts/mockup-sandbox
+# Package manager:    pnpm (workspace managed at repo root)
+# Build output:       artifacts/mockup-sandbox/dist
+# ──────────────────────────────────────────────────────────────────────────
 
+[build]
+  # base = repo root so pnpm can resolve the workspace lockfile
+  base    = "."
+  # pnpm install regenerates the lockfile if absent, then builds
+  command = "pnpm install && pnpm --filter @workspace/abf-website run build"
+  # publish path relative to repo root
+  publish = "artifacts/mockup-sandbox/dist"
+
+# ─── Environment ──────────────────────────────────────────────────────────
+[build.environment]
+  NODE_VERSION = "20"
+
+# ─── SPA Routing Fallback ─────────────────────────────────────────────────
+# Serves index.html for all routes so /about, /projects, etc. work on
+# direct access and hard refresh without returning a 404.
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from   = "/*"
+  to     = "/index.html"
   status = 200
