@@ -362,7 +362,7 @@ function SupportSection() {
             <p style={{ fontSize: "1rem", color: "#4a5a44", lineHeight: 1.75, marginBottom: "1.5rem" }}>
               One of ABF's clearest examples of what access can create: a community space where children and adults can read, study, research and discover new possibilities. The library was commissioned by ABF and is still active and functional today.
             </p>
-            <a href={window.location.pathname.includes("/preview/") ? `${BASE}/preview/ABFProjects` : "/projects"} style={{ textDecoration: "none" }}>
+            <a href="/projects" style={{ textDecoration: "none" }}>
               <button className="abf-btn-primary" style={{ fontSize: "0.9375rem" }}>
                 See Our Projects <Icon.ChevronRight />
               </button>
@@ -468,13 +468,12 @@ function LatestCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
 
-  const isPreview = window.location.pathname.includes("/preview/");
   const getPostUrl = (slug: string) => {
     const postSlug = slug.replace(/^\/latest\//, "");
     if (postSlug === "azu-ogbunike-community-library") {
-      return isPreview ? `${BASE}/preview/ABFProjects?project=${postSlug}` : `/projects/${postSlug}`;
+      return `/projects/${postSlug}`;
     }
-    return isPreview ? `${BASE}/preview/ABFLatest?post=${postSlug}` : `/latest-from-abf/${postSlug}`;
+    return `/latest-from-abf/${postSlug}`;
   };
 
   const scroll = useCallback((dir: "left" | "right") => {
@@ -519,7 +518,7 @@ function LatestCarousel() {
             >
               <Icon.ChevronRight />
             </button>
-            <a href={isPreview ? `${BASE}/preview/ABFLatest` : "/latest"} style={{ textDecoration: "none" }}>
+            <a href="/latest-from-abf" style={{ textDecoration: "none" }}>
               <button className="abf-btn-primary" style={{ fontSize: "0.875rem", padding: "0.625rem 1.25rem" }}>
                 See All <Icon.ChevronRight />
               </button>
@@ -652,7 +651,7 @@ function TeamTeaser() {
         </div>
 
         <div style={{ textAlign: "center" }}>
-          <a href={isPreview ? `${BASE}/preview/ABFTeam` : "/team"} style={{ textDecoration: "none" }}>
+          <a href="/meet-the-team" style={{ textDecoration: "none" }}>
             <button className="abf-btn-primary">
               Meet the Team <Icon.ArrowRight />
             </button>
@@ -755,7 +754,7 @@ function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBo
       title: "Volunteer",
       desc: "Bring your skills, time or ideas.",
       cta: "Get Involved",
-      href: window.location.pathname.includes("/preview/") ? `${BASE}/preview/ABFGetInvolved` : "/get-involved",
+      href: "/get-involved",
       style: "volunteer",
     },
   ];

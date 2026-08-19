@@ -17,13 +17,13 @@ import {
 function parseMemberSlug(): string | null {
   const { pathname, search } = window.location;
   
-  // 1. Check preview mode parameter e.g. ?member=oluwatosin-aina
+  // Check query parameter fallback e.g. ?member=oluwatosin-aina
   const searchParams = new URLSearchParams(search);
   const searchSlug = searchParams.get("member");
   if (searchSlug) return searchSlug;
 
-  // 2. Check standard path suffix e.g. /team/slug
-  const match = pathname.match(/\/team\/([^/]+)$/);
+  // Check standard path suffix e.g. /meet-the-team/slug or /team/slug
+  const match = pathname.match(/\/(?:meet-the-team|team)\/([^/]+)$/);
   return match ? match[1] : null;
 }
 
@@ -62,26 +62,13 @@ export default function ABFTeam() {
   }, []);
 
   const handleOpenProfile = (slug: string) => {
-    const isPreview = window.location.pathname.includes("/preview/");
-    if (isPreview) {
-      const newUrl = `${window.location.pathname}?member=${slug}`;
-      window.history.pushState({}, "", newUrl);
-      setActiveSlug(slug);
-    } else {
-      window.history.pushState({}, "", `${BASE}/team/${slug}`);
-      setActiveSlug(slug);
-    }
+    window.history.pushState({}, "", `/meet-the-team/${slug}`);
+    setActiveSlug(slug);
   };
 
   const handleCloseModal = () => {
-    const isPreview = window.location.pathname.includes("/preview/");
-    if (isPreview) {
-      window.history.pushState({}, "", window.location.pathname);
-      setActiveSlug(null);
-    } else {
-      window.history.pushState({}, "", `${BASE}/team`);
-      setActiveSlug(null);
-    }
+    window.history.pushState({}, "", "/meet-the-team");
+    setActiveSlug(null);
   };
 
   const selectedMember = TEAM_MEMBERS.find((m) => m.slug === activeSlug);
@@ -124,7 +111,7 @@ export default function ABFTeam() {
             <div style={{ maxWidth: 800 }}>
               {/* Breadcrumb */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", marginBottom: "1.5rem", fontWeight: 500 }}>
-                <a href={import.meta.env.BASE_URL.replace(/\/$/, "") + "/preview/ABFHomepage"} style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none" }}>Home</a>
+                <a href="/" style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none" }}>Home</a>
                 <span>/</span>
                 <span style={{ color: "#8dc63f", fontWeight: 600 }}>Meet the Team</span>
               </div>
@@ -280,7 +267,7 @@ export default function ABFTeam() {
               }}>
                 <div style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>🙌</div>
                 <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "white", marginBottom: "1rem" }}>Volunteer</h3>
-                <a href={window.location.pathname.includes("/preview/") ? `${BASE}/preview/ABFGetInvolved` : "/get-involved"} style={{ textDecoration: "none", width: "100%" }}>
+                <a href="/get-involved" style={{ textDecoration: "none", width: "100%" }}>
                   <button className="abf-btn-secondary" style={{ fontSize: "0.875rem", width: "100%", justifyContent: "center" }}>
                     Get Involved
                   </button>

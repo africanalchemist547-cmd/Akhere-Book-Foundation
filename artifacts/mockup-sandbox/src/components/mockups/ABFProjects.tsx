@@ -117,12 +117,12 @@ const PROJECTS_DATA: Project[] = [
 function parseSlug(): string | null {
   const { pathname, search } = window.location;
   
-  // 1. Check preview mode parameter e.g. ?project=azu-ogbunike-community-library
+  // Check query parameter fallback e.g. ?project=azu-ogbunike-community-library
   const searchParams = new URLSearchParams(search);
   const searchSlug = searchParams.get("project");
   if (searchSlug) return searchSlug;
 
-  // 2. Check standard path suffix e.g. /projects/azu-ogbunike-community-library
+  // Check standard path suffix e.g. /projects/azu-ogbunike-community-library
   const match = pathname.match(/\/projects\/([^/]+)$/);
   return match ? match[1] : null;
 }
@@ -160,27 +160,14 @@ export default function ABFProjects() {
   }, []);
 
   const handleViewProject = (slug: string) => {
-    const isPreview = window.location.pathname.includes("/preview/");
-    if (isPreview) {
-      const newUrl = `${window.location.pathname}?project=${slug}`;
-      window.history.pushState({}, "", newUrl);
-      setActiveSlug(slug);
-    } else {
-      window.history.pushState({}, "", `${BASE}/projects/${slug}`);
-      setActiveSlug(slug);
-    }
+    window.history.pushState({}, "", `/projects/${slug}`);
+    setActiveSlug(slug);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleBackToList = () => {
-    const isPreview = window.location.pathname.includes("/preview/");
-    if (isPreview) {
-      window.history.pushState({}, "", window.location.pathname);
-      setActiveSlug(null);
-    } else {
-      window.history.pushState({}, "", `${BASE}/projects`);
-      setActiveSlug(null);
-    }
+    window.history.pushState({}, "", "/projects");
+    setActiveSlug(null);
     window.scrollTo({ top: 0 });
   };
 
@@ -729,7 +716,7 @@ export default function ABFProjects() {
                 }}>
                   <div style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>🙌</div>
                   <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "white", marginBottom: "1rem" }}>Volunteer</h3>
-                  <a href={window.location.pathname.includes("/preview/") ? `${BASE}/preview/ABFGetInvolved` : "/get-involved"} style={{ textDecoration: "none", width: "100%" }}>
+                  <a href="/get-involved" style={{ textDecoration: "none", width: "100%" }}>
                     <button className="abf-btn-secondary" style={{ fontSize: "0.875rem", width: "100%", justifyContent: "center" }}>
                       Get Involved
                     </button>
@@ -774,7 +761,7 @@ export default function ABFProjects() {
               <div style={{ maxWidth: 800 }}>
                 {/* Breadcrumb */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", marginBottom: "1.5rem", fontWeight: 500 }}>
-                  <a href={import.meta.env.BASE_URL.replace(/\/$/, "") + "/preview/ABFHomepage"} style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none" }}>Home</a>
+                  <a href="/" style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none" }}>Home</a>
                   <span>/</span>
                   <span style={{ color: "#8dc63f", fontWeight: 600 }}>Projects</span>
                 </div>

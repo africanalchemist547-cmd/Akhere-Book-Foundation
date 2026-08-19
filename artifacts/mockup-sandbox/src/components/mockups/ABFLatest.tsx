@@ -130,13 +130,13 @@ const POSTS_DATA: Post[] = [
 function parsePostSlug(): string | null {
   const { pathname, search } = window.location;
   
-  // 1. Check preview mode parameter e.g. ?post=a-child-a-book-a-new-possibility
+  // Check query parameter fallback e.g. ?post=a-child-a-book-a-new-possibility
   const searchParams = new URLSearchParams(search);
   const searchSlug = searchParams.get("post");
   if (searchSlug) return searchSlug;
 
-  // 2. Check standard path suffix e.g. /latest-from-abf/slug
-  const match = pathname.match(/\/latest-from-abf\/([^/]+)$/);
+  // Check standard path suffix e.g. /latest-from-abf/slug or /latest/slug
+  const match = pathname.match(/\/(?:latest-from-abf|latest)\/([^/]+)$/);
   return match ? match[1] : null;
 }
 
@@ -171,37 +171,20 @@ export default function ABFLatest() {
   }, []);
 
   const handleViewPost = (slug: string) => {
-    const isPreview = window.location.pathname.includes("/preview/");
-    if (isPreview) {
-      const newUrl = `${window.location.pathname}?post=${slug}`;
-      window.history.pushState({}, "", newUrl);
-      setActiveSlug(slug);
-    } else {
-      window.history.pushState({}, "", `${BASE}/latest-from-abf/${slug}`);
-      setActiveSlug(slug);
-    }
+    window.history.pushState({}, "", `/latest-from-abf/${slug}`);
+    setActiveSlug(slug);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleBackToList = () => {
-    const isPreview = window.location.pathname.includes("/preview/");
-    if (isPreview) {
-      window.history.pushState({}, "", window.location.pathname);
-      setActiveSlug(null);
-    } else {
-      window.history.pushState({}, "", `${BASE}/latest`);
-      setActiveSlug(null);
-    }
+    window.history.pushState({}, "", "/latest-from-abf");
+    setActiveSlug(null);
     window.scrollTo({ top: 0 });
   };
 
   const handleViewProject = (projSlug: string) => {
-    const isPreview = window.location.pathname.includes("/preview/");
-    if (isPreview) {
-      window.location.href = `${BASE}/preview/ABFProjects?project=${projSlug}`;
-    } else {
-      window.location.href = `${BASE}/projects/${projSlug}`;
-    }
+    window.history.pushState({}, "", `/projects/${projSlug}`);
+    window.location.href = `/projects/${projSlug}`;
   };
 
   // Resolve current active post
@@ -483,7 +466,7 @@ export default function ABFLatest() {
                 }}>
                   <div style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>🙌</div>
                   <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "white", marginBottom: "1rem" }}>Volunteer</h3>
-                  <a href={window.location.pathname.includes("/preview/") ? `${BASE}/preview/ABFGetInvolved` : "/get-involved"} style={{ textDecoration: "none", width: "100%" }}>
+                  <a href="/get-involved" style={{ textDecoration: "none", width: "100%" }}>
                     <button className="abf-btn-secondary" style={{ fontSize: "0.875rem", width: "100%", justifyContent: "center" }}>
                       Get Involved
                     </button>
@@ -528,7 +511,7 @@ export default function ABFLatest() {
               <div style={{ maxWidth: 800 }}>
                 {/* Breadcrumb */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", marginBottom: "1.5rem", fontWeight: 500 }}>
-                  <a href={import.meta.env.BASE_URL.replace(/\/$/, "") + "/preview/ABFHomepage"} style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none" }}>Home</a>
+                  <a href="/" style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none" }}>Home</a>
                   <span>/</span>
                   <span style={{ color: "#8dc63f", fontWeight: 600 }}>Latest from ABF</span>
                 </div>

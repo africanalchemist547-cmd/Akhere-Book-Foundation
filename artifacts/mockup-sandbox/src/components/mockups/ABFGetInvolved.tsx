@@ -234,7 +234,7 @@ export default function ABFGetInvolved() {
             <div style={{ maxWidth: 800 }}>
               {/* Breadcrumb */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", marginBottom: "1.5rem", fontWeight: 500 }}>
-                <a href={import.meta.env.BASE_URL.replace(/\/$/, "") + "/preview/ABFHomepage"} style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none" }}>Home</a>
+                <a href="/" style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none" }}>Home</a>
                 <span>/</span>
                 <span style={{ color: "#8dc63f", fontWeight: 600 }}>Get Involved</span>
               </div>

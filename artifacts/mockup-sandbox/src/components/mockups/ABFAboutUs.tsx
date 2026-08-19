@@ -71,7 +71,7 @@ export default function ABFAboutUs() {
             <div style={{ maxWidth: 720 }}>
               {/* Breadcrumb */}
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", marginBottom: "1.5rem", fontWeight: 500 }}>
-                <a href={import.meta.env.BASE_URL.replace(/\/$/, "") + "/preview/ABFHomepage"} style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#8dc63f"} onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255, 255, 255, 0.6)"}>Home</a>
+                <a href="/" style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={(e) => e.currentTarget.style.color = "#8dc63f"} onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255, 255, 255, 0.6)"}>Home</a>
                 <span>/</span>
                 <span style={{ color: "#8dc63f", fontWeight: 600 }}>About Us</span>
               </div>
@@ -415,7 +415,7 @@ export default function ABFAboutUs() {
                 </div>
 
                 <div>
-                  <a href={window.location.pathname.includes("/preview/") ? `${BASE}/preview/ABFProjects` : "/projects"} style={{ textDecoration: "none" }}>
+                  <a href="/projects" style={{ textDecoration: "none" }}>
                     <button className="abf-btn-primary">
                       Explore Our Projects <Icon.ChevronRight />
                     </button>
@@ -596,7 +596,7 @@ export default function ABFAboutUs() {
                   title: "Volunteer",
                   desc: "Bring your skills, time or ideas.",
                   cta: "Get Involved",
-                  href: import.meta.env.BASE_URL.replace(/\/$/, "") + "/preview/ABFHomepage#get-involved",
+                  href: "/get-involved",
                 },
               ].map((action, i) => (
                 <div

@@ -556,36 +556,35 @@ export function Header({ onDonate }: { onDonate: () => void }) {
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
-  const isPreview = window.location.pathname.includes("/preview/");
   const activePath = window.location.pathname;
 
   const navLinks = [
-    { label: "Home", href: isPreview ? `${BASE}/preview/ABFHomepage` : "/" },
-    { label: "About Us", href: isPreview ? `${BASE}/preview/ABFAboutUs` : "/about" },
-    { label: "Projects", href: isPreview ? `${BASE}/preview/ABFProjects` : "/projects" },
-    { label: "Latest from ABF", href: isPreview ? `${BASE}/preview/ABFLatest` : "/latest" },
-    { label: "Meet the Team", href: isPreview ? `${BASE}/preview/ABFTeam` : "/team" },
-    { label: "Get Involved", href: isPreview ? `${BASE}/preview/ABFGetInvolved` : "/get-involved" },
+    { label: "Home", href: "/" },
+    { label: "About Us", href: "/about" },
+    { label: "Projects", href: "/projects" },
+    { label: "Latest from ABF", href: "/latest-from-abf" },
+    { label: "Meet the Team", href: "/meet-the-team" },
+    { label: "Get Involved", href: "/get-involved" },
   ];
 
   const isLinkActive = (href: string) => {
-    if (href.endsWith("ABFHomepage") || href === "/") {
-      return activePath.endsWith("/") || activePath.includes("ABFHomepage");
+    if (href === "/") {
+      return activePath === "/" || activePath === "";
     }
-    if (href.endsWith("ABFAboutUs") || href === "/about") {
-      return activePath.includes("ABFAboutUs") || activePath.includes("/about");
+    if (href === "/about") {
+      return activePath.startsWith("/about");
     }
-    if (href.endsWith("ABFProjects") || href === "/projects") {
-      return activePath.includes("ABFProjects") || activePath.includes("/projects");
+    if (href === "/projects") {
+      return activePath.startsWith("/projects");
     }
-    if (href.endsWith("ABFLatest") || href === "/latest") {
-      return activePath.includes("ABFLatest") || activePath.includes("/latest");
+    if (href === "/latest-from-abf" || href === "/latest") {
+      return activePath.startsWith("/latest");
     }
-    if (href.endsWith("ABFTeam") || href === "/team") {
-      return activePath.includes("ABFTeam") || activePath.includes("/team");
+    if (href === "/meet-the-team" || href === "/team") {
+      return activePath.startsWith("/meet-the-team") || activePath.startsWith("/team");
     }
-    if (href.endsWith("ABFGetInvolved") || href === "/get-involved") {
-      return activePath.includes("ABFGetInvolved") || activePath.includes("/get-involved");
+    if (href === "/get-involved") {
+      return activePath.startsWith("/get-involved");
     }
     return false;
   };
@@ -614,7 +613,7 @@ export function Header({ onDonate }: { onDonate: () => void }) {
           justifyContent: "space-between",
         }}>
           {/* Logo */}
-          <a href={isPreview ? `${BASE}/preview/ABFHomepage` : "/"} style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.625rem", flexShrink: 0 }}>
+          <a href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.625rem", flexShrink: 0 }}>
             <img src={ASSETS.logoGreen} alt="Akhere Book Foundation" style={{ height: 48, width: 48, objectFit: "contain" }} />
             <div className="abf-logo-text">
               <div style={{ fontSize: "0.9375rem", fontWeight: 800, color: "#2d6a2d", lineHeight: 1.1 }}>Akhere Book</div>
@@ -746,15 +745,13 @@ export function Header({ onDonate }: { onDonate: () => void }) {
 export function Footer({ onDonate }: { onDonate: () => void }) {
   const year = new Date().getFullYear();
 
-  const isPreview = window.location.pathname.includes("/preview/");
-
   const navLinks = [
-    { label: "Home", href: isPreview ? `${BASE}/preview/ABFHomepage` : "/" },
-    { label: "About Us", href: isPreview ? `${BASE}/preview/ABFAboutUs` : "/about" },
-    { label: "Projects", href: isPreview ? `${BASE}/preview/ABFProjects` : "/projects" },
-    { label: "Latest from ABF", href: isPreview ? `${BASE}/preview/ABFLatest` : "/latest" },
-    { label: "Meet the Team", href: isPreview ? `${BASE}/preview/ABFTeam` : "/team" },
-    { label: "Get Involved", href: isPreview ? `${BASE}/preview/ABFGetInvolved` : "/get-involved" },
+    { label: "Home", href: "/" },
+    { label: "About Us", href: "/about" },
+    { label: "Projects", href: "/projects" },
+    { label: "Latest from ABF", href: "/latest-from-abf" },
+    { label: "Meet the Team", href: "/meet-the-team" },
+    { label: "Get Involved", href: "/get-involved" },
     { label: "Donate", onClick: onDonate },
   ];
 
