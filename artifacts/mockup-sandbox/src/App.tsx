@@ -1,5 +1,10 @@
 import { useEffect, useState, type ComponentType } from "react";
-
+import ABFHomepage from "./components/mockups/ABFHomepage";
+import ABFAboutUs from "./components/mockups/ABFAboutUs";
+import ABFProjects from "./components/mockups/ABFProjects";
+import ABFLatest from "./components/mockups/ABFLatest";
+import ABFTeam from "./components/mockups/ABFTeam";
+import ABFGetInvolved from "./components/mockups/ABFGetInvolved";
 import { modules as discoveredModules } from "./.generated/mockup-components";
 
 type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
@@ -117,30 +122,77 @@ function Gallery() {
   );
 }
 
-function getPreviewPath(): string | null {
-  const basePath = getBasePath();
-  const { pathname } = window.location;
-  const local =
-    basePath && pathname.startsWith(basePath)
-      ? pathname.slice(basePath.length) || "/"
-      : pathname;
-  const match = local.match(/^\/preview\/(.+)$/);
-  return match ? match[1] : null;
-}
-
 function App() {
-  const previewPath = getPreviewPath();
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
-  if (previewPath) {
+  // Sync state on navigation changes
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
+    window.addEventListener("popstate", handleLocationChange);
+
+    // Override pushState to intercept SPA-style programmatic transitions
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function (...args) {
+      originalPushState.apply(this, args);
+      handleLocationChange();
+    };
+
+    return () => {
+      window.removeEventListener("popstate", handleLocationChange);
+      window.history.pushState = originalPushState;
+    };
+  }, []);
+
+  const basePath = getBasePath();
+  const normalizedPath =
+    basePath && currentPath.startsWith(basePath)
+      ? currentPath.slice(basePath.length) || "/"
+      : currentPath;
+
+  // 1. Check if the path targets the Replit Dynamic Preview system
+  const previewMatch = normalizedPath.match(/^\/preview\/(.+)$/);
+  if (previewMatch) {
+    const componentPath = previewMatch[1];
     return (
       <PreviewRenderer
-        componentPath={previewPath}
+        componentPath={componentPath}
         modules={discoveredModules}
       />
     );
   }
 
-  return <Gallery />;
+  // 2. Production URL Routing mapping
+  const path = normalizedPath.toLowerCase();
+  
+  if (path === "/" || path === "") {
+    return <ABFHomepage />;
+  }
+  if (path.startsWith("/about")) {
+    return <ABFAboutUs />;
+  }
+  if (path.startsWith("/projects")) {
+    return <ABFProjects />;
+  }
+  if (path.startsWith("/latest") || path.startsWith("/latest-from-abf")) {
+    return <ABFLatest />;
+  }
+  if (path.startsWith("/team") || path.startsWith("/meet-the-team")) {
+    return <ABFTeam />;
+  }
+  if (path.startsWith("/get-involved")) {
+    return <ABFGetInvolved />;
+  }
+
+  // Gallery view fallback (available at /gallery or similar unknown paths for debugging)
+  if (path.startsWith("/gallery")) {
+    return <Gallery />;
+  }
+
+  // Default fallback for any unmatched paths to protect production UX
+  return <ABFHomepage />;
 }
 
 export default App;

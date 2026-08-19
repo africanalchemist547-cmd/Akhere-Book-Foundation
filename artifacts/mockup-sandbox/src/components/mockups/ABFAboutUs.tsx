@@ -16,6 +16,10 @@ export default function ABFAboutUs() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
 
+  useEffect(() => {
+    document.title = "About Us | Akhere Book Foundation";
+  }, []);
+
   // Keyboard close
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

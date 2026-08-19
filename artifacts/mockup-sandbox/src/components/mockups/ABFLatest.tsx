@@ -207,6 +207,14 @@ export default function ABFLatest() {
   // Resolve current active post
   const activePost = POSTS_DATA.find((p) => p.slug === activeSlug);
 
+  useEffect(() => {
+    if (activePost) {
+      document.title = `${activePost.title} | Latest from ABF | Akhere Book Foundation`;
+    } else {
+      document.title = "Latest from ABF | Akhere Book Foundation";
+    }
+  }, [activePost]);
+
   // Filter posts list
   const filteredPosts = POSTS_DATA.filter((p) => {
     // Exclude the featured post from the list view so it's not duplicated on category: ALL

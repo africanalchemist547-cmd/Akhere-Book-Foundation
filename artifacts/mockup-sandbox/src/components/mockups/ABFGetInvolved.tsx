@@ -30,6 +30,10 @@ interface VolunteerForm {
 export default function ABFGetInvolved() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
+
+  useEffect(() => {
+    document.title = "Get Involved | Akhere Book Foundation";
+  }, []);
   
   // Volunteer Modal State
   const [volunteerOpen, setVolunteerOpen] = useState(false);

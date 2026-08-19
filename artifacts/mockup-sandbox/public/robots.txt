@@ -1,0 +1,8 @@
+# Robots configuration for Akhere Book Foundation (ABF)
+# Allow indexing of all public files
+
+User-agent: *
+Allow: /
+
+# Sitemap location placeholder (replace [ABF_PRODUCTION_DOMAIN] with the final domain)
+Sitemap: https://[ABF_PRODUCTION_DOMAIN]/sitemap.xml

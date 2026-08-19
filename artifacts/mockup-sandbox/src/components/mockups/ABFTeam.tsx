@@ -33,6 +33,10 @@ export default function ABFTeam() {
 
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
 
+  useEffect(() => {
+    document.title = "Meet the Team | Akhere Book Foundation";
+  }, []);
+
   // Sync state on load and popstates
   useEffect(() => {
     setActiveSlug(parseMemberSlug());

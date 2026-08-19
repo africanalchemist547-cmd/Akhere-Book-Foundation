@@ -932,6 +932,10 @@ export default function ABFHomepage() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
 
+  useEffect(() => {
+    document.title = "Akhere Book Foundation | Building What Comes Next";
+  }, []);
+
   // Keyboard close
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

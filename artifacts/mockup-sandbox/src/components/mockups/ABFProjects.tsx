@@ -187,6 +187,14 @@ export default function ABFProjects() {
   // Find the selected project
   const selectedProject = PROJECTS_DATA.find((p) => p.slug === activeSlug);
 
+  useEffect(() => {
+    if (selectedProject) {
+      document.title = `${selectedProject.title} | Projects | Akhere Book Foundation`;
+    } else {
+      document.title = "Projects | Akhere Book Foundation";
+    }
+  }, [selectedProject]);
+
   // Filter project cards
   const filteredProjects = PROJECTS_DATA.filter((p) => {
     if (activeFilter === "ALL") return true;
