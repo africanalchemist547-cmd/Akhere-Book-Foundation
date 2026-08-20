@@ -279,17 +279,20 @@ export default function ABFAboutUs() {
         {/* Section 4 — No Amount Is Too Small */}
         <section style={{ padding: "6rem 1.5rem", background: "white" }}>
           <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-            <div style={{
-              background: "linear-gradient(135deg, #f0f7f0 0%, #e1e1d0 100%)",
-              borderRadius: 28,
-              padding: "3.5rem 2.5rem",
-              border: "1px solid #d4edd4",
-              display: "grid",
-              gridTemplateColumns: "1fr",
-              gap: "2rem",
-              alignItems: "center",
-              textAlign: "center"
-            }}>
+            <div
+              className="abf-philosophy-card"
+              style={{
+                background: "linear-gradient(135deg, #f0f7f0 0%, #e1e1d0 100%)",
+                borderRadius: 28,
+                padding: "3.5rem 2.5rem",
+                border: "1px solid #d4edd4",
+                display: "grid",
+                gridTemplateColumns: "1fr",
+                gap: "2rem",
+                alignItems: "center",
+                textAlign: "center"
+              }}
+            >
               <div style={{ maxWidth: 700, margin: "0 auto" }}>
                 <SectionLabel text="Our Philosophy" />
                 <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, color: "#1a2218", lineHeight: 1.2, marginBottom: "1.25rem" }}>
@@ -300,15 +303,18 @@ export default function ABFAboutUs() {
                 </p>
 
                 {/* Highlight box */}
-                <div style={{
-                  background: "white",
-                  borderRadius: 16,
-                  padding: "1.5rem 2rem",
-                  border: "2px dashed #2d6a2d",
-                  display: "inline-block",
-                  marginBottom: "2rem",
-                  boxShadow: "0 10px 30px rgba(45,106,45,0.04)"
-                }}>
+                <div
+                  className="abf-recurring-impact-box"
+                  style={{
+                    background: "white",
+                    borderRadius: 16,
+                    padding: "1.5rem 2rem",
+                    border: "2px dashed #2d6a2d",
+                    display: "inline-block",
+                    marginBottom: "2rem",
+                    boxShadow: "0 10px 30px rgba(45,106,45,0.04)"
+                  }}
+                >
                   <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#8dc63f", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.375rem" }}>A Recurring Impact</div>
                   <div style={{ fontSize: "clamp(1.25rem, 3vw, 1.75rem)", fontWeight: 800, color: "#2d6a2d" }}>
                     ₦500 every two weeks
@@ -381,12 +387,15 @@ export default function ABFAboutUs() {
                 </p>
 
                 {/* Grid of placeholders */}
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "1.25rem",
-                  marginBottom: "2rem"
-                }}>
+                <div
+                  className="abf-about-stats-grid"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "1.25rem",
+                    marginBottom: "2rem"
+                  }}
+                >
                   {[
                     { label: "Schools & Communities", tag: "ABF TO PROVIDE VERIFIED FIGURES" },
                     { label: "Estimated Users", tag: "ABF TO PROVIDE VERIFIED FIGURES" },

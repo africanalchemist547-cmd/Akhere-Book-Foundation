@@ -150,6 +150,9 @@
 
   html {
     scroll-behavior: smooth;
+    /* Prevent horizontal overflow at root level */
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   body {
@@ -157,6 +160,9 @@
     @apply antialiased bg-background text-foreground;
     font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
+    /* Prevent horizontal overflow globally */
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -164,6 +170,11 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.15;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
   }
 }
 
@@ -613,4 +624,325 @@
     background: #1da851;
     transform: translateY(-1px);
   }
+
+  /* ─── MOBILE ICON CARD ─────────────────────────────────────── */
+  /* Used in TrustBadges and FinalCTA to render SVG icons cleanly */
+  .abf-icon-card {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #e8f5e8, #d4edd4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+    color: #2d6a2d;
+  }
+
+  .abf-icon-card-lg {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    color: white;
+  }
+
+  /* ─── MOBILE CAROUSEL WRAPPER ─────────────────────────────── */
+  /* Generic wrapper to show carousel on mobile, grid on desktop */
+  .abf-mobile-carousel-wrap {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 0.5rem;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .abf-mobile-carousel-wrap::-webkit-scrollbar {
+    display: none;
+  }
+  .abf-mobile-carousel-slide {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  /* Filter bar — wrapping layout on mobile */
+  .abf-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
 }
+
+/* ============================================================
+   MOBILE RESPONSIVE OVERRIDES
+   ============================================================ */
+
+/* ─── GLOBAL CONTAINER GUARDS ─────────────────────────────── */
+@media (max-width: 640px) {
+  /* Any section or div that is a direct container should not exceed vw */
+  section, footer, header, nav, main {
+    max-width: 100vw;
+  }
+
+  /* Ensure all buttons can shrink */
+  .abf-btn-primary,
+  .abf-btn-secondary,
+  .abf-btn-donate,
+  .abf-btn-lime,
+  .abf-btn-whatsapp {
+    max-width: 100%;
+  }
+
+  /* Partner card — remove fixed min-width on mobile */
+  .abf-partner-card {
+    min-width: 0;
+    white-space: normal;
+    width: 100%;
+  }
+
+  /* Trust cards — full width on very small screens */
+  .abf-trust-card {
+    width: 100%;
+  }
+
+  /* Stat cards — ensure they don't touch edges */
+  .abf-stat-card {
+    padding: 1.5rem 1rem;
+  }
+
+  /* Content cards in carousels — correct sizing */
+  .abf-content-card {
+    width: 100%;
+  }
+
+  /* Modal should not overflow */
+  .abf-modal-overlay {
+    padding: 0.75rem;
+    align-items: flex-end;
+  }
+}
+
+/* ─── HEADER ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Header inner container */
+  .abf-header-inner {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  /* Donate button in header — tighten on small screens */
+  .abf-header-donate {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    font-size: 0.8125rem !important;
+  }
+}
+
+/* ─── HERO SECTIONS ──────────────────────────────────────── */
+@media (max-width: 640px) {
+  .abf-hero-content {
+    padding-top: 5rem !important;
+    padding-bottom: 3rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* ─── TRUST BADGES GRID ──────────────────────────────────── */
+@media (max-width: 640px) {
+  .abf-trust-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.875rem !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .abf-trust-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ─── TEAM CAROUSEL ─────────────────────────────────────── */
+@media (min-width: 901px) {
+  /* On desktop, show as grid, hide carousel controls */
+  .abf-team-grid {
+    display: grid !important;
+  }
+  .abf-team-carousel-wrap {
+    display: none !important;
+  }
+  .abf-carousel-controls {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  /* On mobile/tablet, show carousel, hide grid */
+  .abf-team-grid {
+    display: none !important;
+  }
+  .abf-team-carousel-wrap {
+    display: flex !important;
+  }
+  .abf-carousel-controls {
+    display: flex !important;
+  }
+}
+
+/* ─── PARTNERS CAROUSEL ────────────────────────────────── */
+@media (min-width: 641px) {
+  .abf-partners-grid {
+    display: flex !important;
+  }
+  .abf-partners-carousel-wrap {
+    display: none !important;
+  }
+  .abf-partners-carousel-controls {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .abf-partners-grid {
+    display: none !important;
+  }
+  .abf-partners-carousel-wrap {
+    display: flex !important;
+  }
+  .abf-partners-carousel-controls {
+    display: flex !important;
+  }
+}
+
+/* ─── FILTER / CATEGORY BARS ─────────────────────────────── */
+@media (max-width: 640px) {
+  .abf-filter-bar {
+    flex-wrap: wrap !important;
+    overflow-x: visible !important;
+  }
+
+  .abf-filter-btn {
+    font-size: 0.8125rem !important;
+    padding: 0.5rem 0.875rem !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .abf-filter-btn {
+    font-size: 0.75rem !important;
+    padding: 0.4375rem 0.75rem !important;
+  }
+}
+
+/* ─── ABOUT PAGE — OUR PHILOSOPHY ──────────────────────── */
+@media (max-width: 640px) {
+  .abf-philosophy-card {
+    padding: 2rem 1.25rem !important;
+    border-radius: 20px !important;
+  }
+
+  .abf-recurring-impact-box {
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .abf-philosophy-card {
+    padding: 1.5rem 1rem !important;
+  }
+}
+
+/* ─── ABOUT PAGE — STATS GRID ───────────────────────────── */
+@media (max-width: 480px) {
+  .abf-about-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* ─── SUPPORT SECTION LIBRARY FEATURE ──────────────────── */
+@media (max-width: 640px) {
+  .abf-library-feature {
+    border-radius: 16px !important;
+  }
+
+  .abf-library-text {
+    padding: 1.5rem !important;
+  }
+}
+
+/* ─── FINAL CTA SECTION ─────────────────────────────────── */
+@media (max-width: 640px) {
+  .abf-final-cta-section {
+    padding: 4rem 1rem !important;
+  }
+
+  .abf-final-cta-grid {
+    gap: 1rem !important;
+  }
+
+  .abf-final-cta-card {
+    padding: 1.75rem 1.25rem !important;
+  }
+}
+
+/* ─── FOOTER ────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .abf-footer-inner {
+    gap: 2rem !important;
+  }
+}
+
+/* ─── SOCIAL LINKS ──────────────────────────────────────── */
+@media (max-width: 480px) {
+  .abf-social-links {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .abf-social-links a {
+    justify-content: center !important;
+  }
+}
+
+/* ─── LATEST CAROUSEL CARDS ─────────────────────────────── */
+@media (max-width: 640px) {
+  .abf-latest-carousel-card {
+    width: calc(85vw - 2rem) !important;
+    min-width: 240px !important;
+    max-width: 340px !important;
+  }
+}
+
+/* ─── PROJECTS PAGE — PROJECT CARDS ─────────────────────── */
+@media (max-width: 640px) {
+  .abf-project-card-grid {
+    grid-template-columns: 1fr !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ─── RELATED POSTS SCROLL ──────────────────────────────── */
+@media (max-width: 640px) {
+  .abf-related-scroll {
+    gap: 1rem !important;
+  }
+  .abf-related-card {
+    width: calc(85vw - 1rem) !important;
+    min-width: 220px !important;
+  }
+}
+

@@ -18,7 +18,8 @@ import {
   Header,
   Footer,
   BASE,
-  TEAM_MEMBERS
+  TEAM_MEMBERS,
+  PartnerWithABFModal
 } from "./_shared";
 
 // â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -203,7 +204,7 @@ function HeroSection({ onDonate, onDonateBook }: { onDonate: () => void; onDonat
           {/* CTAs */}
           <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center", marginBottom: "1.25rem" }}>
             <button className="abf-btn-donate" onClick={onDonate} style={{ fontSize: "1rem", padding: "1rem 2.25rem" }}>
-              ðŸ’š Donate
+              💚 Donate
             </button>
             <button className="abf-btn-secondary" onClick={onDonateBook} style={{ fontSize: "1rem", padding: "0.9375rem 2rem" }}>
               Get Involved
@@ -240,27 +241,27 @@ function HeroSection({ onDonate, onDonateBook }: { onDonate: () => void; onDonat
   );
 }
 
-// â”€â”€â”€ TRUST BADGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ————————————————————————————————————————————————————————————————
 
 function TrustBadges() {
   const badges = [
     {
-      icon: "ðŸ“š",
+      icon: <Icon.Book />,
       title: "Books & Learning",
       desc: "Helping children gain access to reading and educational resources that open new worlds.",
     },
     {
-      icon: "ðŸ˜ï¸",
+      icon: <Icon.Users />,
       title: "Community",
       desc: "Creating spaces where children and communities can learn and grow together.",
     },
     {
-      icon: "ðŸŽ¯",
+      icon: <Icon.Star />,
       title: "Real Impact",
       desc: "Focused on turning access to resources into meaningful, lasting learning opportunities.",
     },
     {
-      icon: "ðŸ’¡",
+      icon: <Icon.Lightbulb />,
       title: "Transparency",
       desc: "Showing supporters clearly where their contributions are making a difference.",
     },
@@ -269,24 +270,17 @@ function TrustBadges() {
   return (
     <section style={{ background: "#f8faf6", padding: "4rem 1.5rem", borderBottom: "1px solid #e8f0e8" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "1.25rem",
-        }}>
+        <div
+          className="abf-trust-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "1.25rem",
+          }}
+        >
           {badges.map((b, i) => (
             <div key={i} className="abf-trust-card">
-              <div style={{
-                width: 48,
-                height: 48,
-                borderRadius: 14,
-                background: "linear-gradient(135deg, #e8f5e8, #d4edd4)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "1.5rem",
-                marginBottom: "1rem",
-              }}>
+              <div className="abf-icon-card">
                 {b.icon}
               </div>
               <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a2218", marginBottom: "0.5rem" }}>{b.title}</h3>
@@ -601,6 +595,58 @@ function LatestCarousel() {
 // â”€â”€â”€ MEET THE TEAM TEASER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function TeamTeaser() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const scroll = useCallback((dir: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardW = el.firstElementChild?.clientWidth ?? 300;
+    el.scrollBy({ left: dir === "right" ? cardW + 20 : -(cardW + 20), behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const handler = () => {
+      const cardW = el.firstElementChild?.clientWidth ?? 300;
+      setActiveIdx(Math.round(el.scrollLeft / (cardW + 20)));
+    };
+    el.addEventListener("scroll", handler, { passive: true });
+    return () => el.removeEventListener("scroll", handler);
+  }, []);
+
+  const TeamCard = ({ member }: { member: typeof TEAM_MEMBERS[number] }) => (
+    <div className="abf-team-card" style={{ display: "flex", flexDirection: "column" }}>
+      {/* Photo */}
+      <div style={{ position: "relative", height: 280, overflow: "hidden" }}>
+        <img
+          src={member.image}
+          alt={member.name}
+          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+        />
+        <div style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "40%",
+          background: "linear-gradient(to top, rgba(26,34,24,0.5), transparent)",
+        }} />
+      </div>
+
+      {/* Info */}
+      <div style={{ padding: "1.5rem" }}>
+        <h3 style={{ fontSize: "1.1875rem", fontWeight: 800, color: "#1a2218", marginBottom: "0.5rem" }}>
+          {member.name}
+        </h3>
+        <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.65, margin: 0 }}>
+          {member.description}
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <section id="team" style={{ padding: "6rem 1.5rem", background: "white" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
@@ -611,43 +657,83 @@ function TeamTeaser() {
           </h2>
         </div>
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 360px))",
-          gap: "1.5rem",
-          justifyContent: "center",
-          marginBottom: "2.5rem",
-        }}>
+        {/* Desktop grid — hidden on mobile via CSS */}
+        <div
+          className="abf-team-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 360px))",
+            gap: "1.5rem",
+            justifyContent: "center",
+            marginBottom: "2.5rem",
+          }}
+        >
           {TEAM_MEMBERS.map((member) => (
-            <div key={member.id} className="abf-team-card">
-              {/* Photo */}
-              <div style={{ position: "relative", height: 280, overflow: "hidden" }}>
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
-                />
-                <div style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: "40%",
-                  background: "linear-gradient(to top, rgba(26,34,24,0.5), transparent)",
-                }} />
-              </div>
-
-              {/* Info */}
-              <div style={{ padding: "1.5rem" }}>
-                <h3 style={{ fontSize: "1.1875rem", fontWeight: 800, color: "#1a2218", marginBottom: "0.5rem" }}>
-                  {member.name}
-                </h3>
-                <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.65, margin: 0 }}>
-                  {member.description}
-                </p>
-              </div>
-            </div>
+            <TeamCard key={member.id} member={member} />
           ))}
+        </div>
+
+        {/* Mobile carousel — hidden on desktop via CSS */}
+        <div className="abf-team-carousel-wrap" style={{ display: "none", flexDirection: "column", marginBottom: "1rem" }}>
+          {/* Carousel controls header */}
+          <div
+            className="abf-carousel-controls"
+            style={{
+              display: "none",
+              justifyContent: "flex-end",
+              gap: "0.625rem",
+              marginBottom: "1.25rem",
+            }}
+          >
+            <button
+              onClick={() => scroll("left")}
+              aria-label="Previous person"
+              style={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
+            >
+              <Icon.ChevronLeft />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              aria-label="Next person"
+              style={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
+            >
+              <Icon.ChevronRight />
+            </button>
+          </div>
+
+          {/* Scroll container */}
+          <div
+            ref={scrollRef}
+            className="abf-mobile-carousel-wrap"
+            style={{ gap: "1.25rem" }}
+          >
+            {TEAM_MEMBERS.map((member) => (
+              <div
+                key={member.id}
+                className="abf-mobile-carousel-slide"
+                style={{ width: "calc(85vw - 2rem)", maxWidth: 360, minWidth: 260 }}
+              >
+                <TeamCard member={member} />
+              </div>
+            ))}
+          </div>
+
+          {/* Dot indicators */}
+          <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", marginTop: "1.25rem" }}>
+            {TEAM_MEMBERS.map((_, i) => (
+              <button
+                key={i}
+                className={`abf-dot${i === activeIdx ? " active" : ""}`}
+                onClick={() => {
+                  const el = scrollRef.current;
+                  if (!el) return;
+                  const cardW = el.firstElementChild?.clientWidth ?? 300;
+                  el.scrollTo({ left: i * (cardW + 20), behavior: "smooth" });
+                }}
+                aria-label={`Go to person ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         <div style={{ textAlign: "center" }}>
@@ -662,9 +748,58 @@ function TeamTeaser() {
   );
 }
 
+
 // â”€â”€â”€ PARTNERS SECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-function PartnersSection() {
+function PartnersSection({ onPartnerOpen }: { onPartnerOpen: () => void }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const scroll = useCallback((dir: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardW = el.firstElementChild?.clientWidth ?? 280;
+    el.scrollBy({ left: dir === "right" ? cardW + 16 : -(cardW + 16), behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const handler = () => {
+      const cardW = el.firstElementChild?.clientWidth ?? 280;
+      setActiveIdx(Math.round(el.scrollLeft / (cardW + 16)));
+    };
+    el.addEventListener("scroll", handler, { passive: true });
+    return () => el.removeEventListener("scroll", handler);
+  }, []);
+
+  const PartnerCard = ({ p }: { p: typeof PARTNERS[number] }) => (
+    <div className="abf-partner-card" style={{ minWidth: 0, width: "100%" }}>
+      <div style={{
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        background: p.id === 3 ? "#f0f0f0" : `${p.color}18`,
+        border: `1px solid ${p.color}30`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontWeight: 800,
+        fontSize: "0.875rem",
+        color: p.id === 3 ? "#aaa" : p.color,
+        flexShrink: 0,
+      }}>
+        {p.initials}
+      </div>
+      <div>
+        <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: p.id === 3 ? "#aaa" : "#1a2218", whiteSpace: "normal", lineHeight: 1.3 }}>
+          {p.name}
+        </div>
+        <div style={{ fontSize: "0.8125rem", color: "#8a9a84" }}>{p.description}</div>
+      </div>
+    </div>
+  );
+
   return (
     <section style={{ padding: "5rem 1.5rem", background: "#f8faf6", borderTop: "1px solid #e8f0e8" }}>
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
@@ -678,14 +813,17 @@ function PartnersSection() {
           </p>
         </div>
 
-        {/* Partner cards */}
-        <div style={{
-          display: "flex",
-          gap: "1.25rem",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          marginBottom: "2.5rem",
-        }}>
+        {/* Desktop flex-wrap grid — hidden on mobile via CSS */}
+        <div
+          className="abf-partners-grid"
+          style={{
+            display: "flex",
+            gap: "1.25rem",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            marginBottom: "2.5rem",
+          }}
+        >
           {PARTNERS.map((p) => (
             <div key={p.id} className="abf-partner-card">
               <div style={{
@@ -714,27 +852,89 @@ function PartnersSection() {
           ))}
         </div>
 
+        {/* Mobile carousel — hidden on desktop via CSS */}
+        <div className="abf-partners-carousel-wrap" style={{ display: "none", flexDirection: "column", marginBottom: "1.5rem" }}>
+          {/* Controls */}
+          <div
+            className="abf-partners-carousel-controls"
+            style={{
+              display: "none",
+              justifyContent: "flex-end",
+              gap: "0.625rem",
+              marginBottom: "1rem",
+            }}
+          >
+            <button
+              onClick={() => scroll("left")}
+              aria-label="Previous partner"
+              style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
+            >
+              <Icon.ChevronLeft />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              aria-label="Next partner"
+              style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
+            >
+              <Icon.ChevronRight />
+            </button>
+          </div>
+
+          {/* Scroll container */}
+          <div
+            ref={scrollRef}
+            className="abf-mobile-carousel-wrap"
+            style={{ gap: "1rem" }}
+          >
+            {PARTNERS.map((p) => (
+              <div
+                key={p.id}
+                className="abf-mobile-carousel-slide"
+                style={{ width: "calc(85vw - 2rem)", maxWidth: 340, minWidth: 240 }}
+              >
+                <PartnerCard p={p} />
+              </div>
+            ))}
+          </div>
+
+          {/* Dots */}
+          <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", marginTop: "1rem" }}>
+            {PARTNERS.map((_, i) => (
+              <button
+                key={i}
+                className={`abf-dot${i === activeIdx ? " active" : ""}`}
+                onClick={() => {
+                  const el = scrollRef.current;
+                  if (!el) return;
+                  const cardW = el.firstElementChild?.clientWidth ?? 280;
+                  el.scrollTo({ left: i * (cardW + 16), behavior: "smooth" });
+                }}
+                aria-label={`Go to partner ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: "1rem", color: "#4a5a44", marginBottom: "1rem" }}>
             Want to support the work in your own way?
           </p>
-          <a href="mailto:akherebookfoundation@gmail.com" style={{ textDecoration: "none" }}>
-            <button className="abf-btn-primary">
-              Partner with ABF <Icon.ArrowRight />
-            </button>
-          </a>
+          <button className="abf-btn-primary" onClick={onPartnerOpen}>
+            Partner with ABF <Icon.ArrowRight />
+          </button>
         </div>
       </div>
     </section>
   );
 }
 
+
 // â”€â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBook: () => void }) {
   const actions = [
     {
-      emoji: "ðŸ“š",
+      icon: <Icon.Book />,
       title: "Donate a Book",
       desc: "Give a child another story to discover.",
       cta: "Donate a Book",
@@ -742,7 +942,7 @@ function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBo
       style: "book",
     },
     {
-      emoji: "ðŸ’š",
+      icon: <Icon.Heart />,
       title: "Donate Money",
       desc: "Even a small contribution can go a long way.",
       cta: "Donate Money",
@@ -750,7 +950,7 @@ function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBo
       style: "money",
     },
     {
-      emoji: "🙌",
+      icon: <Icon.Hands />,
       title: "Volunteer",
       desc: "Bring your skills, time or ideas.",
       cta: "Get Involved",
@@ -760,12 +960,16 @@ function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBo
   ];
 
   return (
-    <section id="get-involved" style={{
-      padding: "7rem 1.5rem",
-      background: "linear-gradient(135deg, #1a3d1a 0%, #2d6a2d 100%)",
-      position: "relative",
-      overflow: "hidden",
-    }}>
+    <section
+      id="get-involved"
+      className="abf-final-cta-section"
+      style={{
+        padding: "7rem 1.5rem",
+        background: "linear-gradient(135deg, #1a3d1a 0%, #2d6a2d 100%)",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
       {/* Decorative circles */}
       <div style={{ position: "absolute", top: -80, right: -80, width: 400, height: 400, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.06)", pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: -100, left: -60, width: 320, height: 320, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.04)", pointerEvents: "none" }} />
@@ -782,16 +986,20 @@ function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBo
         </div>
 
         {/* Action cards */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          gap: "1.5rem",
-          maxWidth: 900,
-          margin: "0 auto",
-        }}>
+        <div
+          className="abf-final-cta-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: "1.5rem",
+            maxWidth: 900,
+            margin: "0 auto",
+          }}
+        >
           {actions.map((action, i) => (
             <div
               key={i}
+              className="abf-final-cta-card"
               style={{
                 background: "rgba(255,255,255,0.07)",
                 borderRadius: 20,
@@ -801,18 +1009,8 @@ function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBo
                 transition: "background 0.2s, transform 0.2s",
               }}
             >
-              <div style={{
-                width: 64,
-                height: 64,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.1)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "1.75rem",
-                margin: "0 auto 1.25rem",
-              }}>
-                {action.emoji}
+              <div className="abf-icon-card-lg">
+                {action.icon}
               </div>
               <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "white", marginBottom: "0.625rem" }}>
                 {action.title}
@@ -930,6 +1128,7 @@ function SocialSection() {
 export default function ABFHomepage() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
+  const [partnerOpen, setPartnerOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Akhere Book Foundation | Building What Comes Next";
@@ -941,6 +1140,7 @@ export default function ABFHomepage() {
       if (e.key === "Escape") {
         setDonateMoneyOpen(false);
         setDonateBookOpen(false);
+        setPartnerOpen(false);
       }
     };
     window.addEventListener("keydown", handler);
@@ -974,7 +1174,7 @@ export default function ABFHomepage() {
         <TeamTeaser />
 
         {/* 7. Partners */}
-        <PartnersSection />
+        <PartnersSection onPartnerOpen={() => setPartnerOpen(true)} />
 
         {/* 8. Final CTA */}
         <FinalCTA
@@ -992,6 +1192,7 @@ export default function ABFHomepage() {
       {/* Modals */}
       {donateMoneyOpen && <DonateMoneyModal onClose={() => setDonateMoneyOpen(false)} />}
       {donateBookOpen && <DonateBookModal onClose={() => setDonateBookOpen(false)} />}
+      {partnerOpen && <PartnerWithABFModal onClose={() => setPartnerOpen(false)} />}
     </div>
   );
 }

@@ -379,7 +379,7 @@ export default function ABFLatest() {
                 
                 <div style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
                   gap: "1.5rem",
                   justifyContent: "center"
                 }}>
@@ -553,13 +553,17 @@ export default function ABFLatest() {
             boxShadow: "0 4px 16px rgba(45,106,45,0.03)"
           }}>
             <div style={{ maxWidth: 1280, margin: "0 auto", padding: "1rem 1.5rem" }}>
-              <div style={{ display: "flex", gap: "0.5rem", overflowX: "auto", scrollbarWidth: "none" }}>
+              <div
+                className="abf-filter-bar"
+                style={{ display: "flex", gap: "0.5rem", overflowX: "auto", scrollbarWidth: "none" }}
+              >
                 {(["ALL", "PROJECTS", "EVENTS", "NEWS & IMPACT"] as const).map((cat) => {
                   const active = activeCategory === cat;
                   return (
                     <button
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
+                      className="abf-filter-btn"
                       style={{
                         background: active ? "#f0f7f0" : "transparent",
                         border: active ? "1px solid #dde8dd" : "1px solid transparent",
@@ -592,7 +596,7 @@ export default function ABFLatest() {
                   onClick={() => handleViewPost(featuredPost.slug)}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
                     gap: "2.5rem",
                     alignItems: "center",
                     background: "white",
@@ -644,7 +648,7 @@ export default function ABFLatest() {
               {filteredPosts.length > 0 ? (
                 <div style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(290px, 360px))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 360px))",
                   gap: "2.5rem 2rem",
                   justifyContent: "center"
                 }}>

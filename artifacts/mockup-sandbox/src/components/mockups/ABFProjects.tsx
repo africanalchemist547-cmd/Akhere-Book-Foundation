@@ -620,23 +620,30 @@ export default function ABFProjects() {
                   </p>
                 </div>
 
-                <div style={{
-                  display: "flex",
-                  gap: "1.5rem",
-                  overflowX: "auto",
-                  paddingBottom: "1.5rem",
-                  scrollbarWidth: "thin"
-                }}>
+                <div
+                  className="abf-related-scroll"
+                  style={{
+                    display: "flex",
+                    gap: "1.5rem",
+                    overflowX: "auto",
+                    paddingBottom: "1.5rem",
+                    scrollbarWidth: "thin"
+                  }}
+                >
                   {selectedProject.relatedPosts.map((post, idx) => (
-                    <div key={idx} style={{
-                      background: "white",
-                      borderRadius: 16,
-                      border: "1px solid #e8f0e8",
-                      width: 300,
-                      flexShrink: 0,
-                      overflow: "hidden",
-                      boxShadow: "0 2px 10px rgba(0,0,0,0.02)"
-                    }}>
+                    <div
+                      key={idx}
+                      className="abf-related-card"
+                      style={{
+                        background: "white",
+                        borderRadius: 16,
+                        border: "1px solid #e8f0e8",
+                        width: 300,
+                        flexShrink: 0,
+                        overflow: "hidden",
+                        boxShadow: "0 2px 10px rgba(0,0,0,0.02)"
+                      }}
+                    >
                       <img src={post.image} alt={post.title} style={{ width: "100%", height: 180, objectFit: "cover" }} />
                       <div style={{ padding: "1.25rem" }}>
                         <CategoryBadge label={post.category} color={post.categoryColor} />
@@ -796,19 +803,23 @@ export default function ABFProjects() {
           {/* Filter Bar */}
           <section style={{ background: "white", borderBottom: "1px solid #e8f0e8" }}>
             <div style={{ maxWidth: 1280, margin: "0 auto", padding: "1.25rem 1.5rem" }}>
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                overflowX: "auto",
-                scrollbarWidth: "none"
-              }}>
+              <div
+                className="abf-filter-bar"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  overflowX: "auto",
+                  scrollbarWidth: "none"
+                }}
+              >
                 {(["ALL", "PENDING", "IN PROGRESS", "FINISHED"] as const).map((filter) => {
                   const active = activeFilter === filter;
                   return (
                     <button
                       key={filter}
                       onClick={() => setActiveFilter(filter)}
+                      className="abf-filter-btn"
                       style={{
                         background: active ? "#f0f7f0" : "transparent",
                         border: active ? "1px solid #dde8dd" : "1px solid transparent",
@@ -843,12 +854,15 @@ export default function ABFProjects() {
           <section style={{ padding: "6rem 1.5rem" }}>
             <div style={{ maxWidth: 1280, margin: "0 auto" }}>
               {filteredProjects.length > 0 ? (
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(320px, 400px))",
-                  gap: "2rem",
-                  justifyContent: "center"
-                }}>
+                <div
+                  className="abf-project-card-grid"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 400px))",
+                    gap: "2rem",
+                    justifyContent: "center"
+                  }}
+                >
                   {filteredProjects.map((project) => (
                     <div
                       key={project.id}

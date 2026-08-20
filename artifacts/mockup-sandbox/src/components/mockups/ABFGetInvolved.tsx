@@ -9,8 +9,10 @@ import {
   DonateBookModal,
   Header,
   Footer,
-  BASE
+  BASE,
+  PartnerWithABFModal
 } from "./_shared";
+import { supabase, isSupabaseConfigured } from "../../lib/supabase";
 
 // ─── TYPES & INTERFACES ──────────────────────────────────────
 interface VolunteerForm {
@@ -37,8 +39,11 @@ export default function ABFGetInvolved() {
   
   // Volunteer Modal State
   const [volunteerOpen, setVolunteerOpen] = useState(false);
+  const [partnerOpen, setPartnerOpen] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formErrors, setFormErrors] = useState<string[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   
   // Form State Values
   const [formData, setFormData] = useState<VolunteerForm>({
@@ -62,6 +67,7 @@ export default function ABFGetInvolved() {
         setDonateMoneyOpen(false);
         setDonateBookOpen(false);
         setVolunteerOpen(false);
+        setPartnerOpen(false);
       }
     };
     window.addEventListener("keydown", handler);
@@ -70,13 +76,13 @@ export default function ABFGetInvolved() {
 
   // Sync scrolling state
   useEffect(() => {
-    if (volunteerOpen) {
+    if (volunteerOpen || partnerOpen || donateMoneyOpen || donateBookOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
     }
     return () => { document.body.style.overflow = ""; };
-  }, [volunteerOpen]);
+  }, [volunteerOpen, partnerOpen, donateMoneyOpen, donateBookOpen]);
 
   const handleAreaToggle = (area: string) => {
     setFormData((prev) => {
@@ -87,8 +93,10 @@ export default function ABFGetInvolved() {
     });
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
+
     const errors: string[] = [];
 
     if (!formData.fullName.trim()) errors.push("Please enter your full name.");
@@ -111,13 +119,58 @@ export default function ABFGetInvolved() {
     }
 
     setFormErrors([]);
-    setFormSubmitted(true);
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      if (isSupabaseConfigured()) {
+        const { error } = await supabase
+          .from("volunteer_submissions")
+          .insert([
+            {
+              full_name: formData.fullName.trim(),
+              email: formData.email.trim(),
+              phone: formData.phone.trim(),
+              age_range: formData.ageRange,
+              location: formData.location.trim(),
+              motivation: formData.motivation.trim(),
+              contribution_areas: formData.areas,
+              skills: formData.skills.trim() || null,
+              availability: formData.availability,
+              additional_information: formData.additionalInfo.trim() || null,
+              consent: formData.consent,
+              status: "new",
+            },
+          ]);
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        setFormSubmitted(true);
+      } else {
+        // Fallback for development/QA only
+        if (import.meta.env.PROD) {
+          throw new Error("Supabase is not configured in production. Application cannot be saved.");
+        } else {
+          console.warn("Supabase is not configured. Simulating successful submission in development.");
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          setFormSubmitted(true);
+        }
+      }
+    } catch (err: any) {
+      setSubmitError(err.message || "An unexpected error occurred. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleResetModal = () => {
     setVolunteerOpen(false);
     setFormSubmitted(false);
     setFormErrors([]);
+    setSubmitError(null);
+    setSubmitting(false);
     setFormData({
       fullName: "",
       email: "",
@@ -293,7 +346,7 @@ export default function ABFGetInvolved() {
 
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
               gap: "2rem",
               marginBottom: "3rem"
             }}>
@@ -437,11 +490,9 @@ export default function ABFGetInvolved() {
               <p style={{ fontSize: "0.9375rem", color: "#4a5a44", marginBottom: "0.75rem" }}>
                 Have an organisation or business that could partner with us?
               </p>
-              <a href={`mailto:${CONTACT.email}`} style={{ textDecoration: "none" }}>
-                <button className="abf-btn-secondary" style={{ fontSize: "0.875rem" }}>
-                  Partner with ABF
-                </button>
-              </a>
+              <button className="abf-btn-secondary" onClick={() => setPartnerOpen(true)} style={{ fontSize: "0.875rem" }}>
+                Partner with ABF
+              </button>
             </div>
           </div>
         </section>
@@ -559,6 +610,22 @@ export default function ABFGetInvolved() {
                   </div>
                 )}
 
+                {/* Submission Error Box */}
+                {submitError && (
+                  <div style={{
+                    background: "#fdf3f3",
+                    border: "1px solid #f5c2c2",
+                    borderRadius: 12,
+                    padding: "1rem 1.25rem",
+                    marginBottom: "1.5rem",
+                    color: "#b83232",
+                    fontSize: "0.875rem",
+                    textAlign: "left"
+                  }}>
+                    <strong>Error submitting application:</strong> {submitError}
+                  </div>
+                )}
+
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", marginBottom: "2rem" }}>
                   
                   {/* Name */}
@@ -570,6 +637,7 @@ export default function ABFGetInvolved() {
                       value={formData.fullName}
                       onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
                       style={inputStyle}
+                      disabled={submitting}
                     />
                   </div>
 
@@ -583,6 +651,7 @@ export default function ABFGetInvolved() {
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         style={inputStyle}
+                        disabled={submitting}
                       />
                     </div>
                     <div>
@@ -593,6 +662,7 @@ export default function ABFGetInvolved() {
                         value={formData.phone}
                         onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                         style={inputStyle}
+                        disabled={submitting}
                       />
                     </div>
                   </div>
@@ -605,6 +675,7 @@ export default function ABFGetInvolved() {
                         value={formData.ageRange}
                         onChange={(e) => setFormData(prev => ({ ...prev, ageRange: e.target.value }))}
                         style={inputStyle}
+                        disabled={submitting}
                       >
                         <option value="">Select age range</option>
                         <option value="under-18">Under 18</option>
@@ -622,6 +693,7 @@ export default function ABFGetInvolved() {
                         value={formData.location}
                         onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                         style={inputStyle}
+                        disabled={submitting}
                       />
                     </div>
                   </div>
@@ -635,6 +707,7 @@ export default function ABFGetInvolved() {
                       value={formData.motivation}
                       onChange={(e) => setFormData(prev => ({ ...prev, motivation: e.target.value }))}
                       style={{ ...inputStyle, resize: "vertical", height: 80 }}
+                      disabled={submitting}
                     />
                   </div>
 
@@ -662,6 +735,7 @@ export default function ABFGetInvolved() {
                             type="button"
                             className={`abf-category-chip${selected ? " selected" : ""}`}
                             onClick={() => handleAreaToggle(area)}
+                            disabled={submitting}
                           >
                             {selected && <Icon.Check />}
                             {area}
@@ -680,6 +754,7 @@ export default function ABFGetInvolved() {
                       value={formData.skills}
                       onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
                       style={{ ...inputStyle, resize: "vertical", height: 60 }}
+                      disabled={submitting}
                     />
                   </div>
 
@@ -690,6 +765,7 @@ export default function ABFGetInvolved() {
                       value={formData.availability}
                       onChange={(e) => setFormData(prev => ({ ...prev, availability: e.target.value }))}
                       style={inputStyle}
+                      disabled={submitting}
                     >
                       <option value="">Select availability</option>
                       <option value="occasionally">Occasionally (during campaigns/events)</option>
@@ -709,6 +785,7 @@ export default function ABFGetInvolved() {
                       value={formData.additionalInfo}
                       onChange={(e) => setFormData(prev => ({ ...prev, additionalInfo: e.target.value }))}
                       style={{ ...inputStyle, resize: "vertical", height: 60 }}
+                      disabled={submitting}
                     />
                   </div>
 
@@ -720,6 +797,7 @@ export default function ABFGetInvolved() {
                       checked={formData.consent}
                       onChange={(e) => setFormData(prev => ({ ...prev, consent: e.target.checked }))}
                       style={{ marginTop: "0.25rem", cursor: "pointer" }}
+                      disabled={submitting}
                     />
                     <label htmlFor="consent-check" style={{ fontSize: "0.8125rem", color: "#4a5a44", lineHeight: 1.4, cursor: "pointer" }}>
                       I understand that submitting this form does not guarantee a volunteer position and that ABF may contact me using the info provided. *
@@ -732,9 +810,10 @@ export default function ABFGetInvolved() {
                 <button
                   type="submit"
                   className="abf-btn-primary"
-                  style={{ width: "100%", justifyContent: "center", fontSize: "1rem", padding: "1rem" }}
+                  style={{ width: "100%", justifyContent: "center", fontSize: "1rem", padding: "1rem", opacity: submitting ? 0.7 : 1 }}
+                  disabled={submitting}
                 >
-                  Submit Application
+                  {submitting ? "Submitting..." : "Submit Application"}
                 </button>
 
               </form>
@@ -750,6 +829,7 @@ export default function ABFGetInvolved() {
       {/* Modals */}
       {donateMoneyOpen && <DonateMoneyModal onClose={() => setDonateMoneyOpen(false)} />}
       {donateBookOpen && <DonateBookModal onClose={() => setDonateBookOpen(false)} />}
+      {partnerOpen && <PartnerWithABFModal onClose={() => setPartnerOpen(false)} />}
     </div>
   );
 }
