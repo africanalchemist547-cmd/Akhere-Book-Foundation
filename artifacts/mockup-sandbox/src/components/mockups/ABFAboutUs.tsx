@@ -9,12 +9,14 @@ import {
   DonateBookModal,
   Header,
   Footer,
-  BASE
+  BASE,
+  VolunteerModal
 } from "./_shared";
 
 export default function ABFAboutUs() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
+  const [volunteerOpen, setVolunteerOpen] = useState(false);
 
   useEffect(() => {
     document.title = "About Us | Akhere Book Foundation";
@@ -26,6 +28,7 @@ export default function ABFAboutUs() {
       if (e.key === "Escape") {
         setDonateMoneyOpen(false);
         setDonateBookOpen(false);
+        setVolunteerOpen(false);
       }
     };
     window.addEventListener("keydown", handler);
@@ -152,21 +155,34 @@ export default function ABFAboutUs() {
           </div>
         </section>
 
-        {/* Section 2 — The Bigger Picture */}
-        <section style={{ position: "relative", overflow: "hidden" }}>
-          {/* Background image */}
+        {/* Section 2 — This Work Matters to All of Us */}
+        <section style={{
+          position: "relative",
+          overflow: "hidden",
+          background: "linear-gradient(135deg, #142414 0%, #1a381a 50%, #101e10 100%)",
+          borderTop: "1px solid rgba(141, 198, 63, 0.1)",
+          borderBottom: "1px solid rgba(141, 198, 63, 0.1)",
+        }}>
+          {/* Subtle ambient lighting */}
           <div style={{
             position: "absolute",
-            inset: 0,
-            backgroundImage: `url(${ASSETS.future})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            top: "-15%",
+            right: "-10%",
+            width: 500,
+            height: 500,
+            background: "radial-gradient(circle, rgba(141,198,63,0.06) 0%, transparent 70%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
           }} />
-          {/* Dark Overlay */}
           <div style={{
             position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to right, rgba(26,34,24,0.95) 0%, rgba(26,34,24,0.88) 55%, rgba(26,34,24,0.6) 100%)",
+            bottom: "-15%",
+            left: "-10%",
+            width: 450,
+            height: 450,
+            background: "radial-gradient(circle, rgba(45,106,45,0.08) 0%, transparent 70%)",
+            borderRadius: "50%",
+            pointerEvents: "none",
           }} />
 
           <div style={{
@@ -605,7 +621,7 @@ export default function ABFAboutUs() {
                   title: "Volunteer",
                   desc: "Bring your skills, time or ideas.",
                   cta: "Get Involved",
-                  href: "/get-involved",
+                  onClick: () => setVolunteerOpen(true),
                 },
               ].map((action, i) => (
                 <div
@@ -638,17 +654,9 @@ export default function ABFAboutUs() {
                   <p style={{ fontSize: "0.9375rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: "1.5rem" }}>
                     {action.desc}
                   </p>
-                  {action.href ? (
-                    <a href={action.href} style={{ textDecoration: "none" }}>
-                      <button className="abf-btn-secondary" style={{ fontSize: "0.9375rem" }}>
-                        {action.cta}
-                      </button>
-                    </a>
-                  ) : (
-                    <button className="abf-btn-secondary" onClick={action.onClick} style={{ fontSize: "0.9375rem" }}>
-                      {action.cta}
-                    </button>
-                  )}
+                  <button className="abf-btn-secondary" onClick={action.onClick} style={{ fontSize: "0.9375rem" }}>
+                    {action.cta}
+                  </button>
                 </div>
               ))}
             </div>
@@ -743,6 +751,7 @@ export default function ABFAboutUs() {
       {/* Modals */}
       {donateMoneyOpen && <DonateMoneyModal onClose={() => setDonateMoneyOpen(false)} />}
       {donateBookOpen && <DonateBookModal onClose={() => setDonateBookOpen(false)} />}
+      {volunteerOpen && <VolunteerModal onClose={() => setVolunteerOpen(false)} />}
     </div>
   );
 }

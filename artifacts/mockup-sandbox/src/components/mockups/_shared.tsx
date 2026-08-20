@@ -334,291 +334,324 @@ export function DonateMoneyModal({ onClose }: { onClose: () => void }) {
           background: "white",
           borderRadius: 24,
           width: "100%",
-          maxWidth: 520,
+          maxWidth: 540,
           maxHeight: "90vh",
-          overflowY: "auto",
-          padding: "2rem",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.2)",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
+          position: "relative",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
-          <div>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#f0f7f0", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.75rem" }}>
+        {/* Fixed Header */}
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "1.25rem 1.5rem",
+          borderBottom: "1px solid #eef3ee",
+          background: "white",
+          flexShrink: 0,
+          zIndex: 10,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0f7f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <span style={{ fontSize: "1.25rem" }}>💚</span>
             </div>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1a2218", margin: 0, lineHeight: 1.2 }}>Every Contribution Counts</h2>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", margin: 0, lineHeight: 1.2 }}>Every Contribution Counts</h2>
           </div>
           <button
             onClick={onClose}
-            style={{ background: "#f5f5f3", border: "none", borderRadius: "50%", width: 36, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#555", flexShrink: 0 }}
+            aria-label="Close modal"
+            style={{
+              background: "#f5f5f3",
+              border: "none",
+              borderRadius: "50%",
+              width: 36,
+              height: 36,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#555",
+              flexShrink: 0,
+            }}
           >
             <Icon.X />
           </button>
         </div>
 
-        {formSubmitted ? (
-          <div style={{ textAlign: "center", padding: "2rem 1rem" }}>
-            <span style={{ fontSize: "3.5rem" }}>💚</span>
-            <h3 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#2d6a2d", marginTop: "1rem", marginBottom: "0.5rem" }}>
-              Inquiry Saved!
-            </h3>
-            <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-              We have saved your donation inquiry in our database. We also opened a new tab to complete your donation on WhatsApp.
-            </p>
-            <p style={{ fontSize: "0.875rem", color: "#6a7a64", lineHeight: 1.5, marginBottom: "1.5rem" }}>
-              If WhatsApp didn't open automatically, please click the button below to message us directly:
-            </p>
-            <a
-              href={`${CONTACT.whatsapp}?text=${whatsappMsg}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: "block", textDecoration: "none", marginBottom: "1.5rem" }}
-            >
-              <button className="abf-btn-whatsapp" style={{ width: "100%", justifyContent: "center" }}>
-                <Icon.WhatsApp />
-                Connect on WhatsApp
+        {/* Scrollable Body */}
+        <div style={{
+          overflowY: "auto",
+          padding: "1.5rem",
+          flex: 1,
+          WebkitOverflowScrolling: "touch",
+        }}>
+          {formSubmitted ? (
+            <div style={{ textAlign: "center", padding: "1.5rem 0.5rem" }}>
+              <span style={{ fontSize: "3.5rem" }}>💚</span>
+              <h3 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#2d6a2d", marginTop: "1rem", marginBottom: "0.5rem" }}>
+                Inquiry Saved!
+              </h3>
+              <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                We have saved your donation inquiry in our database. We also opened a new tab to complete your donation on WhatsApp.
+              </p>
+              <p style={{ fontSize: "0.875rem", color: "#6a7a64", lineHeight: 1.5, marginBottom: "1.5rem" }}>
+                If WhatsApp didn't open automatically, please click the button below to message us directly:
+              </p>
+              <a
+                href={`${CONTACT.whatsapp}?text=${whatsappMsg}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: "block", textDecoration: "none", marginBottom: "1.5rem" }}
+              >
+                <button className="abf-btn-whatsapp" style={{ width: "100%", justifyContent: "center" }}>
+                  <Icon.WhatsApp />
+                  Connect on WhatsApp
+                </button>
+              </a>
+              <button
+                onClick={onClose}
+                className="abf-btn-primary"
+                style={{ background: "transparent", border: "2px solid #dde8dd", color: "#2d6a2d", width: "100%", justifyContent: "center" }}
+              >
+                Close Window
               </button>
-            </a>
-            <button
-              onClick={onClose}
-              className="abf-btn-primary"
-              style={{ background: "transparent", border: "2px solid #dde8dd", color: "#2d6a2d", width: "100%", justifyContent: "center" }}
-            >
-              Close Window
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.65, marginBottom: "1.75rem" }}>
-              You don't need to give a lot to make a difference. ABF works to stretch contributions as far as possible so that small acts of support can become meaningful opportunities for children.
-            </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.65, marginBottom: "1.75rem" }}>
+                You don't need to give a lot to make a difference. ABF works to stretch contributions as far as possible so that small acts of support can become meaningful opportunities for children.
+              </p>
 
-            {/* Validation Errors */}
-            {formErrors.length > 0 && (
-              <div style={{
-                background: "#fdf3f3",
-                border: "1px solid #f5c2c2",
-                borderRadius: 12,
-                padding: "1rem 1.25rem",
-                marginBottom: "1.5rem",
-              }}>
-                <h4 style={{ margin: "0 0 0.5rem", color: "#b83232", fontWeight: 700, fontSize: "0.875rem" }}>Please review required details:</h4>
-                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8125rem", color: "#b83232", lineHeight: 1.5 }}>
-                  {formErrors.map((err, i) => (
-                    <li key={i}>{err}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              {/* Validation Errors */}
+              {formErrors.length > 0 && (
+                <div style={{
+                  background: "#fdf3f3",
+                  border: "1px solid #f5c2c2",
+                  borderRadius: 12,
+                  padding: "1rem 1.25rem",
+                  marginBottom: "1.5rem",
+                }}>
+                  <h4 style={{ margin: "0 0 0.5rem", color: "#b83232", fontWeight: 700, fontSize: "0.875rem" }}>Please review required details:</h4>
+                  <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8125rem", color: "#b83232", lineHeight: 1.5 }}>
+                    {formErrors.map((err, i) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-            {/* Submission Error Box */}
-            {submitError && (
-              <div style={{
-                background: "#fdf3f3",
-                border: "1px solid #f5c2c2",
-                borderRadius: 12,
-                padding: "1rem 1.25rem",
-                marginBottom: "1.5rem",
-                color: "#b83232",
-                fontSize: "0.875rem",
-                textAlign: "left"
-              }}>
-                <strong>Error:</strong> {submitError}
-                <div style={{ marginTop: "0.5rem", borderTop: "1px solid rgba(184, 50, 50, 0.2)", paddingTop: "0.5rem" }}>
-                  We couldn't save your details, but you can still continue your donation directly via WhatsApp:
-                  <div style={{ marginTop: "0.5rem" }}>
-                    <a
-                      href={`${CONTACT.whatsapp}?text=${whatsappMsg}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="abf-btn-whatsapp"
-                      style={{ textDecoration: "none", display: "inline-flex", padding: "0.5rem 1rem", fontSize: "0.8125rem", gap: "0.375rem" }}
-                    >
-                      <Icon.WhatsApp />
-                      Continue via WhatsApp
-                    </a>
+              {/* Submission Error Box */}
+              {submitError && (
+                <div style={{
+                  background: "#fdf3f3",
+                  border: "1px solid #f5c2c2",
+                  borderRadius: 12,
+                  padding: "1rem 1.25rem",
+                  marginBottom: "1.5rem",
+                  color: "#b83232",
+                  fontSize: "0.875rem",
+                  textAlign: "left"
+                }}>
+                  <strong>Error:</strong> {submitError}
+                  <div style={{ marginTop: "0.5rem", borderTop: "1px solid rgba(184, 50, 50, 0.2)", paddingTop: "0.5rem" }}>
+                    We couldn't save your details, but you can still continue your donation directly via WhatsApp:
+                    <div style={{ marginTop: "0.5rem" }}>
+                      <a
+                        href={`${CONTACT.whatsapp}?text=${whatsappMsg}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="abf-btn-whatsapp"
+                        style={{ textDecoration: "none", display: "inline-flex", padding: "0.5rem 1rem", fontSize: "0.8125rem", gap: "0.375rem" }}
+                      >
+                        <Icon.WhatsApp />
+                        Continue via WhatsApp
+                      </a>
+                    </div>
                   </div>
                 </div>
+              )}
+
+              <div style={{ marginBottom: "1.25rem" }}>
+                <label style={{ display: "block", fontWeight: 700, color: "#1a2218", marginBottom: "0.5rem", fontSize: "0.9375rem" }}>
+                  How much would you like to give? *
+                </label>
+                <div style={{ position: "relative" }}>
+                  <span style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", fontWeight: 700, color: "#2d6a2d", fontSize: "1.125rem" }}>₦</span>
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => { setAmount(e.target.value); setSelectedQuick(null); }}
+                    placeholder="Enter amount"
+                    disabled={submitting}
+                    style={{
+                      width: "100%",
+                      padding: "0.9375rem 1rem 0.9375rem 2.25rem",
+                      border: "2px solid #dde8dd",
+                      borderRadius: 12,
+                      fontSize: "1.125rem",
+                      fontWeight: 600,
+                      fontFamily: "inherit",
+                      outline: "none",
+                      color: "#1a2218",
+                      boxSizing: "border-box",
+                      transition: "border-color 0.15s",
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
               </div>
-            )}
 
-            <div style={{ marginBottom: "1.25rem" }}>
-              <label style={{ display: "block", fontWeight: 700, color: "#1a2218", marginBottom: "0.5rem", fontSize: "0.9375rem" }}>
-                How much would you like to give? *
-              </label>
-              <div style={{ position: "relative" }}>
-                <span style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", fontWeight: 700, color: "#2d6a2d", fontSize: "1.125rem" }}>₦</span>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => { setAmount(e.target.value); setSelectedQuick(null); }}
-                  placeholder="Enter amount"
-                  disabled={submitting}
-                  style={{
-                    width: "100%",
-                    padding: "0.9375rem 1rem 0.9375rem 2.25rem",
-                    border: "2px solid #dde8dd",
-                    borderRadius: 12,
-                    fontSize: "1.125rem",
-                    fontWeight: 600,
-                    fontFamily: "inherit",
-                    outline: "none",
-                    color: "#1a2218",
-                    boxSizing: "border-box",
-                    transition: "border-color 0.15s",
-                  }}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
-            </div>
-
-            <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
-              {quickAmounts.map((val) => (
-                <button
-                  key={val}
-                  type="button"
-                  className={`abf-amount-btn${selectedQuick === val ? " selected" : ""}`}
-                  onClick={() => handleQuick(val)}
-                  disabled={submitting}
-                >
-                  ₦{val.toLocaleString()}
-                </button>
-              ))}
-              <button
-                type="button"
-                className={`abf-amount-btn${selectedQuick === -1 ? " selected" : ""}`}
-                onClick={() => { setSelectedQuick(-1); setAmount(""); }}
-                disabled={submitting}
-              >
-                Other
-              </button>
-            </div>
-
-            <div style={{ marginBottom: "1.75rem" }}>
-              <label style={{ display: "block", fontWeight: 700, color: "#1a2218", marginBottom: "0.75rem", fontSize: "0.9375rem" }}>
-                How often? *
-              </label>
-              <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" }}>
-                {[
-                  { key: "one-time", label: "One-time" },
-                  { key: "bi-weekly", label: "Every 2 weeks" },
-                  { key: "monthly", label: "Monthly" },
-                ].map(({ key, label }) => (
+              <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
+                {quickAmounts.map((val) => (
                   <button
-                    key={key}
+                    key={val}
                     type="button"
-                    className={`abf-freq-btn${frequency === key ? " selected" : ""}`}
-                    onClick={() => setFrequency(key)}
+                    className={`abf-amount-btn${selectedQuick === val ? " selected" : ""}`}
+                    onClick={() => handleQuick(val)}
                     disabled={submitting}
                   >
-                    {label}
+                    ₦{val.toLocaleString()}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  className={`abf-amount-btn${selectedQuick === -1 ? " selected" : ""}`}
+                  onClick={() => { setSelectedQuick(-1); setAmount(""); }}
+                  disabled={submitting}
+                >
+                  Other
+                </button>
               </div>
-            </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.75rem" }}>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Your Name *</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
+              <div style={{ marginBottom: "1.75rem" }}>
+                <label style={{ display: "block", fontWeight: 700, color: "#1a2218", marginBottom: "0.75rem", fontSize: "0.9375rem" }}>
+                  How often? *
+                </label>
+                <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" }}>
+                  {[
+                    { key: "one-time", label: "One-time" },
+                    { key: "bi-weekly", label: "Every 2 weeks" },
+                    { key: "monthly", label: "Monthly" },
+                  ].map(({ key, label }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`abf-freq-btn${frequency === key ? " selected" : ""}`}
+                      onClick={() => setFrequency(key)}
+                      disabled={submitting}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Email Address *</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Phone / WhatsApp *</label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+234..."
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
-            </div>
 
-            <div style={{
-              background: "#f8faf6",
-              borderRadius: 16,
-              padding: "1.25rem",
-              marginBottom: "1.5rem",
-              border: "1px solid #e8f0e8",
-            }}>
-              <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#1a2218", marginBottom: "0.875rem" }}>
-                Have a question before you give?
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
-                {faqs.map((faq, i) => {
-                  const isOpen = activeFaq === i;
-                  return (
-                    <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                      <div
-                        onClick={() => setActiveFaq(isOpen ? null : i)}
-                        style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", cursor: "pointer" }}
-                      >
-                        <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#e8f5e8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1, transition: "transform 0.2s", transform: isOpen ? "rotate(90deg)" : "none" }}>
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2d6a2d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="9 18 15 12 9 6" />
-                          </svg>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.75rem" }}>
+                <div>
+                  <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Your Name *</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Email Address *</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Phone / WhatsApp *</label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+234..."
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+              </div>
+
+              <div style={{
+                background: "#f8faf6",
+                borderRadius: 16,
+                padding: "1.25rem",
+                marginBottom: "1.5rem",
+                border: "1px solid #e8f0e8",
+              }}>
+                <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#1a2218", marginBottom: "0.875rem" }}>
+                  Have a question before you give?
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+                  {faqs.map((faq, i) => {
+                    const isOpen = activeFaq === i;
+                    return (
+                      <div key={i} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                        <div
+                          onClick={() => setActiveFaq(isOpen ? null : i)}
+                          style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", cursor: "pointer" }}
+                        >
+                          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#e8f5e8", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1, transition: "transform 0.2s", transform: isOpen ? "rotate(90deg)" : "none" }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2d6a2d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                          </div>
+                          <span style={{ fontSize: "0.875rem", color: "#2d6a2d", fontWeight: 600, lineHeight: 1.5 }}>{faq.q}</span>
                         </div>
-                        <span style={{ fontSize: "0.875rem", color: "#2d6a2d", fontWeight: 600, lineHeight: 1.5 }}>{faq.q}</span>
+                        {isOpen && (
+                          <div style={{ paddingLeft: "1.625rem", fontSize: "0.8125rem", color: "#4a5a44", lineHeight: 1.5 }}>
+                            {faq.a}
+                          </div>
+                        )}
                       </div>
-                      {isOpen && (
-                        <div style={{ paddingLeft: "1.625rem", fontSize: "0.8125rem", color: "#4a5a44", lineHeight: 1.5 }}>
-                          {faq.a}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6a7a64", marginBottom: "1rem" }}>
-              Still have a question?{" "}
-              <a href={`mailto:${CONTACT.email}`} style={{ color: "#2d6a2d", fontWeight: 600, textDecoration: "none" }}>
-                Ask us
-              </a>
-            </p>
+              <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6a7a64", marginBottom: "1rem" }}>
+                Still have a question?{" "}
+                <a href={`mailto:${CONTACT.email}`} style={{ color: "#2d6a2d", fontWeight: 600, textDecoration: "none" }}>
+                  Ask us
+                </a>
+              </p>
 
-            <button
-              type="submit"
-              className="abf-btn-whatsapp"
-              style={{ width: "100%", justifyContent: "center", border: "none", opacity: submitting ? 0.7 : 1 }}
-              disabled={submitting}
-            >
-              <Icon.WhatsApp />
-              {submitting ? "Submitting..." : "Continue via WhatsApp"}
-            </button>
+              <button
+                type="submit"
+                className="abf-btn-whatsapp"
+                style={{ width: "100%", justifyContent: "center", border: "none", opacity: submitting ? 0.7 : 1 }}
+                disabled={submitting}
+              >
+                <Icon.WhatsApp />
+                {submitting ? "Submitting..." : "Continue via WhatsApp"}
+              </button>
 
-            <p style={{ textAlign: "center", fontSize: "0.8rem", color: "#9aaa94", marginTop: "0.875rem", margin: "0.875rem 0 0" }}>
-              You'll be connected with our team to complete your contribution.
-            </p>
-          </form>
-        )}
+              <p style={{ textAlign: "center", fontSize: "0.8rem", color: "#9aaa94", marginTop: "0.875rem", margin: "0.875rem 0 0" }}>
+                You'll be connected with our team to complete your contribution.
+              </p>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -754,213 +787,272 @@ export function DonateBookModal({ onClose }: { onClose: () => void }) {
           background: "white",
           borderRadius: 24,
           width: "100%",
-          maxWidth: 520,
+          maxWidth: 540,
           maxHeight: "90vh",
-          overflowY: "auto",
-          padding: "2rem",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.2)",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
+          position: "relative",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
-          <div>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#f5fbeb", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.75rem" }}>
+        {/* Fixed Header */}
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "1.25rem 1.5rem",
+          borderBottom: "1px solid #eef3ee",
+          background: "white",
+          flexShrink: 0,
+          zIndex: 10,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f5fbeb", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <span style={{ fontSize: "1.25rem" }}>📚</span>
             </div>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1a2218", margin: 0, lineHeight: 1.2 }}>Give a Book. Open a World.</h2>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", margin: 0, lineHeight: 1.2 }}>Give a Book. Open a World.</h2>
           </div>
           <button
             onClick={onClose}
-            style={{ background: "#f5f5f3", border: "none", borderRadius: "50%", width: 36, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#555", flexShrink: 0 }}
+            aria-label="Close modal"
+            style={{
+              background: "#f5f5f3",
+              border: "none",
+              borderRadius: "50%",
+              width: 36,
+              height: 36,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#555",
+              flexShrink: 0,
+            }}
           >
             <Icon.X />
           </button>
         </div>
 
-        {formSubmitted ? (
-          <div style={{ textAlign: "center", padding: "2rem 1rem" }}>
-            <span style={{ fontSize: "3.5rem" }}>💚</span>
-            <h3 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#2d6a2d", marginTop: "1rem", marginBottom: "0.5rem" }}>
-              Thank You!
-            </h3>
-            <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-              We have saved your book donation inquiry in our database. We also opened a new tab to complete your donation on WhatsApp.
-            </p>
-            <p style={{ fontSize: "0.875rem", color: "#6a7a64", lineHeight: 1.5, marginBottom: "1.5rem" }}>
-              If WhatsApp didn't open automatically, please click the button below to message us directly:
-            </p>
-            <a
-              href={`${CONTACT.whatsapp}?text=${buildMsg()}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: "block", textDecoration: "none", marginBottom: "1.5rem" }}
-            >
-              <button className="abf-btn-whatsapp" style={{ width: "100%", justifyContent: "center" }}>
-                <Icon.WhatsApp />
-                Connect on WhatsApp
+        {/* Scrollable Body */}
+        <div style={{
+          overflowY: "auto",
+          padding: "1.5rem",
+          flex: 1,
+          WebkitOverflowScrolling: "touch",
+        }}>
+          {formSubmitted ? (
+            <div style={{ textAlign: "center", padding: "1.5rem 0.5rem" }}>
+              <span style={{ fontSize: "3.5rem" }}>💚</span>
+              <h3 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#2d6a2d", marginTop: "1rem", marginBottom: "0.5rem" }}>
+                Thank You!
+              </h3>
+              <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                We have saved your book donation inquiry in our database. We also opened a new tab to complete your donation on WhatsApp.
+              </p>
+              <p style={{ fontSize: "0.875rem", color: "#6a7a64", lineHeight: 1.5, marginBottom: "1.5rem" }}>
+                If WhatsApp didn't open automatically, please click the button below to message us directly:
+              </p>
+              <a
+                href={`${CONTACT.whatsapp}?text=${buildMsg()}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: "block", textDecoration: "none", marginBottom: "1.5rem" }}
+              >
+                <button className="abf-btn-whatsapp" style={{ width: "100%", justifyContent: "center" }}>
+                  <Icon.WhatsApp />
+                  Connect on WhatsApp
+                </button>
+              </a>
+              <button
+                onClick={onClose}
+                className="abf-btn-primary"
+                style={{ background: "transparent", border: "2px solid #dde8dd", color: "#2d6a2d", width: "100%", justifyContent: "center" }}
+              >
+                Close Window
               </button>
-            </a>
-            <button
-              onClick={onClose}
-              className="abf-btn-primary"
-              style={{ background: "transparent", border: "2px solid #dde8dd", color: "#2d6a2d", width: "100%", justifyContent: "center" }}
-            >
-              Close Window
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.65, marginBottom: "1.5rem" }}>
-              You don't need a huge collection. A few good books can still travel a long way. All books should be in <strong>good condition</strong> — no missing pages or covers.
-            </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.65, marginBottom: "1.5rem" }}>
+                You don't need a huge collection. A few good books can still travel a long way. All books should be in <strong>good condition</strong> — no missing pages or covers.
+              </p>
 
-            {/* Validation Errors */}
-            {formErrors.length > 0 && (
-              <div style={{
-                background: "#fdf3f3",
-                border: "1px solid #f5c2c2",
-                borderRadius: 12,
-                padding: "1rem 1.25rem",
-                marginBottom: "1.5rem",
-              }}>
-                <h4 style={{ margin: "0 0 0.5rem", color: "#b83232", fontWeight: 700, fontSize: "0.875rem" }}>Please review required details:</h4>
-                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8125rem", color: "#b83232", lineHeight: 1.5 }}>
-                  {formErrors.map((err, i) => (
-                    <li key={i}>{err}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              {/* Validation Errors */}
+              {formErrors.length > 0 && (
+                <div style={{
+                  background: "#fdf3f3",
+                  border: "1px solid #f5c2c2",
+                  borderRadius: 12,
+                  padding: "1rem 1.25rem",
+                  marginBottom: "1.5rem",
+                }}>
+                  <h4 style={{ margin: "0 0 0.5rem", color: "#b83232", fontWeight: 700, fontSize: "0.875rem" }}>Please review required details:</h4>
+                  <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8125rem", color: "#b83232", lineHeight: 1.5 }}>
+                    {formErrors.map((err, i) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-            {/* Submission Error Box */}
-            {submitError && (
-              <div style={{
-                background: "#fdf3f3",
-                border: "1px solid #f5c2c2",
-                borderRadius: 12,
-                padding: "1rem 1.25rem",
-                marginBottom: "1.5rem",
-                color: "#b83232",
-                fontSize: "0.875rem",
-                textAlign: "left"
-              }}>
-                <strong>Error:</strong> {submitError}
-                <div style={{ marginTop: "0.5rem", borderTop: "1px solid rgba(184, 50, 50, 0.2)", paddingTop: "0.5rem" }}>
-                  We couldn't save your details, but you can still continue your book donation directly via WhatsApp:
-                  <div style={{ marginTop: "0.5rem" }}>
-                    <a
-                      href={`${CONTACT.whatsapp}?text=${buildMsg()}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="abf-btn-whatsapp"
-                      style={{ textDecoration: "none", display: "inline-flex", padding: "0.5rem 1rem", fontSize: "0.8125rem", gap: "0.375rem" }}
-                    >
-                      <Icon.WhatsApp />
-                      Continue via WhatsApp
-                    </a>
+              {/* Submission Error Box */}
+              {submitError && (
+                <div style={{
+                  background: "#fdf3f3",
+                  border: "1px solid #f5c2c2",
+                  borderRadius: 12,
+                  padding: "1rem 1.25rem",
+                  marginBottom: "1.5rem",
+                  color: "#b83232",
+                  fontSize: "0.875rem",
+                  textAlign: "left"
+                }}>
+                  <strong>Error:</strong> {submitError}
+                  <div style={{ marginTop: "0.5rem", borderTop: "1px solid rgba(184, 50, 50, 0.2)", paddingTop: "0.5rem" }}>
+                    We couldn't save your details, but you can still continue your book donation directly via WhatsApp:
+                    <div style={{ marginTop: "0.5rem" }}>
+                      <a
+                        href={`${CONTACT.whatsapp}?text=${buildMsg()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="abf-btn-whatsapp"
+                        style={{ textDecoration: "none", display: "inline-flex", padding: "0.5rem 1rem", fontSize: "0.8125rem", gap: "0.375rem" }}
+                      >
+                        <Icon.WhatsApp />
+                        Continue via WhatsApp
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div style={{ marginBottom: "1.5rem" }}>
-              <label style={{ display: "block", fontWeight: 700, color: "#1a2218", marginBottom: "0.75rem", fontSize: "0.9375rem" }}>
-                What would you like to donate? * <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Select all that apply)</span>
-              </label>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className={`abf-category-chip${selected.has(cat) ? " selected" : ""}`}
-                    onClick={() => toggle(cat)}
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label style={{ display: "block", fontWeight: 700, color: "#1a2218", marginBottom: "0.75rem", fontSize: "0.9375rem" }}>
+                  What would you like to donate? * <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Select all that apply)</span>
+                </label>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`abf-category-chip${selected.has(cat) ? " selected" : ""}`}
+                      onClick={() => toggle(cat)}
+                      disabled={submitting}
+                    >
+                      {selected.has(cat) ? "✓ " : "+ "}{cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
+                <div>
+                  <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>
+                    Approximate Quantity * <span style={{ fontWeight: 400, color: "#8a9a84" }}>(e.g. 5 books, 2 boxes, 50 textbooks)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    placeholder="e.g. 10 story books"
+                    style={inputStyle}
                     disabled={submitting}
-                  >
-                    {selected.has(cat) && <Icon.Check />}
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.5rem" }}>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Approximately how many books?</label>
-                <input
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  placeholder="e.g. 10, 25, a box..."
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
+                <div>
+                  <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>
+                    Your Location * <span style={{ fontWeight: 400, color: "#8a9a84" }}>(City / State)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="e.g. Awka, Anambra State / Lagos"
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
               </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Where are you located?</label>
-                <input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="City / State"
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Your name *</label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Email Address *</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
-              <div>
-                <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Phone / WhatsApp *</label>
-                <input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+234..."
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
-            </div>
 
-            <button
-              type="submit"
-              className="abf-btn-whatsapp"
-              style={{ width: "100%", justifyContent: "center", border: "none", opacity: submitting ? 0.7 : 1 }}
-              disabled={submitting}
-            >
-              <Icon.WhatsApp />
-              {submitting ? "Submitting Inquiry..." : "Donate Books via WhatsApp"}
-            </button>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.75rem" }}>
+                <div>
+                  <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Your Name *</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
 
-            <p style={{ textAlign: "center", fontSize: "0.8rem", color: "#9aaa94", marginTop: "0.875rem", margin: "0.875rem 0 0" }}>
-              Our team will follow up to arrange collection or drop-off.
-            </p>
-          </form>
-        )}
+                <div>
+                  <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Email Address *</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontWeight: 600, fontSize: "0.9rem", color: "#2c3424" }}>Phone / WhatsApp *</label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+234..."
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+              </div>
+
+              <div style={{
+                background: "#f8faf6",
+                borderRadius: 14,
+                padding: "1rem 1.25rem",
+                marginBottom: "1.5rem",
+                border: "1px solid #e8f0e8",
+                fontSize: "0.875rem",
+                color: "#4a5a44",
+                lineHeight: 1.55,
+              }}>
+                📦 <strong>How collection works:</strong> Once you submit, our team will review your book details and coordinate drop-off or collection depending on your location.
+              </div>
+
+              <button
+                type="submit"
+                className="abf-btn-whatsapp"
+                style={{ width: "100%", justifyContent: "center", border: "none", opacity: submitting ? 0.7 : 1 }}
+                disabled={submitting}
+              >
+                <Icon.WhatsApp />
+                {submitting ? "Submitting Inquiry..." : "Donate Books via WhatsApp"}
+              </button>
+
+              <p style={{ textAlign: "center", fontSize: "0.8rem", color: "#9aaa94", marginTop: "0.875rem", margin: "0.875rem 0 0" }}>
+                Our team will follow up to arrange collection or drop-off.
+              </p>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1436,238 +1528,756 @@ export function PartnerWithABFModal({ onClose }: { onClose: () => void }) {
           width: "100%",
           maxWidth: 540,
           maxHeight: "90vh",
-          overflowY: "auto",
-          padding: "2rem",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.2)",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
+          position: "relative",
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
-          <div>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#f5fbeb", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.75rem" }}>
+        {/* Fixed Header */}
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "1.25rem 1.5rem",
+          borderBottom: "1px solid #eef3ee",
+          background: "white",
+          flexShrink: 0,
+          zIndex: 10,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f5fbeb", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <span style={{ fontSize: "1.25rem" }}>🤝</span>
             </div>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1a2218", margin: 0, lineHeight: 1.2 }}>Partner With ABF</h2>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", margin: 0, lineHeight: 1.2 }}>Partner With ABF</h2>
           </div>
           <button
             onClick={onClose}
-            style={{ background: "#f5f5f3", border: "none", borderRadius: "50%", width: 36, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#555", flexShrink: 0 }}
+            aria-label="Close modal"
+            style={{
+              background: "#f5f5f3",
+              border: "none",
+              borderRadius: "50%",
+              width: 36,
+              height: 36,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#555",
+              flexShrink: 0,
+            }}
           >
             <Icon.X />
           </button>
         </div>
 
-        {formSubmitted ? (
-          <div style={{ textAlign: "center", padding: "2rem 1rem" }}>
-            <span style={{ fontSize: "3.5rem" }}>💚</span>
-            <h3 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#2d6a2d", marginTop: "1rem", marginBottom: "0.5rem" }}>
-              Inquiry Received!
-            </h3>
-            <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-              Thank you for expressing interest in partnering with Akhere Book Foundation. We have stored your inquiry and our team will get in touch with you shortly.
-            </p>
-            <button
-              onClick={onClose}
-              className="abf-btn-primary"
-              style={{ width: "100%", justifyContent: "center" }}
-            >
-              Done
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.65, marginBottom: "1.5rem" }}>
-              Join us in building community resources. Let us know how you or your organisation would like to collaborate.
-            </p>
+        {/* Scrollable Body */}
+        <div style={{
+          overflowY: "auto",
+          padding: "1.5rem",
+          flex: 1,
+          WebkitOverflowScrolling: "touch",
+        }}>
+          {formSubmitted ? (
+            <div style={{ textAlign: "center", padding: "1.5rem 0.5rem" }}>
+              <span style={{ fontSize: "3.5rem" }}>💚</span>
+              <h3 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#2d6a2d", marginTop: "1rem", marginBottom: "0.5rem" }}>
+                Inquiry Received!
+              </h3>
+              <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                Thank you for expressing interest in partnering with Akhere Book Foundation. We have stored your inquiry and our team will get in touch with you shortly.
+              </p>
+              <button
+                onClick={onClose}
+                className="abf-btn-primary"
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                Done
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.65, marginBottom: "1.5rem" }}>
+                Join us in building community resources. Let us know how you or your organisation would like to collaborate.
+              </p>
 
-            {/* Validation Errors */}
-            {formErrors.length > 0 && (
-              <div style={{
-                background: "#fdf3f3",
-                border: "1px solid #f5c2c2",
-                borderRadius: 12,
-                padding: "1rem 1.25rem",
-                marginBottom: "1.5rem",
-              }}>
-                <h4 style={{ margin: "0 0 0.5rem", color: "#b83232", fontWeight: 700, fontSize: "0.875rem" }}>Please review required details:</h4>
-                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8125rem", color: "#b83232", lineHeight: 1.5 }}>
-                  {formErrors.map((err, i) => (
-                    <li key={i}>{err}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Submission Error Box */}
-            {submitError && (
-              <div style={{
-                background: "#fdf3f3",
-                border: "1px solid #f5c2c2",
-                borderRadius: 12,
-                padding: "1rem 1.25rem",
-                marginBottom: "1.5rem",
-                color: "#b83232",
-                fontSize: "0.875rem",
-                textAlign: "left"
-              }}>
-                <strong>Error:</strong> {submitError}
-              </div>
-            )}
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", marginBottom: "1.5rem" }}>
-              {/* Entity Type Selection */}
-              <div>
-                <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>I am inquiring as a(n): *</label>
-                <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
-                  {[
-                    { label: "Individual", value: "individual" },
-                    { label: "Organisation / Business", value: "business" },
-                    { label: "Other", value: "other" }
-                  ].map((option) => (
-                    <label key={option.value} style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.875rem", color: "#4a5a44", cursor: "pointer" }}>
-                      <input
-                        type="radio"
-                        name="personType"
-                        value={option.value}
-                        checked={personType === option.value}
-                        onChange={() => setPersonType(option.value as any)}
-                        disabled={submitting}
-                        style={{ cursor: "pointer" }}
-                      />
-                      {option.label}
-                    </label>
-                  ))}
+              {/* Validation Errors */}
+              {formErrors.length > 0 && (
+                <div style={{
+                  background: "#fdf3f3",
+                  border: "1px solid #f5c2c2",
+                  borderRadius: 12,
+                  padding: "1rem 1.25rem",
+                  marginBottom: "1.5rem",
+                }}>
+                  <h4 style={{ margin: "0 0 0.5rem", color: "#b83232", fontWeight: 700, fontSize: "0.875rem" }}>Please review required details:</h4>
+                  <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8125rem", color: "#b83232", lineHeight: 1.5 }}>
+                    {formErrors.map((err, i) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
+              )}
 
-              {/* Name */}
-              <div>
-                <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>
-                  {personType === "business" ? "Contact Person Name *" : "Full Name *"}
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
+              {/* Submission Error Box */}
+              {submitError && (
+                <div style={{
+                  background: "#fdf3f3",
+                  border: "1px solid #f5c2c2",
+                  borderRadius: 12,
+                  padding: "1rem 1.25rem",
+                  marginBottom: "1.5rem",
+                  color: "#b83232",
+                  fontSize: "0.875rem",
+                  textAlign: "left"
+                }}>
+                  <strong>Error:</strong> {submitError}
+                </div>
+              )}
 
-              {/* Organisation Name (Conditional) */}
-              {personType === "business" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", marginBottom: "1.5rem" }}>
+                {/* Entity Type Selection */}
                 <div>
-                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Organisation / Business Name *</label>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>I am inquiring as a(n): *</label>
+                  <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
+                    {[
+                      { label: "Individual", value: "individual" },
+                      { label: "Organisation / Business", value: "business" },
+                      { label: "Other", value: "other" }
+                    ].map((option) => (
+                      <label key={option.value} style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.875rem", color: "#4a5a44", cursor: "pointer" }}>
+                        <input
+                          type="radio"
+                          name="personType"
+                          value={option.value}
+                          checked={personType === option.value}
+                          onChange={() => setPersonType(option.value as any)}
+                          disabled={submitting}
+                          style={{ cursor: "pointer" }}
+                        />
+                        {option.label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Name */}
+                <div>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>
+                    {personType === "business" ? "Contact Person Name *" : "Full Name *" }
+                  </label>
                   <input
                     type="text"
-                    placeholder="Enter organisation name"
-                    value={organisation}
-                    onChange={(e) => setOrganisation(e.target.value)}
+                    placeholder="Enter name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     style={inputStyle}
                     disabled={submitting}
                     onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
                     onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
                   />
                 </div>
-              )}
 
-              {/* Email Address */}
-              <div>
-                <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Email Address *</label>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
+                {/* Organisation Name (Conditional) */}
+                {personType === "business" && (
+                  <div>
+                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Organisation / Business Name *</label>
+                    <input
+                      type="text"
+                      placeholder="Enter organisation name"
+                      value={organisation}
+                      onChange={(e) => setOrganisation(e.target.value)}
+                      style={inputStyle}
+                      disabled={submitting}
+                      onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                      onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                    />
+                  </div>
+                )}
 
-              {/* Phone / WhatsApp */}
-              <div>
-                <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Phone / WhatsApp Number *</label>
-                <input
-                  type="tel"
-                  placeholder="e.g. +234..."
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  style={inputStyle}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
+                {/* Email Address */}
+                <div>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Email Address *</label>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
 
-              {/* Partnership Areas */}
-              <div>
-                <label style={{ fontWeight: 700, display: "block", fontSize: "0.9rem", color: "#1a2218", marginBottom: "0.5rem" }}>
-                  Partnership Areas of Interest * <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Select all that apply)</span>
-                </label>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                  {partnershipAreas.map((area) => {
-                    const selected = selectedAreas.includes(area.value);
-                    return (
-                      <button
-                        key={area.value}
-                        type="button"
-                        className={`abf-category-chip${selected ? " selected" : ""}`}
-                        onClick={() => handleAreaToggle(area.value)}
-                        disabled={submitting}
-                      >
-                        {selected && <Icon.Check />}
-                        {area.label}
-                      </button>
-                    );
-                  })}
+                {/* Phone / WhatsApp */}
+                <div>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Phone / WhatsApp Number *</label>
+                  <input
+                    type="tel"
+                    placeholder="e.g. +234..."
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+
+                {/* Partnership Areas */}
+                <div>
+                  <label style={{ fontWeight: 700, display: "block", fontSize: "0.9rem", color: "#1a2218", marginBottom: "0.5rem" }}>
+                    Partnership Areas of Interest * <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Select all that apply)</span>
+                  </label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                    {partnershipAreas.map((area) => {
+                      const selected = selectedAreas.includes(area.value);
+                      return (
+                        <button
+                          key={area.value}
+                          type="button"
+                          className={`abf-category-chip${selected ? " selected" : ""}`}
+                          onClick={() => handleAreaToggle(area.value)}
+                          disabled={submitting}
+                        >
+                          {selected && <Icon.Check />}
+                          {area.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Message / Proposal Details *</label>
+                  <textarea
+                    placeholder="Please describe how you'd like to collaborate, what you'd like to bring, or any specific project proposal..."
+                    rows={4}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    style={{ ...inputStyle, resize: "vertical", height: 100 }}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+
+                {/* Consent check */}
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", marginTop: "0.5rem" }}>
+                  <input
+                    type="checkbox"
+                    id="partner-consent-check"
+                    checked={consent}
+                    onChange={(e) => setConsent(e.target.checked)}
+                    style={{ marginTop: "0.25rem", cursor: "pointer" }}
+                    disabled={submitting}
+                  />
+                  <label htmlFor="partner-consent-check" style={{ fontSize: "0.8125rem", color: "#4a5a44", lineHeight: 1.4, cursor: "pointer" }}>
+                    I understand that submitting this inquiry does not establish an official partnership and that ABF may contact me using the info provided. *
+                  </label>
                 </div>
               </div>
 
-              {/* Message */}
-              <div>
-                <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Message / Proposal Details *</label>
-                <textarea
-                  placeholder="Please describe how you'd like to collaborate, what you'd like to bring, or any specific project proposal..."
-                  rows={4}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  style={{ ...inputStyle, resize: "vertical", height: 100 }}
-                  disabled={submitting}
-                  onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
-                  onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
-                />
-              </div>
+              <button
+                type="submit"
+                className="abf-btn-primary"
+                style={{ width: "100%", justifyContent: "center", fontSize: "1rem", padding: "1rem", opacity: submitting ? 0.7 : 1 }}
+                disabled={submitting}
+              >
+                {submitting ? "Submitting Inquiry..." : "Submit Inquiry"}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-              {/* Consent check */}
-              <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", marginTop: "0.5rem" }}>
-                <input
-                  type="checkbox"
-                  id="partner-consent-check"
-                  checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
-                  style={{ marginTop: "0.25rem", cursor: "pointer" }}
-                  disabled={submitting}
-                />
-                <label htmlFor="partner-consent-check" style={{ fontSize: "0.8125rem", color: "#4a5a44", lineHeight: 1.4, cursor: "pointer" }}>
-                  I understand that submitting this inquiry does not establish an official partnership and that ABF may contact me using the info provided. *
-                </label>
-              </div>
+// ─── VOLUNTEER MODAL ─────────────────────────────────────────
+export function VolunteerModal({ onClose }: { onClose: () => void }) {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    ageRange: "",
+    location: "",
+    motivation: "",
+    areas: [] as string[],
+    skills: "",
+    availability: "",
+    additionalInfo: "",
+    consent: false,
+  });
+
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formErrors, setFormErrors] = useState<string[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const handleAreaToggle = (area: string) => {
+    setFormData((prev) => {
+      const nextAreas = prev.areas.includes(area)
+        ? prev.areas.filter((a) => a !== area)
+        : [...prev.areas, area];
+      return { ...prev, areas: nextAreas };
+    });
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (submitting) return;
+
+    const errors: string[] = [];
+    let firstErrorId: string | null = null;
+
+    if (!formData.fullName.trim()) {
+      errors.push("Please enter your full name.");
+      if (!firstErrorId) firstErrorId = "volunteer-fullName";
+    }
+    if (!formData.email.trim()) {
+      errors.push("Please enter your email address.");
+      if (!firstErrorId) firstErrorId = "volunteer-email";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.push("Please enter a valid email address.");
+      if (!firstErrorId) firstErrorId = "volunteer-email";
+    }
+    if (!formData.phone.trim()) {
+      errors.push("Please enter your phone or WhatsApp number.");
+      if (!firstErrorId) firstErrorId = "volunteer-phone";
+    }
+    if (!formData.ageRange) {
+      errors.push("Please select your age range.");
+      if (!firstErrorId) firstErrorId = "volunteer-ageRange";
+    }
+    if (!formData.location.trim()) {
+      errors.push("Please enter where you are based.");
+      if (!firstErrorId) firstErrorId = "volunteer-location";
+    }
+    if (!formData.motivation.trim()) {
+      errors.push("Please tell us what made you interested in ABF.");
+      if (!firstErrorId) firstErrorId = "volunteer-motivation";
+    }
+    if (formData.areas.length === 0) {
+      errors.push("Please select at least one way you would like to contribute.");
+      if (!firstErrorId) firstErrorId = "volunteer-areas";
+    }
+    if (!formData.availability) {
+      errors.push("Please select your time availability.");
+      if (!firstErrorId) firstErrorId = "volunteer-availability";
+    }
+    if (!formData.consent) {
+      errors.push("Please accept the volunteer consent checkbox.");
+      if (!firstErrorId) firstErrorId = "volunteer-consent";
+    }
+
+    if (errors.length > 0) {
+      setFormErrors(errors);
+      if (firstErrorId) {
+        setTimeout(() => {
+          const el = document.getElementById(firstErrorId!);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.focus();
+          }
+        }, 50);
+      }
+      return;
+    }
+
+    setFormErrors([]);
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      if (isSupabaseConfigured()) {
+        const { error } = await supabase
+          .from("volunteer_submissions")
+          .insert([
+            {
+              full_name: formData.fullName.trim(),
+              email: formData.email.trim(),
+              phone: formData.phone.trim(),
+              age_range: formData.ageRange,
+              location: formData.location.trim(),
+              motivation: formData.motivation.trim(),
+              contribution_areas: formData.areas,
+              skills: formData.skills.trim() || null,
+              availability: formData.availability,
+              additional_information: formData.additionalInfo.trim() || null,
+              consent: formData.consent,
+              status: "new",
+            },
+          ]);
+
+        if (error) {
+          throw new Error(error.message);
+        }
+      } else {
+        if (import.meta.env.PROD) {
+          throw new Error("Supabase is not configured in production. Volunteer application cannot be saved.");
+        } else {
+          console.warn("Supabase is not configured. Simulating successful volunteer submission in development.");
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+
+      setFormSubmitted(true);
+    } catch (err: any) {
+      setSubmitError(err.message || "An error occurred while saving your application. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const inputStyle: CSSProperties = {
+    width: "100%",
+    padding: "0.8125rem 1rem",
+    border: "2px solid #dde8dd",
+    borderRadius: 10,
+    fontSize: "0.9375rem",
+    fontFamily: "inherit",
+    outline: "none",
+    color: "#1a2218",
+    boxSizing: "border-box",
+    transition: "border-color 0.15s",
+    marginTop: "0.375rem",
+    background: "white",
+  };
+
+  return (
+    <div className="abf-modal-overlay" onClick={onClose}>
+      <div
+        className="abf-animate-slide-up"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "white",
+          borderRadius: 24,
+          width: "100%",
+          maxWidth: 580,
+          maxHeight: "90vh",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
+          position: "relative",
+        }}
+      >
+        {/* Fixed Header */}
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "1.25rem 1.5rem",
+          borderBottom: "1px solid #eef3ee",
+          background: "white",
+          flexShrink: 0,
+          zIndex: 10,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0f7f0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <span style={{ fontSize: "1.25rem" }}>🙌</span>
             </div>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", margin: 0, lineHeight: 1.2 }}>Let's Get to Know You</h2>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close modal"
+            style={{
+              background: "#f5f5f3",
+              border: "none",
+              borderRadius: "50%",
+              width: 36,
+              height: 36,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#555",
+              flexShrink: 0,
+            }}
+          >
+            <Icon.X />
+          </button>
+        </div>
 
-            <button
-              type="submit"
-              className="abf-btn-primary"
-              style={{ width: "100%", justifyContent: "center", fontSize: "1rem", padding: "1rem", opacity: submitting ? 0.7 : 1 }}
-              disabled={submitting}
-            >
-              {submitting ? "Submitting Inquiry..." : "Submit Inquiry"}
-            </button>
-          </form>
-        )}
+        {/* Scrollable Body */}
+        <div style={{
+          overflowY: "auto",
+          padding: "1.5rem",
+          flex: 1,
+          WebkitOverflowScrolling: "touch",
+        }}>
+          {formSubmitted ? (
+            <div style={{ textAlign: "center", padding: "1.5rem 0.5rem" }}>
+              <span style={{ fontSize: "3.5rem" }}>💚</span>
+              <h3 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#2d6a2d", marginTop: "1rem", marginBottom: "0.5rem" }}>
+                Thank You for Reaching Out
+              </h3>
+              <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.65, margin: "0 0 1.5rem" }}>
+                We've received your interest in volunteering with ABF. We'll be in touch with opportunities to get involved.
+              </p>
+              <button className="abf-btn-primary" onClick={onClose} style={{ width: "100%", justifyContent: "center" }}>
+                Done
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleFormSubmit}>
+              <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+                We're not looking for a perfect CV. We'd simply like to understand what interests you, what you enjoy doing and where you think you could be useful.
+              </p>
+
+              {/* Validation Warnings Box */}
+              {formErrors.length > 0 && (
+                <div style={{
+                  background: "#fdf3f3",
+                  border: "1px solid #f5c2c2",
+                  borderRadius: 12,
+                  padding: "1rem 1.25rem",
+                  marginBottom: "1.5rem",
+                }}>
+                  <h4 style={{ margin: "0 0 0.5rem", color: "#b83232", fontWeight: 700, fontSize: "0.875rem" }}>Please review required details:</h4>
+                  <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8125rem", color: "#b83232", lineHeight: 1.5 }}>
+                    {formErrors.map((err, i) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Submission Error Box */}
+              {submitError && (
+                <div style={{
+                  background: "#fdf3f3",
+                  border: "1px solid #f5c2c2",
+                  borderRadius: 12,
+                  padding: "1rem 1.25rem",
+                  marginBottom: "1.5rem",
+                  color: "#b83232",
+                  fontSize: "0.875rem",
+                  textAlign: "left"
+                }}>
+                  <strong>Error submitting application:</strong> {submitError}
+                </div>
+              )}
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", marginBottom: "2rem" }}>
+                
+                {/* Name */}
+                <div>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Full Name *</label>
+                  <input
+                    id="volunteer-fullName"
+                    type="text"
+                    placeholder="Enter your name"
+                    value={formData.fullName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                    style={inputStyle}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+
+                {/* Contact Row */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+                  <div>
+                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Email Address *</label>
+                    <input
+                      id="volunteer-email"
+                      type="email"
+                      placeholder="your@email.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      style={inputStyle}
+                      disabled={submitting}
+                      onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                      onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Phone / WhatsApp Number *</label>
+                    <input
+                      id="volunteer-phone"
+                      type="tel"
+                      placeholder="e.g. +234..."
+                      value={formData.phone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                      style={inputStyle}
+                      disabled={submitting}
+                      onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                      onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                    />
+                  </div>
+                </div>
+
+                {/* Age & Location Row */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+                  <div>
+                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Age Range *</label>
+                    <select
+                      id="volunteer-ageRange"
+                      value={formData.ageRange}
+                      onChange={(e) => setFormData(prev => ({ ...prev, ageRange: e.target.value }))}
+                      style={inputStyle}
+                      disabled={submitting}
+                    >
+                      <option value="">Select age range</option>
+                      <option value="under-18">Under 18</option>
+                      <option value="18-24">18 - 24</option>
+                      <option value="25-34">25 - 34</option>
+                      <option value="35-50">35 - 50</option>
+                      <option value="over-50">Over 50</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Where are you based? *</label>
+                    <input
+                      id="volunteer-location"
+                      type="text"
+                      placeholder="e.g. Ogbunike, Awka, Lagos..."
+                      value={formData.location}
+                      onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                      style={inputStyle}
+                      disabled={submitting}
+                      onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                      onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                    />
+                  </div>
+                </div>
+
+                {/* Motivation */}
+                <div>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>What made you interested in ABF? *</label>
+                  <textarea
+                    id="volunteer-motivation"
+                    placeholder="Please tell us a little about what caught your eye..."
+                    rows={3}
+                    value={formData.motivation}
+                    onChange={(e) => setFormData(prev => ({ ...prev, motivation: e.target.value }))}
+                    style={{ ...inputStyle, resize: "vertical", height: 80 }}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+
+                {/* Contribution Areas */}
+                <div id="volunteer-areas">
+                  <label style={{ fontWeight: 700, display: "block", fontSize: "0.9rem", color: "#1a2218", marginBottom: "0.5rem" }}>
+                    How would you like to contribute? * <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Select all that apply)</span>
+                  </label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                    {[
+                      "Reading & Library Support",
+                      "Educational Activities",
+                      "Community Outreach",
+                      "Events Coordinator",
+                      "Media & Storytelling",
+                      "Technology & Digital",
+                      "Administration Support",
+                      "Fundraising",
+                      "Other"
+                    ].map((area) => {
+                      const selected = formData.areas.includes(area);
+                      return (
+                        <button
+                          key={area}
+                          type="button"
+                          className={`abf-category-chip${selected ? " selected" : ""}`}
+                          onClick={() => handleAreaToggle(area)}
+                          disabled={submitting}
+                        >
+                          {selected ? "✓ " : "+ "}{area}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Skills/Interests */}
+                <div>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>What skills or interests would you like to bring? <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Optional)</span></label>
+                  <textarea
+                    placeholder="Describe any creative, teaching, digital or organisational skills..."
+                    rows={2}
+                    value={formData.skills}
+                    onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
+                    style={{ ...inputStyle, resize: "vertical", height: 60 }}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+
+                {/* Time Availability */}
+                <div>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>How much time could you realistically contribute? *</label>
+                  <select
+                    id="volunteer-availability"
+                    value={formData.availability}
+                    onChange={(e) => setFormData(prev => ({ ...prev, availability: e.target.value }))}
+                    style={inputStyle}
+                    disabled={submitting}
+                  >
+                    <option value="">Select availability</option>
+                    <option value="occasionally">Occasionally (during campaigns/events)</option>
+                    <option value="monthly">A few hours a month</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="event-specific">During specific events or projects</option>
+                    <option value="unsure">I'm not sure yet</option>
+                  </select>
+                </div>
+
+                {/* Additional Info */}
+                <div>
+                  <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Is there anything else you'd like us to know? <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Optional)</span></label>
+                  <textarea
+                    placeholder="Tell us a little more about yourself..."
+                    rows={2}
+                    value={formData.additionalInfo}
+                    onChange={(e) => setFormData(prev => ({ ...prev, additionalInfo: e.target.value }))}
+                    style={{ ...inputStyle, resize: "vertical", height: 60 }}
+                    disabled={submitting}
+                    onFocus={(e) => (e.target.style.borderColor = "#2d6a2d")}
+                    onBlur={(e) => (e.target.style.borderColor = "#dde8dd")}
+                  />
+                </div>
+
+                {/* Consent checkbox */}
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", marginTop: "0.5rem" }}>
+                  <input
+                    type="checkbox"
+                    id="volunteer-consent"
+                    checked={formData.consent}
+                    onChange={(e) => setFormData(prev => ({ ...prev, consent: e.target.checked }))}
+                    style={{ marginTop: "0.25rem", cursor: "pointer" }}
+                    disabled={submitting}
+                  />
+                  <label htmlFor="volunteer-consent" style={{ fontSize: "0.8125rem", color: "#4a5a44", lineHeight: 1.4, cursor: "pointer" }}>
+                    I understand that submitting this form does not guarantee a volunteer position and that ABF may contact me using the info provided. *
+                  </label>
+                </div>
+
+              </div>
+
+              {/* Submit button */}
+              <button
+                type="submit"
+                className="abf-btn-primary"
+                style={{ width: "100%", justifyContent: "center", fontSize: "1rem", padding: "1rem", opacity: submitting ? 0.7 : 1 }}
+                disabled={submitting}
+              >
+                {submitting ? "Submitting..." : "Submit Application"}
+              </button>
+
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );

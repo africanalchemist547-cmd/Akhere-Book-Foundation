@@ -9,7 +9,8 @@ import {
   DonateBookModal,
   Header,
   Footer,
-  BASE
+  BASE,
+  VolunteerModal
 } from "./_shared";
 
 // ─── DATA SYSTEM / INTERFACES ────────────────────────────────
@@ -130,6 +131,7 @@ function parseSlug(): string | null {
 export default function ABFProjects() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
+  const [volunteerOpen, setVolunteerOpen] = useState(false);
   
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<"ALL" | "PENDING" | "IN PROGRESS" | "FINISHED">("ALL");
@@ -152,6 +154,7 @@ export default function ABFProjects() {
       if (e.key === "Escape") {
         setDonateMoneyOpen(false);
         setDonateBookOpen(false);
+        setVolunteerOpen(false);
         setLightboxIndex(null);
       }
     };
@@ -279,7 +282,7 @@ export default function ABFProjects() {
           {/* Section: Why This Project Matters & What We Built */}
           <section style={{ padding: "6rem 1.5rem", background: "white" }}>
             <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "5rem" }}>
+              <div className="abf-project-two-col">
                 
                 {/* Column 1: Why It Matters */}
                 <div>
@@ -324,15 +327,7 @@ export default function ABFProjects() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {selectedProject.whoItServes.map((profile, index) => (
-                  <div key={index} style={{
-                    background: "white",
-                    padding: "1.5rem 2rem",
-                    borderRadius: 16,
-                    border: "1px solid #e8f0e8",
-                    display: "flex",
-                    gap: "1.25rem",
-                    alignItems: "center"
-                  }}>
+                  <div key={index} className="abf-beneficiary-card">
                     <div style={{
                       width: 36,
                       height: 36,
@@ -359,17 +354,7 @@ export default function ABFProjects() {
           {selectedProject.humanImpactStory && (
             <section style={{ padding: "6rem 1.5rem", background: "white" }}>
               <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-                <div style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                  gap: "3rem",
-                  alignItems: "center",
-                  background: "#fdfdfa",
-                  borderRadius: 24,
-                  padding: "3.5rem 2.5rem",
-                  border: "1px solid #f0f0ec",
-                  boxShadow: "0 10px 40px rgba(0, 0, 0, 0.01)"
-                }}>
+                <div className="abf-human-impact-card">
                   {/* Text */}
                   <div>
                     <SectionLabel text="Human Impact Story" />
@@ -515,21 +500,23 @@ export default function ABFProjects() {
                     {/* Navigation Buttons */}
                     <button
                       onClick={() => setLightboxIndex((prev) => (prev! > 0 ? prev! - 1 : selectedProject.gallery.length - 1))}
+                      aria-label="Previous image"
                       style={{
                         position: "absolute",
-                        left: "-3rem",
+                        left: "0.5rem",
                         top: "50%",
                         transform: "translateY(-50%)",
-                        background: "rgba(255,255,255,0.1)",
+                        background: "rgba(0,0,0,0.5)",
                         border: "none",
                         color: "white",
-                        width: 44,
-                        height: 44,
+                        width: 40,
+                        height: 40,
                         borderRadius: "50%",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center"
+                        justifyContent: "center",
+                        zIndex: 10,
                       }}
                     >
                       <Icon.ChevronLeft />
@@ -537,21 +524,23 @@ export default function ABFProjects() {
                     
                     <button
                       onClick={() => setLightboxIndex((prev) => (prev! < selectedProject.gallery.length - 1 ? prev! + 1 : 0))}
+                      aria-label="Next image"
                       style={{
                         position: "absolute",
-                        right: "-3rem",
+                        right: "0.5rem",
                         top: "50%",
                         transform: "translateY(-50%)",
-                        background: "rgba(255,255,255,0.1)",
+                        background: "rgba(0,0,0,0.5)",
                         border: "none",
                         color: "white",
-                        width: 44,
-                        height: 44,
+                        width: 40,
+                        height: 40,
                         borderRadius: "50%",
                         cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center"
+                        justifyContent: "center",
+                        zIndex: 10,
                       }}
                     >
                       <Icon.ChevronRight />
@@ -719,15 +708,15 @@ export default function ABFProjects() {
                   padding: "1.75rem 1.5rem",
                   border: "1px solid rgba(255,255,255,0.12)",
                   width: 260,
+                  maxWidth: "100%",
+                  boxSizing: "border-box",
                   textAlign: "center"
                 }}>
                   <div style={{ fontSize: "1.5rem", marginBottom: "0.75rem" }}>🙌</div>
                   <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "white", marginBottom: "1rem" }}>Volunteer</h3>
-                  <a href="/get-involved" style={{ textDecoration: "none", width: "100%" }}>
-                    <button className="abf-btn-secondary" style={{ fontSize: "0.875rem", width: "100%", justifyContent: "center" }}>
-                      Get Involved
-                    </button>
-                  </a>
+                  <button className="abf-btn-secondary" onClick={() => setVolunteerOpen(true)} style={{ fontSize: "0.875rem", width: "100%", justifyContent: "center" }}>
+                    Get Involved
+                  </button>
                 </div>
               </div>
             </div>
@@ -765,158 +754,146 @@ export default function ABFProjects() {
               padding: "4rem 1.5rem",
               width: "100%",
             }}>
-              <div style={{ maxWidth: 800 }}>
-                {/* Breadcrumb */}
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "rgba(255, 255, 255, 0.6)", fontSize: "0.875rem", marginBottom: "1.5rem", fontWeight: 500 }}>
-                  <a href="/" style={{ color: "rgba(255, 255, 255, 0.6)", textDecoration: "none" }}>Home</a>
-                  <span>/</span>
-                  <span style={{ color: "#8dc63f", fontWeight: 600 }}>Projects</span>
-                </div>
-
-                <SectionLabel text="What We Are Doing" />
-
+              <div style={{ maxWidth: 680 }}>
+                <SectionLabel text="Our Work" />
                 <h1 style={{
-                  fontSize: "clamp(2rem, 5vw, 3.5rem)",
+                  fontSize: "clamp(2.5rem, 5vw, 4rem)",
                   fontWeight: 900,
                   color: "white",
                   lineHeight: 1.1,
-                  marginBottom: "1.5rem",
+                  margin: "0 0 1.25rem",
                   letterSpacing: "-0.02em",
                 }}>
-                  Projects That Turn Access<br />
-                  <span style={{ color: "#8dc63f" }}>Into Opportunity.</span>
+                  Projects Built With<br />
+                  <span style={{ color: "#8dc63f" }}>Community Purpose.</span>
                 </h1>
-
                 <p style={{
-                  fontSize: "1.125rem",
-                  color: "rgba(255,255,255,0.9)",
+                  fontSize: "clamp(1rem, 2vw, 1.1875rem)",
+                  color: "rgba(255,255,255,0.85)",
                   lineHeight: 1.7,
-                  maxWidth: 620,
-                  margin: 0
+                  margin: 0,
+                  maxWidth: 580,
                 }}>
-                  From books and learning resources to community spaces built around education, ABF's projects are designed to help children and communities gain access to the tools they need to learn, explore and grow.
+                  Explore the learning spaces, library projects and educational foundations we are bringing to life across communities.
                 </p>
               </div>
             </div>
           </section>
 
-          {/* Filter Bar */}
-          <section style={{ background: "white", borderBottom: "1px solid #e8f0e8" }}>
-            <div style={{ maxWidth: 1280, margin: "0 auto", padding: "1.25rem 1.5rem" }}>
+          {/* Filter Bar & Grid */}
+          <section style={{ padding: "4rem 1.5rem 7rem", background: "#fdfdfa" }}>
+            <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+              {/* Filter Tabs */}
               <div
                 className="abf-filter-bar"
                 style={{
                   display: "flex",
-                  alignItems: "center",
                   gap: "0.5rem",
-                  overflowX: "auto",
-                  scrollbarWidth: "none"
+                  marginBottom: "3rem",
+                  borderBottom: "1px solid #e8f0e8",
+                  paddingBottom: "1rem"
                 }}
               >
-                {(["ALL", "PENDING", "IN PROGRESS", "FINISHED"] as const).map((filter) => {
-                  const active = activeFilter === filter;
-                  return (
-                    <button
-                      key={filter}
-                      onClick={() => setActiveFilter(filter)}
-                      className="abf-filter-btn"
-                      style={{
-                        background: active ? "#f0f7f0" : "transparent",
-                        border: active ? "1px solid #dde8dd" : "1px solid transparent",
-                        color: active ? "#2d6a2d" : "#6a7a64",
-                        padding: "0.625rem 1.25rem",
-                        borderRadius: 9999,
-                        fontSize: "0.875rem",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        whiteSpace: "nowrap",
-                        transition: "all 0.15s"
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!active) e.currentTarget.style.color = "#2d6a2d";
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!active) e.currentTarget.style.color = "#6a7a64";
-                      }}
-                    >
-                      {filter === "ALL" && "All Projects"}
-                      {filter === "PENDING" && "Preparing to Begin"}
-                      {filter === "IN PROGRESS" && "Currently Underway"}
-                      {filter === "FINISHED" && "Completed Work"}
-                    </button>
-                  );
-                })}
+                {[
+                  { label: "All Work", value: "ALL" },
+                  { label: "Preparing to Bring to Life", value: "PENDING" },
+                  { label: "Currently Underway", value: "IN PROGRESS" },
+                  { label: "Completed Work", value: "FINISHED" },
+                ].map((tab) => (
+                  <button
+                    key={tab.value}
+                    onClick={() => setActiveFilter(tab.value as any)}
+                    className="abf-filter-btn"
+                    style={{
+                      padding: "0.625rem 1.25rem",
+                      borderRadius: 9999,
+                      fontSize: "0.875rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      border: "none",
+                      background: activeFilter === tab.value ? "#2d6a2d" : "#f0f7f0",
+                      color: activeFilter === tab.value ? "white" : "#4a5a44",
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
               </div>
-            </div>
-          </section>
 
-          {/* Project List / Grid */}
-          <section style={{ padding: "6rem 1.5rem" }}>
-            <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+              {/* Projects Grid */}
               {filteredProjects.length > 0 ? (
                 <div
                   className="abf-project-card-grid"
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 400px))",
-                    gap: "2rem",
-                    justifyContent: "center"
+                    gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
+                    gap: "2.5rem",
                   }}
                 >
                   {filteredProjects.map((project) => (
                     <div
                       key={project.id}
-                      className="abf-content-card"
-                      onClick={() => handleViewProject(project.slug)}
+                      style={{
+                        background: "white",
+                        borderRadius: 24,
+                        border: "1px solid #e8f0e8",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+                      }}
                     >
-                      {/* Image */}
                       <div style={{ position: "relative", height: 240, overflow: "hidden" }}>
                         <img
                           src={project.coverImage}
                           alt={project.title}
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
                         />
                         <div style={{ position: "absolute", top: "1rem", left: "1rem" }}>
                           <CategoryBadge label={project.statusText} color="#2d6a2d" />
                         </div>
                       </div>
 
-                      {/* Content */}
-                      <div style={{ padding: "2rem" }}>
-                        <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#8dc63f", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>
-                          📍 {project.location}
+                      <div style={{ padding: "2rem", display: "flex", flexDirection: "column", flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#6a7a64", fontSize: "0.875rem", marginBottom: "0.75rem" }}>
+                          <span>📍</span>
+                          <span>{project.location}</span>
                         </div>
-                        <h3 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#1a2218", margin: "0 0 0.875rem", lineHeight: 1.25 }}>
+
+                        <h3 style={{ fontSize: "1.375rem", fontWeight: 800, color: "#1a2218", marginBottom: "0.75rem", lineHeight: 1.3 }}>
                           {project.title}
                         </h3>
-                        <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.65, margin: "0 0 1.5rem" }}>
+
+                        <p style={{ fontSize: "0.9375rem", color: "#4a5a44", lineHeight: 1.65, marginBottom: "1.5rem", flex: 1 }}>
                           {project.shortDescription}
                         </p>
-                        
-                        <div style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.375rem",
-                          color: "#2d6a2d",
-                          fontWeight: 700,
-                          fontSize: "0.9375rem"
-                        }}>
-                          View Project <Icon.ArrowRight />
-                        </div>
+
+                        <button
+                          onClick={() => handleViewProject(project.slug)}
+                          className="abf-btn-primary"
+                          style={{ width: "100%", justifyContent: "center", fontSize: "0.9375rem" }}
+                        >
+                          View Project Details <Icon.ArrowRight />
+                        </button>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                // ─── EMPTY STATES ──────────────────────────────────────────
                 <div style={{
-                  maxWidth: 540,
-                  margin: "0 auto",
                   textAlign: "center",
-                  padding: "4rem 2rem",
+                  padding: "5rem 2rem",
                   background: "white",
                   borderRadius: 24,
                   border: "1px solid #e8f0e8",
+                  maxWidth: 600,
+                  margin: "0 auto",
                   boxShadow: "0 4px 20px rgba(0,0,0,0.01)"
                 }}>
                   <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🌱</div>
@@ -966,6 +943,7 @@ export default function ABFProjects() {
       {/* Modals */}
       {donateMoneyOpen && <DonateMoneyModal onClose={() => setDonateMoneyOpen(false)} />}
       {donateBookOpen && <DonateBookModal onClose={() => setDonateBookOpen(false)} />}
+      {volunteerOpen && <VolunteerModal onClose={() => setVolunteerOpen(false)} />}
     </div>
   );
 }

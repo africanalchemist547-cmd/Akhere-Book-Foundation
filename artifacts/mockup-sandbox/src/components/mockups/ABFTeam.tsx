@@ -320,16 +320,27 @@ export default function ABFTeam() {
               width: "100%",
               maxWidth: 680,
               maxHeight: "90vh",
-              overflowY: "auto",
-              padding: "2.5rem",
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
               boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
               border: "1px solid #dde8dd",
             }}
           >
             {/* Modal Header */}
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "1.25rem 1.5rem",
+              borderBottom: "1px solid #eef3ee",
+              background: "white",
+              flexShrink: 0,
+            }}>
+              <CategoryBadge label={selectedMember.role} color="#2d6a2d" />
               <button
                 onClick={handleCloseModal}
+                aria-label="Close modal"
                 style={{
                   background: "#f5f5f3",
                   border: "none",
@@ -347,56 +358,63 @@ export default function ABFTeam() {
               </button>
             </div>
 
-            {/* Profile Grid */}
+            {/* Scrollable Body */}
             <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-              gap: "2rem",
-              alignItems: "flex-start"
+              overflowY: "auto",
+              padding: "1.5rem 1.5rem 2rem",
+              flex: 1,
+              WebkitOverflowScrolling: "touch",
             }}>
-              {/* Photo */}
+              {/* Profile Grid */}
               <div style={{
-                borderRadius: 20,
-                overflow: "hidden",
-                border: "1px solid #e8f0e8",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.03)"
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: "2rem",
+                alignItems: "flex-start"
               }}>
-                <img
-                  src={selectedMember.image}
-                  alt={selectedMember.name}
-                  style={{ width: "100%", height: 320, objectFit: "cover", objectPosition: "top" }}
-                />
-              </div>
-
-              {/* Story Details */}
-              <div>
-                <CategoryBadge label={selectedMember.role} color="#2d6a2d" />
-                <h2 style={{ fontSize: "1.75rem", fontWeight: 900, color: "#1a2218", margin: "0.75rem 0 0.5rem", lineHeight: 1.2 }}>
-                  {selectedMember.name}
-                </h2>
-                
-                <p style={{
-                  fontSize: "1.0625rem",
-                  color: "#4a5a44",
-                  lineHeight: 1.75,
-                  margin: "1.25rem 0 0",
-                  whiteSpace: "pre-wrap"
-                }}>
-                  {selectedMember.fullStory}
-                </p>
-
+                {/* Photo */}
                 <div style={{
-                  marginTop: "2rem",
-                  padding: "1rem 1.25rem",
-                  background: "#f8faf6",
-                  borderRadius: 12,
-                  borderLeft: "3px solid #8dc63f",
-                  fontSize: "0.875rem",
-                  color: "#2c3424",
-                  fontWeight: 600,
-                  lineHeight: 1.4
+                  borderRadius: 20,
+                  overflow: "hidden",
+                  border: "1px solid #e8f0e8",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.03)"
                 }}>
-                  🤝 Part of the dedicated group helping ABF build what comes next.
+                  <img
+                    src={selectedMember.image}
+                    alt={selectedMember.name}
+                    style={{ width: "100%", height: 320, objectFit: "cover", objectPosition: "top" }}
+                  />
+                </div>
+
+                {/* Story Details */}
+                <div>
+                  <h2 style={{ fontSize: "1.75rem", fontWeight: 900, color: "#1a2218", margin: "0.25rem 0 0.5rem", lineHeight: 1.2 }}>
+                    {selectedMember.name}
+                  </h2>
+                  
+                  <p style={{
+                    fontSize: "1.0625rem",
+                    color: "#4a5a44",
+                    lineHeight: 1.75,
+                    margin: "1.25rem 0 0",
+                    whiteSpace: "pre-wrap"
+                  }}>
+                    {selectedMember.fullStory}
+                  </p>
+
+                  <div style={{
+                    marginTop: "2rem",
+                    padding: "1rem 1.25rem",
+                    background: "#f8faf6",
+                    borderRadius: 12,
+                    borderLeft: "3px solid #8dc63f",
+                    fontSize: "0.875rem",
+                    color: "#2c3424",
+                    fontWeight: 600,
+                    lineHeight: 1.4
+                  }}>
+                    🤝 Part of the dedicated group helping ABF build what comes next.
+                  </div>
                 </div>
               </div>
             </div>

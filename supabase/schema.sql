@@ -447,11 +447,11 @@ CREATE TABLE public.volunteer_submissions (
 
 ALTER TABLE public.volunteer_submissions ENABLE ROW LEVEL SECURITY;
 
--- Anonymous visitors can submit but ONLY with status = 'new'
+-- Public visitors (anon and authenticated) can submit but ONLY with status = 'new'
 -- This prevents a visitor from manipulating their own status on submission
 CREATE POLICY "Public can submit volunteer application"
   ON public.volunteer_submissions FOR INSERT
-  TO anon
+  TO anon, authenticated
   WITH CHECK (
     consent = true
     AND status = 'new'
@@ -501,10 +501,10 @@ CREATE TABLE public.partnership_inquiries (
 
 ALTER TABLE public.partnership_inquiries ENABLE ROW LEVEL SECURITY;
 
--- Anonymous visitors can submit partnership inquiries with status = 'new' only
+-- Public visitors (anon and authenticated) can submit partnership inquiries with status = 'new' only
 CREATE POLICY "Public can submit partnership inquiry"
   ON public.partnership_inquiries FOR INSERT
-  TO anon
+  TO anon, authenticated
   WITH CHECK (
     consent = true
     AND status = 'new'
@@ -549,10 +549,10 @@ CREATE TABLE public.donation_inquiries (
 
 ALTER TABLE public.donation_inquiries ENABLE ROW LEVEL SECURITY;
 
--- Anonymous visitors can submit donation inquiries with status = 'new' only
+-- Public visitors (anon and authenticated) can submit donation inquiries with status = 'new' only
 CREATE POLICY "Public can submit donation inquiry"
   ON public.donation_inquiries FOR INSERT
-  TO anon
+  TO anon, authenticated
   WITH CHECK (status = 'new');
 
 CREATE POLICY "Admins can read donation inquiries"

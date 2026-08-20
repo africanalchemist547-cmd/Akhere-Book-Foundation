@@ -10,55 +10,19 @@ import {
   Header,
   Footer,
   BASE,
-  PartnerWithABFModal
+  PartnerWithABFModal,
+  VolunteerModal
 } from "./_shared";
-import { supabase, isSupabaseConfigured } from "../../lib/supabase";
-
-// ─── TYPES & INTERFACES ──────────────────────────────────────
-interface VolunteerForm {
-  fullName: string;
-  email: string;
-  phone: string;
-  ageRange: string;
-  location: string;
-  motivation: string;
-  areas: string[];
-  skills: string;
-  availability: string;
-  additionalInfo: string;
-  consent: boolean;
-}
 
 export default function ABFGetInvolved() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
+  const [volunteerOpen, setVolunteerOpen] = useState(false);
+  const [partnerOpen, setPartnerOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Get Involved | Akhere Book Foundation";
   }, []);
-  
-  // Volunteer Modal State
-  const [volunteerOpen, setVolunteerOpen] = useState(false);
-  const [partnerOpen, setPartnerOpen] = useState(false);
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [formErrors, setFormErrors] = useState<string[]>([]);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  
-  // Form State Values
-  const [formData, setFormData] = useState<VolunteerForm>({
-    fullName: "",
-    email: "",
-    phone: "",
-    ageRange: "",
-    location: "",
-    motivation: "",
-    areas: [],
-    skills: "",
-    availability: "",
-    additionalInfo: "",
-    consent: false
-  });
 
   // Keyboard escape listeners
   useEffect(() => {
@@ -83,108 +47,6 @@ export default function ABFGetInvolved() {
     }
     return () => { document.body.style.overflow = ""; };
   }, [volunteerOpen, partnerOpen, donateMoneyOpen, donateBookOpen]);
-
-  const handleAreaToggle = (area: string) => {
-    setFormData((prev) => {
-      const nextAreas = prev.areas.includes(area)
-        ? prev.areas.filter((a) => a !== area)
-        : [...prev.areas, area];
-      return { ...prev, areas: nextAreas };
-    });
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (submitting) return;
-
-    const errors: string[] = [];
-
-    if (!formData.fullName.trim()) errors.push("Please enter your full name.");
-    if (!formData.email.trim()) {
-      errors.push("Please enter your email address.");
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.push("Please enter a valid email address.");
-    }
-    if (!formData.phone.trim()) errors.push("Please enter your phone or WhatsApp number.");
-    if (!formData.ageRange) errors.push("Please select your age range.");
-    if (!formData.location.trim()) errors.push("Please enter where you are based.");
-    if (!formData.motivation.trim()) errors.push("Please tell us what made you interested in ABF.");
-    if (formData.areas.length === 0) errors.push("Please select at least one way you would like to contribute.");
-    if (!formData.availability) errors.push("Please select your time availability.");
-    if (!formData.consent) errors.push("Please accept the volunteer consent checkbox.");
-
-    if (errors.length > 0) {
-      setFormErrors(errors);
-      return;
-    }
-
-    setFormErrors([]);
-    setSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      if (isSupabaseConfigured()) {
-        const { error } = await supabase
-          .from("volunteer_submissions")
-          .insert([
-            {
-              full_name: formData.fullName.trim(),
-              email: formData.email.trim(),
-              phone: formData.phone.trim(),
-              age_range: formData.ageRange,
-              location: formData.location.trim(),
-              motivation: formData.motivation.trim(),
-              contribution_areas: formData.areas,
-              skills: formData.skills.trim() || null,
-              availability: formData.availability,
-              additional_information: formData.additionalInfo.trim() || null,
-              consent: formData.consent,
-              status: "new",
-            },
-          ]);
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        setFormSubmitted(true);
-      } else {
-        // Fallback for development/QA only
-        if (import.meta.env.PROD) {
-          throw new Error("Supabase is not configured in production. Application cannot be saved.");
-        } else {
-          console.warn("Supabase is not configured. Simulating successful submission in development.");
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          setFormSubmitted(true);
-        }
-      }
-    } catch (err: any) {
-      setSubmitError(err.message || "An unexpected error occurred. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleResetModal = () => {
-    setVolunteerOpen(false);
-    setFormSubmitted(false);
-    setFormErrors([]);
-    setSubmitError(null);
-    setSubmitting(false);
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      ageRange: "",
-      location: "",
-      motivation: "",
-      areas: [],
-      skills: "",
-      availability: "",
-      additionalInfo: "",
-      consent: false
-    });
-  };
 
   const volunteerRoles = [
     {
@@ -232,21 +94,6 @@ export default function ABFGetInvolved() {
       fit: "You enjoy creative design, writing or photography."
     }
   ];
-
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "0.8125rem 1rem",
-    border: "2px solid #dde8dd",
-    borderRadius: 10,
-    fontSize: "0.9375rem",
-    fontFamily: "inherit",
-    outline: "none",
-    color: "#1a2218",
-    boxSizing: "border-box",
-    transition: "border-color 0.15s",
-    marginTop: "0.375rem",
-    background: "white",
-  };
 
   return (
     <div style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif", minHeight: "100vh", background: "#fafaf7" }}>
@@ -311,24 +158,56 @@ export default function ABFGetInvolved() {
                 color: "rgba(255,255,255,0.9)",
                 lineHeight: 1.7,
                 maxWidth: 620,
-                margin: 0
+                margin: "0 0 2rem",
               }}>
                 ABF's work is powered not only by donations, but by people who are willing to contribute their time, skills, ideas and energy.
               </p>
+
+              {/* Hero Action Button */}
+              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+                <button
+                  className="abf-btn-primary"
+                  onClick={() => setVolunteerOpen(true)}
+                  style={{
+                    fontSize: "1rem",
+                    padding: "1rem 2.25rem",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.5rem"
+                  }}
+                >
+                  🙌 Become a Volunteer
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Introduction Section */}
-        <section style={{ padding: "6rem 1.5rem", background: "white" }}>
+        <section style={{ padding: "5.5rem 1.5rem", background: "white" }}>
           <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
             <SectionLabel text="Ways to Participate" />
             <h2 style={{ fontSize: "clamp(1.75rem, 3vw, 2.5rem)", fontWeight: 900, color: "#1a2218", marginBottom: "1.25rem", lineHeight: 1.2 }}>
               There's More Than One Way to Help
             </h2>
-            <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.8, margin: 0 }}>
+            <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.8, margin: "0 0 2rem" }}>
               Akhere Book Foundation is not looking only for financial donors. We believe that local support has many dimensions. Depending on current project needs, individuals can contribute through library supervision, homework aid, distributing book drives, sorting collections, or documenting our milestones. Every form of assistance helps optimize the impact we have in Ogbunike.
             </p>
+            <button
+              className="abf-btn-primary"
+              onClick={() => setVolunteerOpen(true)}
+              style={{
+                fontSize: "1rem",
+                padding: "0.9375rem 2.25rem",
+                margin: "0 auto",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem"
+              }}
+            >
+              🙌 Get Involved as a Volunteer
+            </button>
           </div>
         </section>
 
@@ -490,7 +369,7 @@ export default function ABFGetInvolved() {
               <p style={{ fontSize: "0.9375rem", color: "#4a5a44", marginBottom: "0.75rem" }}>
                 Have an organisation or business that could partner with us?
               </p>
-              <button className="abf-btn-secondary" onClick={() => setPartnerOpen(true)} style={{ fontSize: "0.875rem" }}>
+              <button className="abf-btn-primary" onClick={() => setPartnerOpen(true)} style={{ fontSize: "0.875rem" }}>
                 Partner with ABF
               </button>
             </div>
@@ -524,305 +403,6 @@ export default function ABFGetInvolved() {
         </section>
       </div>
 
-      {/* Conversational Volunteer Modal Dialog */}
-      {volunteerOpen && (
-        <div className="abf-modal-overlay" onClick={handleResetModal} style={{ zIndex: 200 }}>
-          <div
-            className="abf-animate-slide-up"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "white",
-              borderRadius: 24,
-              width: "100%",
-              maxWidth: 580,
-              maxHeight: "92vh",
-              overflowY: "auto",
-              padding: "2rem",
-              boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
-              border: "1px solid #dde8dd",
-            }}
-          >
-            {/* Modal Header */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
-              <div>
-                <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#f0f7f0", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.75rem" }}>
-                  <span style={{ fontSize: "1.25rem" }}>🙌</span>
-                </div>
-                <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1a2218", margin: 0, lineHeight: 1.2 }}>Let's Get to Know You</h2>
-              </div>
-              <button
-                onClick={handleResetModal}
-                style={{ background: "#f5f5f3", border: "none", borderRadius: "50%", width: 36, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#555", flexShrink: 0 }}
-              >
-                <Icon.X />
-              </button>
-            </div>
-
-            {formSubmitted ? (
-              // ─── SUCCESS SCREEN STATE ──────────────────────────────
-              <div style={{ textAlign: "center", padding: "3rem 1rem" }}>
-                <span style={{ fontSize: "4rem" }}>💚</span>
-                <h3 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#2d6a2d", marginTop: "1.5rem", marginBottom: "0.5rem" }}>
-                  Thank You for Reaching Out
-                </h3>
-                <p style={{ fontSize: "1rem", color: "#4a5a44", lineHeight: 1.65, margin: "0 0 2rem" }}>
-                  We've received your interest in volunteering with ABF. Your willingness to contribute matters!
-                </p>
-                <div style={{
-                  background: "#fcf9f2",
-                  padding: "1.25rem",
-                  borderRadius: 12,
-                  border: "1px dashed #c98f3b",
-                  fontSize: "0.875rem",
-                  color: "#845e28",
-                  lineHeight: 1.5,
-                  marginBottom: "2rem"
-                }}>
-                  🛠️ <strong>Development Notice:</strong> This form is currently being prepared for ABF's volunteer system. We will contact you when the volunteer database is connected in Stage 4.
-                </div>
-                <button className="abf-btn-primary" onClick={handleResetModal} style={{ width: "100%", justifyContent: "center" }}>
-                  Done
-                </button>
-              </div>
-            ) : (
-              // ─── CONVERSATIONAL FORM FIELDS ────────────────────────
-              <form onSubmit={handleFormSubmit}>
-                
-                <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-                  We're not looking for a perfect CV. We'd simply like to understand what interests you, what you enjoy doing and where you think you could be useful.
-                </p>
-
-                {/* Validation Warnings Box */}
-                {formErrors.length > 0 && (
-                  <div style={{
-                    background: "#fdf3f3",
-                    border: "1px solid #f5c2c2",
-                    borderRadius: 12,
-                    padding: "1rem 1.25rem",
-                    marginBottom: "1.5rem",
-                  }}>
-                    <h4 style={{ margin: "0 0 0.5rem", color: "#b83232", fontWeight: 700, fontSize: "0.875rem" }}>Please review required details:</h4>
-                    <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8125rem", color: "#b83232", lineHeight: 1.5 }}>
-                      {formErrors.map((err, i) => (
-                        <li key={i}>{err}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Submission Error Box */}
-                {submitError && (
-                  <div style={{
-                    background: "#fdf3f3",
-                    border: "1px solid #f5c2c2",
-                    borderRadius: 12,
-                    padding: "1rem 1.25rem",
-                    marginBottom: "1.5rem",
-                    color: "#b83232",
-                    fontSize: "0.875rem",
-                    textAlign: "left"
-                  }}>
-                    <strong>Error submitting application:</strong> {submitError}
-                  </div>
-                )}
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", marginBottom: "2rem" }}>
-                  
-                  {/* Name */}
-                  <div>
-                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Full Name *</label>
-                    <input
-                      type="text"
-                      placeholder="Enter your name"
-                      value={formData.fullName}
-                      onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
-                      style={inputStyle}
-                      disabled={submitting}
-                    />
-                  </div>
-
-                  {/* Contact Row */}
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
-                    <div>
-                      <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Email Address *</label>
-                      <input
-                        type="email"
-                        placeholder="your@email.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                        style={inputStyle}
-                        disabled={submitting}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Phone / WhatsApp Number *</label>
-                      <input
-                        type="tel"
-                        placeholder="e.g. +234..."
-                        value={formData.phone}
-                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                        style={inputStyle}
-                        disabled={submitting}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Age & Location Row */}
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
-                    <div>
-                      <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Age Range *</label>
-                      <select
-                        value={formData.ageRange}
-                        onChange={(e) => setFormData(prev => ({ ...prev, ageRange: e.target.value }))}
-                        style={inputStyle}
-                        disabled={submitting}
-                      >
-                        <option value="">Select age range</option>
-                        <option value="under-18">Under 18</option>
-                        <option value="18-24">18 - 24</option>
-                        <option value="25-34">25 - 34</option>
-                        <option value="35-50">35 - 50</option>
-                        <option value="over-50">Over 50</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Where are you based? *</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Ogbunike, Awka, Lagos..."
-                        value={formData.location}
-                        onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                        style={inputStyle}
-                        disabled={submitting}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Motivation */}
-                  <div>
-                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>What made you interested in ABF? *</label>
-                    <textarea
-                      placeholder="Please tell us a little about what caught your eye..."
-                      rows={3}
-                      value={formData.motivation}
-                      onChange={(e) => setFormData(prev => ({ ...prev, motivation: e.target.value }))}
-                      style={{ ...inputStyle, resize: "vertical", height: 80 }}
-                      disabled={submitting}
-                    />
-                  </div>
-
-                  {/* Contribution Areas */}
-                  <div>
-                    <label style={{ fontWeight: 700, display: "block", fontSize: "0.9rem", color: "#1a2218", marginBottom: "0.5rem" }}>
-                      How would you like to contribute? * <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Select all that apply)</span>
-                    </label>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                      {[
-                        "Reading & Library Support",
-                        "Educational Activities",
-                        "Community Outreach",
-                        "Events Coordinator",
-                        "Media & Storytelling",
-                        "Technology & Digital",
-                        "Administration Support",
-                        "Fundraising",
-                        "Other"
-                      ].map((area) => {
-                        const selected = formData.areas.includes(area);
-                        return (
-                          <button
-                            key={area}
-                            type="button"
-                            className={`abf-category-chip${selected ? " selected" : ""}`}
-                            onClick={() => handleAreaToggle(area)}
-                            disabled={submitting}
-                          >
-                            {selected && <Icon.Check />}
-                            {area}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Skills/Interests */}
-                  <div>
-                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>What skills or interests would you like to bring? <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Optional)</span></label>
-                    <textarea
-                      placeholder="Describe any creative, teaching, digital or organisational skills..."
-                      rows={2}
-                      value={formData.skills}
-                      onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
-                      style={{ ...inputStyle, resize: "vertical", height: 60 }}
-                      disabled={submitting}
-                    />
-                  </div>
-
-                  {/* Time Availability */}
-                  <div>
-                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>How much time could you realistically contribute? *</label>
-                    <select
-                      value={formData.availability}
-                      onChange={(e) => setFormData(prev => ({ ...prev, availability: e.target.value }))}
-                      style={inputStyle}
-                      disabled={submitting}
-                    >
-                      <option value="">Select availability</option>
-                      <option value="occasionally">Occasionally (during campaigns/events)</option>
-                      <option value="monthly">A few hours a month</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="event-specific">During specific events or projects</option>
-                      <option value="unsure">I'm not sure yet</option>
-                    </select>
-                  </div>
-
-                  {/* Additional Info */}
-                  <div>
-                    <label style={{ fontWeight: 700, fontSize: "0.9rem", color: "#1a2218" }}>Is there anything else you'd like us to know? <span style={{ fontWeight: 400, color: "#8a9a84" }}>(Optional)</span></label>
-                    <textarea
-                      placeholder="Tell us a little more about yourself..."
-                      rows={2}
-                      value={formData.additionalInfo}
-                      onChange={(e) => setFormData(prev => ({ ...prev, additionalInfo: e.target.value }))}
-                      style={{ ...inputStyle, resize: "vertical", height: 60 }}
-                      disabled={submitting}
-                    />
-                  </div>
-
-                  {/* Consent checkbox */}
-                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", marginTop: "0.5rem" }}>
-                    <input
-                      type="checkbox"
-                      id="consent-check"
-                      checked={formData.consent}
-                      onChange={(e) => setFormData(prev => ({ ...prev, consent: e.target.checked }))}
-                      style={{ marginTop: "0.25rem", cursor: "pointer" }}
-                      disabled={submitting}
-                    />
-                    <label htmlFor="consent-check" style={{ fontSize: "0.8125rem", color: "#4a5a44", lineHeight: 1.4, cursor: "pointer" }}>
-                      I understand that submitting this form does not guarantee a volunteer position and that ABF may contact me using the info provided. *
-                    </label>
-                  </div>
-
-                </div>
-
-                {/* Submit button */}
-                <button
-                  type="submit"
-                  className="abf-btn-primary"
-                  style={{ width: "100%", justifyContent: "center", fontSize: "1rem", padding: "1rem", opacity: submitting ? 0.7 : 1 }}
-                  disabled={submitting}
-                >
-                  {submitting ? "Submitting..." : "Submit Application"}
-                </button>
-
-              </form>
-            )}
-
-          </div>
-        </div>
-      )}
-
       {/* Footer */}
       <Footer onDonate={() => setDonateMoneyOpen(true)} />
 
@@ -830,6 +410,7 @@ export default function ABFGetInvolved() {
       {donateMoneyOpen && <DonateMoneyModal onClose={() => setDonateMoneyOpen(false)} />}
       {donateBookOpen && <DonateBookModal onClose={() => setDonateBookOpen(false)} />}
       {partnerOpen && <PartnerWithABFModal onClose={() => setPartnerOpen(false)} />}
+      {volunteerOpen && <VolunteerModal onClose={() => setVolunteerOpen(false)} />}
     </div>
   );
 }

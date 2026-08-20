@@ -19,7 +19,8 @@ import {
   Footer,
   BASE,
   TEAM_MEMBERS,
-  PartnerWithABFModal
+  PartnerWithABFModal,
+  VolunteerModal
 } from "./_shared";
 
 // â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -134,7 +135,7 @@ const PARTNERS: Partner[] = [
 
 // â”€â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-function HeroSection({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBook: () => void }) {
+function HeroSection({ onDonate, onVolunteer }: { onDonate: () => void; onVolunteer: () => void }) {
   return (
     <section style={{
       position: "relative",
@@ -206,7 +207,7 @@ function HeroSection({ onDonate, onDonateBook }: { onDonate: () => void; onDonat
             <button className="abf-btn-donate" onClick={onDonate} style={{ fontSize: "1rem", padding: "1rem 2.25rem" }}>
               💚 Donate
             </button>
-            <button className="abf-btn-secondary" onClick={onDonateBook} style={{ fontSize: "1rem", padding: "0.9375rem 2rem" }}>
+            <button className="abf-btn-secondary" onClick={onVolunteer} style={{ fontSize: "1rem", padding: "0.9375rem 2rem" }}>
               Get Involved
             </button>
           </div>
@@ -399,19 +400,33 @@ function SupportSection() {
 
 function FutureSection() {
   return (
-    <section style={{ position: "relative", overflow: "hidden" }}>
-      {/* Background image */}
+    <section style={{
+      position: "relative",
+      overflow: "hidden",
+      background: "linear-gradient(135deg, #142414 0%, #1a381a 50%, #101e10 100%)",
+      borderTop: "1px solid rgba(141, 198, 63, 0.1)",
+      borderBottom: "1px solid rgba(141, 198, 63, 0.1)",
+    }}>
+      {/* Subtle ambient lighting */}
       <div style={{
         position: "absolute",
-        inset: 0,
-        backgroundImage: `url(${ASSETS.future})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        top: "-15%",
+        right: "-10%",
+        width: 500,
+        height: 500,
+        background: "radial-gradient(circle, rgba(141,198,63,0.06) 0%, transparent 70%)",
+        borderRadius: "50%",
+        pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute",
-        inset: 0,
-        background: "linear-gradient(to right, rgba(26,34,24,0.92) 0%, rgba(26,34,24,0.85) 55%, rgba(26,34,24,0.5) 100%)",
+        bottom: "-15%",
+        left: "-10%",
+        width: 450,
+        height: 450,
+        background: "radial-gradient(circle, rgba(45,106,45,0.08) 0%, transparent 70%)",
+        borderRadius: "50%",
+        pointerEvents: "none",
       }} />
 
       <div style={{
@@ -931,7 +946,7 @@ function PartnersSection({ onPartnerOpen }: { onPartnerOpen: () => void }) {
 
 // â”€â”€â”€ FINAL CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBook: () => void }) {
+function FinalCTA({ onDonate, onDonateBook, onVolunteer }: { onDonate: () => void; onDonateBook: () => void; onVolunteer: () => void }) {
   const actions = [
     {
       icon: <Icon.Book />,
@@ -954,7 +969,7 @@ function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBo
       title: "Volunteer",
       desc: "Bring your skills, time or ideas.",
       cta: "Get Involved",
-      href: "/get-involved",
+      onClick: onVolunteer,
       style: "volunteer",
     },
   ];
@@ -1018,17 +1033,9 @@ function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBo
               <p style={{ fontSize: "0.9375rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.6, marginBottom: "1.5rem" }}>
                 {action.desc}
               </p>
-              {action.href ? (
-                <a href={action.href} style={{ textDecoration: "none" }}>
-                  <button className="abf-btn-secondary" style={{ fontSize: "0.9375rem" }}>
-                    {action.cta}
-                  </button>
-                </a>
-              ) : (
-                <button className="abf-btn-secondary" onClick={action.onClick} style={{ fontSize: "0.9375rem" }}>
-                  {action.cta}
-                </button>
-              )}
+              <button className="abf-btn-secondary" onClick={action.onClick} style={{ fontSize: "0.9375rem" }}>
+                {action.cta}
+              </button>
             </div>
           ))}
         </div>
@@ -1037,7 +1044,7 @@ function FinalCTA({ onDonate, onDonateBook }: { onDonate: () => void; onDonateBo
   );
 }
 
-// â”€â”€â”€ SOCIAL SECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SOCIAL SECTION ──────────────────────────────────────────
 
 function SocialSection() {
   return (
@@ -1123,12 +1130,13 @@ function SocialSection() {
   );
 }
 
-// â”€â”€â”€ MAIN PAGE ASSEMBLY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── MAIN PAGE ASSEMBLY ──────────────────────────────────────
 
 export default function ABFHomepage() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
   const [partnerOpen, setPartnerOpen] = useState(false);
+  const [volunteerOpen, setVolunteerOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Akhere Book Foundation | Building What Comes Next";
@@ -1141,6 +1149,7 @@ export default function ABFHomepage() {
         setDonateMoneyOpen(false);
         setDonateBookOpen(false);
         setPartnerOpen(false);
+        setVolunteerOpen(false);
       }
     };
     window.addEventListener("keydown", handler);
@@ -1155,7 +1164,7 @@ export default function ABFHomepage() {
         {/* 1. Hero */}
         <HeroSection
           onDonate={() => setDonateMoneyOpen(true)}
-          onDonateBook={() => setDonateBookOpen(true)}
+          onVolunteer={() => setVolunteerOpen(true)}
         />
 
         {/* 2. Trust Badges */}
@@ -1180,6 +1189,7 @@ export default function ABFHomepage() {
         <FinalCTA
           onDonate={() => setDonateMoneyOpen(true)}
           onDonateBook={() => setDonateBookOpen(true)}
+          onVolunteer={() => setVolunteerOpen(true)}
         />
 
         {/* 9. Social */}
@@ -1193,6 +1203,7 @@ export default function ABFHomepage() {
       {donateMoneyOpen && <DonateMoneyModal onClose={() => setDonateMoneyOpen(false)} />}
       {donateBookOpen && <DonateBookModal onClose={() => setDonateBookOpen(false)} />}
       {partnerOpen && <PartnerWithABFModal onClose={() => setPartnerOpen(false)} />}
+      {volunteerOpen && <VolunteerModal onClose={() => setVolunteerOpen(false)} />}
     </div>
   );
 }
