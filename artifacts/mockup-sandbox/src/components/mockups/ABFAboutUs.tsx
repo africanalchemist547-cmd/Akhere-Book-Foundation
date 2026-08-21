@@ -12,7 +12,7 @@ import {
   BASE,
   VolunteerModal
 } from "./_shared";
-import { usePublicStatistics } from "../../hooks/useCmsData";
+import { usePublicStatistics, usePublicProjects, findMatchingStatistic } from "../../hooks/useCmsData";
 
 export default function ABFAboutUs() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
@@ -20,30 +20,57 @@ export default function ABFAboutUs() {
   const [volunteerOpen, setVolunteerOpen] = useState(false);
 
   const { data: dbStats } = usePublicStatistics();
+  const { data: projects } = usePublicProjects();
 
-  const getStat = (key: string, defaultLabel: string, defaultVal: string) => {
-    const found = dbStats.find((s) => s.metric_key === key);
-    if (found) {
-      return {
-        label: found.label,
-        value: found.value,
-        tag: found.description || "ABF TO PROVIDE VERIFIED FIGURES",
-        isPending: found.value.includes("[") || found.value.toLowerCase().includes("pending"),
-      };
-    }
-    return {
-      label: defaultLabel,
-      value: defaultVal,
-      tag: "ABF TO PROVIDE VERIFIED FIGURES",
-      isPending: true,
-    };
-  };
+  const featuredProject = projects.find((p) => p.featured) || projects[0];
+  const libraryImage = featuredProject?.cover_image || ASSETS.library;
+  const libraryLocation = featuredProject?.location || "Ogbunike, Anambra State";
 
   const aboutStats = [
-    getStat("schools_reached", "Schools & Communities", "[XX]"),
-    getStat("library_users", "Estimated Users", "[XX]"),
-    getStat("books_available", "Books & Resources", "[XX]"),
-    getStat("monthly_hours", "Monthly Usage Hours", "[XX]"),
+    findMatchingStatistic(
+      dbStats,
+      {
+        primaryKey: "schools_reached",
+        aliases: ["schools_and_communities", "schools", "schools_communities"],
+        labelIncludes: ["school"],
+      },
+      "Schools & Communities",
+      "[XX]",
+      "ABF TO PROVIDE VERIFIED FIGURES"
+    ),
+    findMatchingStatistic(
+      dbStats,
+      {
+        primaryKey: "library_users",
+        aliases: ["estimated_users", "users"],
+        labelIncludes: ["user"],
+      },
+      "Estimated Users",
+      "[XX]",
+      "ABF TO PROVIDE VERIFIED FIGURES"
+    ),
+    findMatchingStatistic(
+      dbStats,
+      {
+        primaryKey: "books_available",
+        aliases: ["books_made_available", "books_and_resources", "books"],
+        labelIncludes: ["book"],
+      },
+      "Books & Resources",
+      "[XX]",
+      "ABF TO PROVIDE VERIFIED FIGURES"
+    ),
+    findMatchingStatistic(
+      dbStats,
+      {
+        primaryKey: "monthly_hours",
+        aliases: ["monthly_usage_hours", "hours"],
+        labelIncludes: ["hour"],
+      },
+      "Monthly Usage Hours",
+      "[XX]",
+      "ABF TO PROVIDE VERIFIED FIGURES"
+    ),
   ];
 
   useEffect(() => {
@@ -396,7 +423,7 @@ export default function ABFAboutUs() {
                 border: "1px solid #e8f0e8"
               }}>
                 <img
-                  src={ASSETS.library}
+                  src={libraryImage}
                   alt="Azu-Ogbunike Public Library"
                   style={{ width: "100%", height: "auto", display: "block", maxHeight: 480, objectFit: "cover" }}
                 />
@@ -413,7 +440,7 @@ export default function ABFAboutUs() {
                   fontSize: "0.8125rem",
                   border: "1px solid rgba(255,255,255,0.1)"
                 }}>
-                  📍 Ogbunike, Anambra State
+                  📍 {libraryLocation}
                 </div>
               </div>
 
@@ -458,7 +485,7 @@ export default function ABFAboutUs() {
                         {stat.label}
                       </div>
                       <div style={{ fontSize: "0.6875rem", color: "#8a9a84", fontStyle: "italic", marginTop: "0.25rem", lineHeight: 1.2 }}>
-                        {stat.tag}
+                        {stat.description || "ABF TO PROVIDE VERIFIED FIGURES"}
                       </div>
                     </div>
                   ))}

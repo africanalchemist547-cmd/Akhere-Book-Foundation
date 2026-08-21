@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
-import { DbPost } from "../../../hooks/useCmsData";
+import { DbPost, stripGalleryMarker } from "../../../hooks/useCmsData";
 import ImageUploadField from "../ImageUploadField";
 
 interface PostEditorModalProps {
@@ -20,11 +20,28 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
   const [category, setCategory] = useState<"projects" | "events" | "news_impact">(post?.category || "news_impact");
   const [author, setAuthor] = useState(post?.author || "Akhere Book Foundation");
   const [excerpt, setExcerpt] = useState(post?.excerpt || "");
-  const [content, setContent] = useState(post?.content || "");
+  const [content, setContent] = useState(post?.content ? stripGalleryMarker(post.content) : "");
   const [coverImage, setCoverImage] = useState(post?.cover_image || "");
   const [youtubeUrl, setYoutubeUrl] = useState(post?.youtube_url || "");
   const [published, setPublished] = useState(post?.published ?? true);
   const [featured, setFeatured] = useState(post?.featured || false);
+
+  // Gallery state for multiple story photos (up to 6)
+  const [galleryImages, setGalleryImages] = useState<string[]>(() => {
+    if (post?.gallery_images && post.gallery_images.length > 0) {
+      return post.gallery_images;
+    }
+    if (post?.content) {
+      const match = post.content.match(/<!-- GALLERY:([\s\S]*?) -->/);
+      if (match && match[1]) {
+        try {
+          const parsed = JSON.parse(match[1]);
+          if (Array.isArray(parsed)) return parsed;
+        } catch {}
+      }
+    }
+    return [];
+  });
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +55,19 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
       setSlug(generated);
     }
   }, [title, isSlugCustomized]);
+
+  const handleAddGalleryImage = (url: string) => {
+    if (!url) return;
+    if (galleryImages.length >= 6) {
+      setError("Maximum 6 gallery photos permitted per story.");
+      return;
+    }
+    setGalleryImages([...galleryImages, url]);
+  };
+
+  const handleRemoveGalleryImage = (index: number) => {
+    setGalleryImages(galleryImages.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,13 +88,19 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
 
     setSaving(true);
 
+    // Embed gallery images in content marker cleanly
+    let finalContent = content.trim();
+    if (galleryImages.length > 0) {
+      finalContent = `${finalContent}\n\n<!-- GALLERY:${JSON.stringify(galleryImages)} -->`;
+    }
+
     const payload = {
       title: title.trim(),
       slug: slug.trim(),
       category,
       author: author.trim() || "Akhere Book Foundation",
       excerpt: excerpt.trim(),
-      content: content.trim(),
+      content: finalContent,
       cover_image: coverImage.trim(),
       youtube_url: youtubeUrl.trim() || null,
       published,
@@ -242,15 +278,76 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
 
             {/* Direct Cover Image Upload */}
             <ImageUploadField
-              label="Article Cover Image"
+              label="Primary Cover Image *"
               value={coverImage}
               onChange={setCoverImage}
               folder="posts"
               slug={slug || "post"}
               required
               aspectRatio="cover"
-              helperText="Upload the header image for this article."
+              helperText="Upload the main header photo for this article."
             />
+
+            {/* Story Multi-Image Photo Gallery */}
+            <div style={{ background: "#f8faf8", padding: "1rem 1.25rem", borderRadius: 12, border: "1px solid #e8f0e8" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                <div>
+                  <label style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", display: "block" }}>
+                    Additional Story Photos ({galleryImages.length}/6 photos)
+                  </label>
+                  <span style={{ fontSize: "0.75rem", color: "#6a7a64" }}>
+                    Add extra photos to create an image gallery inside this story.
+                  </span>
+                </div>
+              </div>
+
+              {/* Gallery Thumbnails */}
+              {galleryImages.length > 0 && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: "0.75rem", marginBottom: "1rem", marginTop: "0.5rem" }}>
+                  {galleryImages.map((imgUrl, idx) => (
+                    <div key={idx} style={{ position: "relative", borderRadius: 8, overflow: "hidden", border: "1.5px solid #dde8dd", height: 80, background: "#1a2218" }}>
+                      <img src={imgUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveGalleryImage(idx)}
+                        style={{
+                          position: "absolute",
+                          top: 4,
+                          right: 4,
+                          background: "rgba(0,0,0,0.7)",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "50%",
+                          width: 22,
+                          height: 22,
+                          fontSize: "0.75rem",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                        aria-label="Remove image"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {galleryImages.length < 6 && (
+                <div style={{ marginTop: "0.5rem" }}>
+                  <ImageUploadField
+                    label="Add Gallery Photo"
+                    value=""
+                    onChange={handleAddGalleryImage}
+                    folder="posts"
+                    slug={`${slug || "post"}-gallery-${galleryImages.length + 1}`}
+                    aspectRatio="cover"
+                  />
+                </div>
+              )}
+            </div>
 
             {/* Video Link */}
             <div>

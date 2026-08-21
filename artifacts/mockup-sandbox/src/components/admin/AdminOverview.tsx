@@ -55,20 +55,20 @@ export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: strin
         { data: volData },
         { data: donData },
         { data: partData },
-        { count: projCount },
-        { count: postCount },
-        { count: teamCount },
-        { count: partnerCount },
-        { count: statCount },
+        { data: projData, count: projCount },
+        { data: postData, count: postCount },
+        { data: teamData, count: teamCount },
+        { data: partnerData, count: partnerCount },
+        { data: statData, count: statCount },
       ] = await Promise.all([
         supabase.from("volunteer_submissions").select("*").order("created_at", { ascending: false }),
         supabase.from("donation_inquiries").select("*").order("created_at", { ascending: false }),
         supabase.from("partnership_inquiries").select("*").order("created_at", { ascending: false }),
-        supabase.from("projects").select("*", { count: "exact", head: true }),
-        supabase.from("posts").select("*", { count: "exact", head: true }),
-        supabase.from("team_members").select("*", { count: "exact", head: true }),
-        supabase.from("partners").select("*", { count: "exact", head: true }),
-        supabase.from("library_statistics").select("*", { count: "exact", head: true }),
+        supabase.from("projects").select("id", { count: "exact" }),
+        supabase.from("posts").select("id", { count: "exact" }),
+        supabase.from("team_members").select("id", { count: "exact" }),
+        supabase.from("partners").select("id", { count: "exact" }),
+        supabase.from("library_statistics").select("id", { count: "exact" }),
       ]);
 
       const volunteers = volData || [];
@@ -90,11 +90,11 @@ export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: strin
         moneyTotalPledged: moneyPledged,
         partnershipsTotal: partnerships.length,
         partnershipsNew: partnerships.filter((p) => p.status === "new").length,
-        projectsTotal: projCount || 0,
-        postsTotal: postCount || 0,
-        teamTotal: teamCount || 0,
-        partnersTotal: partnerCount || 0,
-        statsTotal: statCount || 0,
+        projectsTotal: projCount ?? projData?.length ?? 0,
+        postsTotal: postCount ?? postData?.length ?? 0,
+        teamTotal: teamCount ?? teamData?.length ?? 0,
+        partnersTotal: partnerCount ?? partnerData?.length ?? 0,
+        statsTotal: statCount ?? statData?.length ?? 0,
       });
 
       // Combine and sort recent 10 submissions

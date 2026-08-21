@@ -8,6 +8,44 @@ interface StatisticEditorModalProps {
   onSaved: () => void;
 }
 
+const STATISTIC_PRESETS = [
+  {
+    label: "Books Made Available",
+    metric_key: "books_available",
+    desc: "figures to be confirmed",
+    order: 1,
+    icon: "📚",
+  },
+  {
+    label: "Schools / Communities Reached",
+    metric_key: "schools_reached",
+    desc: "figures to be confirmed",
+    order: 2,
+    icon: "🏫",
+  },
+  {
+    label: "Children & Community Members Reached",
+    metric_key: "people_reached",
+    desc: "figures to be confirmed",
+    order: 3,
+    icon: "👥",
+  },
+  {
+    label: "Library Users",
+    metric_key: "library_users",
+    desc: "figures to be confirmed",
+    order: 4,
+    icon: "📖",
+  },
+  {
+    label: "Monthly Usage Hours",
+    metric_key: "monthly_hours",
+    desc: "figures to be confirmed",
+    order: 5,
+    icon: "⏱️",
+  },
+];
+
 export default function StatisticEditorModal({ statistic, onClose, onSaved }: StatisticEditorModalProps) {
   const isEditing = !!statistic;
 
@@ -23,15 +61,32 @@ export default function StatisticEditorModal({ statistic, onClose, onSaved }: St
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Auto-generate key when label changes unless customized
   useEffect(() => {
     if (!isEditing && !isKeyCustomized && label) {
-      const generated = label
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_")
-        .replace(/(^_|_$)+/g, "");
-      setMetricKey(generated);
+      // Check if it matches a preset
+      const matchedPreset = STATISTIC_PRESETS.find(
+        (p) => p.label.toLowerCase() === label.trim().toLowerCase()
+      );
+      if (matchedPreset) {
+        setMetricKey(matchedPreset.metric_key);
+      } else {
+        const generated = label
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "_")
+          .replace(/(^_|_$)+/g, "");
+        setMetricKey(generated);
+      }
     }
   }, [label, isEditing, isKeyCustomized]);
+
+  const handleApplyPreset = (preset: typeof STATISTIC_PRESETS[0]) => {
+    setLabel(preset.label);
+    setMetricKey(preset.metric_key);
+    setDescription(preset.desc);
+    setDisplayOrder(preset.order);
+    setIsKeyCustomized(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +97,7 @@ export default function StatisticEditorModal({ statistic, onClose, onSaved }: St
       return;
     }
     if (!value.trim()) {
-      setError("Value is required (e.g. 3,500+ or [XX+]).");
+      setError("Value is required (e.g. 200, 3,500+, or [XX+]).");
       return;
     }
     if (!metricKey.trim()) {
@@ -94,7 +149,7 @@ export default function StatisticEditorModal({ statistic, onClose, onSaved }: St
           background: "white",
           borderRadius: 24,
           width: "100%",
-          maxWidth: 560,
+          maxWidth: 580,
           maxHeight: "min(90vh, calc(100dvh - 2rem))",
           display: "flex",
           flexDirection: "column",
@@ -154,6 +209,39 @@ export default function StatisticEditorModal({ statistic, onClose, onSaved }: St
               </div>
             )}
 
+            {/* Quick Presets (when creating new) */}
+            {!isEditing && (
+              <div>
+                <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 700, color: "#6a7a64", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                  Quick Fill Preset Metrics
+                </label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                  {STATISTIC_PRESETS.map((preset) => (
+                    <button
+                      key={preset.metric_key}
+                      type="button"
+                      onClick={() => handleApplyPreset(preset)}
+                      style={{
+                        background: metricKey === preset.metric_key ? "#e8f5e8" : "#f8faf6",
+                        border: metricKey === preset.metric_key ? "1.5px solid #2d6a2d" : "1px solid #dde8dd",
+                        color: metricKey === preset.metric_key ? "#2d6a2d" : "#4a5a44",
+                        fontWeight: 700,
+                        fontSize: "0.75rem",
+                        padding: "0.35rem 0.65rem",
+                        borderRadius: 8,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.35rem",
+                      }}
+                    >
+                      <span>{preset.icon}</span> {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Label */}
             <div>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
@@ -178,12 +266,12 @@ export default function StatisticEditorModal({ statistic, onClose, onSaved }: St
                 type="text"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder="e.g. 3,500+ or [XX+]"
+                placeholder="e.g. 200, 3,500+, or [XX+]"
                 required
-                style={{ width: "100%", padding: "0.75rem 0.875rem", borderRadius: 10, border: "1.5px solid #dde8dd", fontSize: "0.9375rem" }}
+                style={{ width: "100%", padding: "0.75rem 0.875rem", borderRadius: 10, border: "1.5px solid #dde8dd", fontSize: "0.9375rem", fontWeight: 700, color: "#2d6a2d" }}
               />
               <span style={{ fontSize: "0.75rem", color: "#6a7a64", marginTop: "0.25rem", display: "block" }}>
-                Tip: Enter [XX+] if the metric is awaiting field audit confirmation.
+                Enter real figures (e.g. 200 or 5,000+) or enter [XX+] if awaiting field audit confirmation.
               </span>
             </div>
 
@@ -196,7 +284,7 @@ export default function StatisticEditorModal({ statistic, onClose, onSaved }: St
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="e.g. (figures to be confirmed) or Audited by field team"
+                placeholder="e.g. (figures to be confirmed) or Audited by ABF field team"
                 style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
               />
             </div>

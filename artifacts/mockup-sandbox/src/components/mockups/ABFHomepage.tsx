@@ -22,7 +22,7 @@ import {
   PartnerWithABFModal,
   VolunteerModal
 } from "./_shared";
-import { usePublicPosts, usePublicTeam, usePublicPartners, usePublicStatistics } from "../../hooks/useCmsData";
+import { usePublicPosts, usePublicTeam, usePublicPartners, usePublicStatistics, findMatchingStatistic } from "../../hooks/useCmsData";
 
 // â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface LatestCard {
@@ -300,27 +300,47 @@ function TrustBadges() {
 function SupportSection() {
   const { data: dbStats, loading: statsLoading } = usePublicStatistics();
 
-  const getStat = (key: string, defaultLabel: string, defaultVal: string) => {
-    const found = dbStats.find((s) => s.metric_key === key);
-    if (found) {
-      return {
-        label: found.label,
-        value: found.value,
-        description: found.description || "(figures to be confirmed)",
-      };
-    }
-    return {
-      label: defaultLabel,
-      value: defaultVal,
-      description: "(figures to be confirmed)",
-    };
-  };
-
   const stats = [
-    getStat("schools_reached", "Schools / Communities Reached", "[XX+]"),
-    getStat("books_available", "Books Made Available", "[XX+]"),
-    getStat("people_reached", "Children & Community Members Reached", "[XX+]"),
-    getStat("library_users", "Library Users", "[XX+]"),
+    findMatchingStatistic(
+      dbStats,
+      {
+        primaryKey: "schools_reached",
+        aliases: ["schools_and_communities", "schools", "schools_communities"],
+        labelIncludes: ["school"],
+      },
+      "Schools / Communities Reached",
+      "[XX+]"
+    ),
+    findMatchingStatistic(
+      dbStats,
+      {
+        primaryKey: "books_available",
+        aliases: ["books_made_available", "books", "books_and_resources"],
+        labelIncludes: ["book"],
+      },
+      "Books Made Available",
+      "[XX+]"
+    ),
+    findMatchingStatistic(
+      dbStats,
+      {
+        primaryKey: "people_reached",
+        aliases: ["children_community_reached", "children_reached", "people"],
+        labelIncludes: ["people", "children"],
+      },
+      "Children & Community Members Reached",
+      "[XX+]"
+    ),
+    findMatchingStatistic(
+      dbStats,
+      {
+        primaryKey: "library_users",
+        aliases: ["users", "estimated_users"],
+        labelIncludes: ["user"],
+      },
+      "Library Users",
+      "[XX+]"
+    ),
   ];
 
   return (

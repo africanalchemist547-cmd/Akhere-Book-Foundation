@@ -22,6 +22,7 @@ interface Post {
   excerpt: string;
   contentHtml: string;
   coverImage: string;
+  gallery?: string[];
   additionalImages?: string[];
   youtubeVideoId?: string;
   date: string;
@@ -48,6 +49,7 @@ function parsePostSlug(): string | null {
 export default function ABFLatest() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<"ALL" | "PROJECTS" | "EVENTS" | "NEWS & IMPACT">("ALL");
@@ -76,6 +78,7 @@ export default function ABFLatest() {
       excerpt: p.excerpt,
       contentHtml: p.content,
       coverImage: p.cover_image || ASSETS.ig13,
+      gallery: p.gallery_images && p.gallery_images.length > 0 ? p.gallery_images : [p.cover_image || ASSETS.ig13],
       date: dateStr,
       author: p.author || "Akhere Book Foundation",
       featured: p.featured,
@@ -99,6 +102,7 @@ export default function ABFLatest() {
       if (e.key === "Escape") {
         setDonateMoneyOpen(false);
         setDonateBookOpen(false);
+        setLightboxIndex(null);
       }
     };
     window.addEventListener("keydown", handler);
@@ -312,6 +316,158 @@ export default function ABFLatest() {
               )}
             </div>
           </section>
+
+          {/* Story Photo Gallery (Multi-image support) */}
+          {activePost.gallery && activePost.gallery.length > 1 && (
+            <section style={{ padding: "4rem 1.5rem 5rem", background: "#f8faf6", borderTop: "1px solid #e8f0e8" }}>
+              <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+                <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+                  <SectionLabel text="Story Gallery" />
+                  <h3 style={{ fontSize: "1.75rem", fontWeight: 800, color: "#1a2218", margin: 0 }}>
+                    Photos From This Story
+                  </h3>
+                </div>
+
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                  gap: "1.25rem",
+                  justifyContent: "center"
+                }}>
+                  {activePost.gallery.map((imgUrl, index) => (
+                    <div
+                      key={index}
+                      onClick={() => setLightboxIndex(index)}
+                      style={{
+                        borderRadius: 16,
+                        overflow: "hidden",
+                        border: "1px solid #e8f0e8",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.03)",
+                        cursor: "pointer",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        background: "#1a2218",
+                        height: 220,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "scale(1.02)";
+                        e.currentTarget.style.boxShadow = "0 10px 24px rgba(45,106,45,0.08)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.03)";
+                      }}
+                    >
+                      <img
+                        src={imgUrl}
+                        alt={`Story image ${index + 1}`}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Lightbox Modal */}
+                {lightboxIndex !== null && (
+                  <div
+                    onClick={() => setLightboxIndex(null)}
+                    style={{
+                      position: "fixed",
+                      inset: 0,
+                      background: "rgba(0,0,0,0.9)",
+                      zIndex: 350,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "2rem"
+                    }}
+                  >
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setLightboxIndex(null); }}
+                      style={{
+                        position: "absolute",
+                        top: "1.5rem",
+                        right: "1.5rem",
+                        background: "rgba(255,255,255,0.15)",
+                        border: "none",
+                        color: "white",
+                        width: 44,
+                        height: 44,
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1.25rem",
+                      }}
+                      aria-label="Close image lightbox"
+                    >
+                      ✕
+                    </button>
+
+                    <div style={{ position: "relative", maxWidth: "90%", maxHeight: "80vh" }} onClick={(e) => e.stopPropagation()}>
+                      <img
+                        src={activePost.gallery[lightboxIndex]}
+                        alt="Enlarged gallery view"
+                        style={{ maxWidth: "100%", maxHeight: "80vh", objectFit: "contain", borderRadius: 12 }}
+                      />
+                      
+                      {/* Navigation buttons */}
+                      {activePost.gallery.length > 1 && (
+                        <>
+                          <button
+                            onClick={() => setLightboxIndex((prev) => (prev! > 0 ? prev! - 1 : activePost.gallery!.length - 1))}
+                            aria-label="Previous image"
+                            style={{
+                              position: "absolute",
+                              left: "0.75rem",
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              background: "rgba(0,0,0,0.6)",
+                              border: "none",
+                              color: "white",
+                              width: 40,
+                              height: 40,
+                              borderRadius: "50%",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "1.125rem",
+                            }}
+                          >
+                            ‹
+                          </button>
+                          <button
+                            onClick={() => setLightboxIndex((prev) => (prev! < activePost.gallery!.length - 1 ? prev! + 1 : 0))}
+                            aria-label="Next image"
+                            style={{
+                              position: "absolute",
+                              right: "0.75rem",
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              background: "rgba(0,0,0,0.6)",
+                              border: "none",
+                              color: "white",
+                              width: 40,
+                              height: 40,
+                              borderRadius: "50%",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "1.125rem",
+                            }}
+                          >
+                            ›
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           {/* Related Posts Grid (More from ABF) */}
           {relatedPosts.length > 0 && (

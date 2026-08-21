@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 import { ASSETS } from "../components/mockups/_shared";
 
-// ─── STATIC SEED FALLBACK DATA (For offline/network failure ONLY) ───
+// ─── DATA INTERFACES ──────────────────────────────────────────
 
 export interface DbProjectImage {
   id: string;
@@ -40,6 +40,7 @@ export interface DbPost {
   excerpt: string;
   content: string;
   cover_image: string;
+  gallery_images?: string[];
   youtube_url?: string | null;
   published_at: string;
   published: boolean;
@@ -84,7 +85,8 @@ export interface DbStatistic {
   updated_at?: string;
 }
 
-// Static Seed Fallbacks
+// ─── STATIC SEED FALLBACKS (Used ONLY on offline/network failure) ───
+
 export const STATIC_SEED_PROJECTS: DbProject[] = [
   {
     id: "azu-ogbunike-library",
@@ -133,6 +135,7 @@ export const STATIC_SEED_POSTS: DbPost[] = [
     excerpt: "Grace was a quiet junior secondary student who discovered the library. Through access to books, her curiosity grew, leading her to write her own stories.",
     content: "At Akhere Book Foundation, we believe that access to books is not just about reading—it is about intellectual curiosity and expanding horizons. The stories of individual growth that emerge from our community library projects are powerful evidence of this belief.\n\nGrace is a quiet junior secondary student who lives in the local community of Ogbunike. Before the Azu-Ogbunike Community Library was commissioned by ABF, she had very limited access to books beyond her basic school textbooks. The opening of the library provided a new, quiet, supervised space right in her neighborhood.\n\nGrace began visiting the library regularly after school. Page by page, she began exploring different sections, moving from simple children's storybooks to more advanced historical novels and reference books. The librarians noticed her quiet dedication as she spent hours absorbed in reading.\n\nThis consistent access unlocked something new. She began asking questions, discussing ideas, and writing down her thoughts. Eventually, this curiosity turned into creation: Grace started writing her own short, imaginative stories. A library did not just give her a space to read; it gave her a voice to write.",
     cover_image: ASSETS.ig13,
+    gallery_images: [ASSETS.ig13, ASSETS.ig1, ASSETS.ig2],
     published_at: "2025-07-15T10:00:00Z",
     published: true,
     featured: true,
@@ -146,6 +149,7 @@ export const STATIC_SEED_POSTS: DbPost[] = [
     excerpt: "A year after the commissioning of the Azu-Ogbunike Community Library, the space remains in excellent physical condition, clean, and actively used by local students.",
     content: "One year ago, ABF commissioned its first major project: the Azu-Ogbunike Community Library. The goal was simple but ambitious: to build a lasting, functional community study space that would remain active and useful for years to come.\n\nToday, we are proud to report that the library is still fully functional, clean, and regularly used by students from multiple primary and secondary schools in the local government area. The desks are full, the shelves are supervised, and children are actively reading, preparing for WAEC/NECO exams, and doing homework.\n\nA key focus of ABF's operational strategy is optimization on the ground. We work closely with community representatives to ensure that books are well cared for, reference materials remain complete, and the space remains a safe, encouraging environment for all visitors.",
     cover_image: ASSETS.ig12,
+    gallery_images: [ASSETS.ig12, ASSETS.library],
     published_at: "2025-08-01T10:00:00Z",
     published: true,
     featured: false,
@@ -159,6 +163,7 @@ export const STATIC_SEED_POSTS: DbPost[] = [
     excerpt: "Schools must remain safe zones. ABF stands in solidarity with teachers and children affected by attacks on educational institutions.",
     content: "Education is a fundamental right, and schools should be safe sanctuaries for growth, hope, and learning. When educational institutions are attacked, it is not just buildings that are damaged—the future of children and communities is attacked as well.\n\nABF stands in firm solidarity with every child, teacher, and family affected by attacks on schools. We believe that protecting access to learning requires protecting the safety of the spaces where learning happens.\n\nOur advocacy focus remains on raising awareness of school safety, supporting local educational resilience, and ensuring that children have safe, stable pathways to continue their reading and development without fear.",
     cover_image: ASSETS.schoolAttacks1,
+    gallery_images: [ASSETS.schoolAttacks1, ASSETS.schoolAttacks2],
     published_at: "2025-06-10T10:00:00Z",
     published: true,
     featured: false,
@@ -172,6 +177,7 @@ export const STATIC_SEED_POSTS: DbPost[] = [
     excerpt: "As reading habits grow, so does the demand for fresh content. We are seeking donations of children's storybooks and novels to stock our shelves.",
     content: "The success of the Azu-Ogbunike Library has created a wonderful challenge: our regular readers are consuming books faster than ever. Children who once had very little reading experience are now avid readers looking for new adventures and stories.\n\nTo keep this enthusiasm alive, ABF is launching a dedicated book collection effort focused on high-quality storybooks, children's literature, and local fiction. Fresh stories keep children returning to the library and help them continuously build their vocabulary and reading confidence.\n\nIf you have storybooks in good condition that you'd like to donate, please use our book donation modal to let us know. A small collection of books can open new worlds for dozens of children.",
     cover_image: ASSETS.ig7,
+    gallery_images: [ASSETS.ig7, ASSETS.bookDrive],
     published_at: "2025-05-20T10:00:00Z",
     published: true,
     featured: false,
@@ -292,7 +298,6 @@ export function usePublicProjects(): CmsState<DbProject> {
     }
 
     try {
-      // Query projects and their related gallery images
       const { data: rows, error: queryError } = await supabase
         .from("projects")
         .select("*, project_images(*)")
@@ -300,7 +305,7 @@ export function usePublicProjects(): CmsState<DbProject> {
         .order("created_at", { ascending: false });
 
       if (queryError) {
-        // Fallback to basic projects query if project_images table is not yet migrated
+        // Fallback to basic query if project_images relation not present
         const { data: fallbackRows, error: fallbackError } = await supabase
           .from("projects")
           .select("*")
@@ -316,7 +321,6 @@ export function usePublicProjects(): CmsState<DbProject> {
           setIsFallback(false);
         }
       } else {
-        // Successful query! (Even if rows is empty [])
         setData(rows || []);
         setIsFallback(false);
       }
@@ -336,7 +340,35 @@ export function usePublicProjects(): CmsState<DbProject> {
   return { data, loading, error, isFallback, refetch: fetchProjects };
 }
 
-// ─── 2. PUBLIC POSTS HOOK ────────────────────────────────────
+// ─── 2. PUBLIC POSTS HOOK (With Multiple Images Parsing) ─────
+
+// Helper to extract embedded gallery from post content
+export function parsePostGallery(post: DbPost): string[] {
+  if (post.gallery_images && post.gallery_images.length > 0) {
+    return post.gallery_images;
+  }
+  if (!post.content) return [post.cover_image].filter(Boolean);
+
+  const match = post.content.match(/<!-- GALLERY:([\s\S]*?) -->/);
+  if (match && match[1]) {
+    try {
+      const parsed = JSON.parse(match[1]);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    } catch {
+      // ignore parse errors
+    }
+  }
+  return [post.cover_image].filter(Boolean);
+}
+
+// Helper to strip gallery marker from displayed text
+export function stripGalleryMarker(content: string): string {
+  if (!content) return "";
+  return content.replace(/<!-- GALLERY:[\s\S]*? -->/, "").trim();
+}
+
 export function usePublicPosts(categoryFilter?: string): CmsState<DbPost> {
   const [data, setData] = useState<DbPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -384,8 +416,11 @@ export function usePublicPosts(categoryFilter?: string): CmsState<DbPost> {
         setError(new Error(queryError.message));
         setIsFallback(true);
       } else {
-        // Successful query!
-        setData(rows || []);
+        const processedRows: DbPost[] = (rows || []).map((row: DbPost) => ({
+          ...row,
+          gallery_images: parsePostGallery(row),
+        }));
+        setData(processedRows);
         setIsFallback(false);
       }
     } catch (err: any) {
@@ -502,7 +537,7 @@ export function usePublicPartners(): CmsState<DbPartner> {
   return { data, loading, error, isFallback, refetch: fetchPartners };
 }
 
-// ─── 5. PUBLIC STATISTICS HOOK ───────────────────────────────
+// ─── 5. PUBLIC STATISTICS HOOK & SMART MATCHER ───────────────
 export function usePublicStatistics(): CmsState<DbStatistic> {
   const [data, setData] = useState<DbStatistic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -551,15 +586,92 @@ export function usePublicStatistics(): CmsState<DbStatistic> {
 }
 
 /**
+ * Universal matcher for impact statistics.
+ * Matches by primaryKey, aliases (e.g. books_made_available vs books_available), or keyword.
+ */
+export function findMatchingStatistic(
+  stats: DbStatistic[],
+  matchCriteria: {
+    primaryKey: string;
+    aliases?: string[];
+    labelIncludes?: string[];
+  },
+  fallbackLabel: string,
+  fallbackVal: string = "[XX+]",
+  fallbackDesc: string = "(figures to be confirmed)"
+): { label: string; value: string; description: string; isPending: boolean } {
+  if (!stats || stats.length === 0) {
+    return {
+      label: fallbackLabel,
+      value: fallbackVal,
+      description: fallbackDesc,
+      isPending: true,
+    };
+  }
+
+  // 1. Exact match on metric_key
+  let found = stats.find(
+    (s) => s.metric_key && s.metric_key.toLowerCase() === matchCriteria.primaryKey.toLowerCase()
+  );
+
+  // 2. Match on aliases
+  if (!found && matchCriteria.aliases) {
+    found = stats.find(
+      (s) =>
+        s.metric_key &&
+        matchCriteria.aliases!.some(
+          (alias) => s.metric_key.toLowerCase() === alias.toLowerCase()
+        )
+    );
+  }
+
+  // 3. Match on label keyword or metric_key substring
+  if (!found && matchCriteria.labelIncludes) {
+    found = stats.find(
+      (s) =>
+        matchCriteria.labelIncludes!.some((keyword) => {
+          const k = keyword.toLowerCase();
+          return (
+            (s.label && s.label.toLowerCase().includes(k)) ||
+            (s.metric_key && s.metric_key.toLowerCase().includes(k))
+          );
+        })
+    );
+  }
+
+  if (found) {
+    const isPending =
+      found.value.includes("[") ||
+      found.value.toLowerCase().includes("pending") ||
+      found.value.toLowerCase().includes("to be confirmed");
+    return {
+      label: found.label || fallbackLabel,
+      value: found.value,
+      description: found.description || (isPending ? fallbackDesc : ""),
+      isPending,
+    };
+  }
+
+  return {
+    label: fallbackLabel,
+    value: fallbackVal,
+    description: fallbackDesc,
+    isPending: true,
+  };
+}
+
+/**
  * Splits plain text content with blank lines into paragraphs, or preserves existing HTML tags.
  */
 export function formatCmsParagraphs(content: string): string[] {
   if (!content) return [];
+  // Strip gallery marker if present
+  const cleanContent = stripGalleryMarker(content);
   // If content contains standard HTML tags, return as single block for safe rendering
-  if (/<[a-z][\s\S]*>/i.test(content)) {
-    return [content];
+  if (/<[a-z][\s\S]*>/i.test(cleanContent)) {
+    return [cleanContent];
   }
-  return content
+  return cleanContent
     .split(/\n\s*\n/)
     .map((p) => p.trim())
     .filter(Boolean);
