@@ -544,14 +544,41 @@
   .abf-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(26, 34, 24, 0.6);
+    background: rgba(26, 34, 24, 0.65);
     backdrop-filter: blur(4px);
-    z-index: 50;
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 300;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 1rem 0.75rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     animation: fadeIn 0.2s ease;
+  }
+
+  /* Modal card base container */
+  .abf-modal-card {
+    background: white;
+    border-radius: 24px;
+    width: 100%;
+    max-height: min(90vh, calc(100dvh - 2rem));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.25);
+    position: relative;
+    margin: auto;
+  }
+
+  @media (max-width: 640px) {
+    .abf-modal-overlay {
+      padding: 0.75rem 0.5rem;
+    }
+    .abf-modal-card {
+      border-radius: 20px;
+      max-height: min(92vh, calc(100dvh - 1.5rem));
+    }
   }
 
   /* Animated entrance */
@@ -560,7 +587,7 @@
     to { opacity: 1; }
   }
   @keyframes slideUp {
-    from { transform: translateY(24px); opacity: 0; }
+    from { transform: translateY(16px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
   @keyframes slideDown {
@@ -569,7 +596,7 @@
   }
 
   .abf-animate-slide-up {
-    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .abf-animate-slide-down {
     animation: slideDown 0.25s ease;
@@ -1002,5 +1029,16 @@
     padding: 1.5rem 1rem !important;
   }
 }
+
+/* ─── ADMIN DASHBOARD RESPONSIVE ───────────────────────── */
+@media (max-width: 768px) {
+  .admin-desktop-sidebar {
+    display: none !important;
+  }
+  .mobile-admin-menu-btn {
+    display: flex !important;
+  }
+}
+
 
 

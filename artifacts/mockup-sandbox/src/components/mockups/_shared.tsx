@@ -335,12 +335,13 @@ export function DonateMoneyModal({ onClose }: { onClose: () => void }) {
           borderRadius: 24,
           width: "100%",
           maxWidth: 540,
-          maxHeight: "90vh",
+          maxHeight: "min(90vh, calc(100dvh - 2rem))",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
           boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
           position: "relative",
+          margin: "auto",
         }}
       >
         {/* Fixed Header */}
@@ -788,12 +789,13 @@ export function DonateBookModal({ onClose }: { onClose: () => void }) {
           borderRadius: 24,
           width: "100%",
           maxWidth: 540,
-          maxHeight: "90vh",
+          maxHeight: "min(90vh, calc(100dvh - 2rem))",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
           boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
           position: "relative",
+          margin: "auto",
         }}
       >
         {/* Fixed Header */}
@@ -1527,12 +1529,13 @@ export function PartnerWithABFModal({ onClose }: { onClose: () => void }) {
           borderRadius: 24,
           width: "100%",
           maxWidth: 540,
-          maxHeight: "90vh",
+          maxHeight: "min(90vh, calc(100dvh - 2rem))",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
           boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
           position: "relative",
+          margin: "auto",
         }}
       >
         {/* Fixed Header */}
@@ -1959,12 +1962,13 @@ export function VolunteerModal({ onClose }: { onClose: () => void }) {
           borderRadius: 24,
           width: "100%",
           maxWidth: 580,
-          maxHeight: "90vh",
+          maxHeight: "min(90vh, calc(100dvh - 2rem))",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
           boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
           position: "relative",
+          margin: "auto",
         }}
       >
         {/* Fixed Header */}

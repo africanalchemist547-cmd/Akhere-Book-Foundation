@@ -11,6 +11,7 @@ import {
   Footer,
   BASE
 } from "./_shared";
+import { usePublicPosts, DbPost } from "../../hooks/useCmsData";
 
 // ─── TYPES & INTERFACES ──────────────────────────────────────
 interface Post {
@@ -22,109 +23,13 @@ interface Post {
   contentHtml: string;
   coverImage: string;
   additionalImages?: string[];
-  youtubeVideoId?: string; // YouTube embed ready
+  youtubeVideoId?: string;
   date: string;
   projectId?: string;
   projectTitle?: string;
   author: string;
   featured: boolean;
 }
-
-// ─── POSTS MOCK DATA ─────────────────────────────────────────
-const POSTS_DATA: Post[] = [
-  {
-    id: "grace-story",
-    title: "Sometimes Impact Begins Quietly: A Child, A Book, A New Possibility",
-    slug: "a-child-a-book-a-new-possibility",
-    category: "NEWS & IMPACT",
-    excerpt: "Grace was a quiet junior secondary student who discovered the library. Through access to books, her curiosity grew, leading her to write her own stories.",
-    contentHtml: `
-      <p>At Akhere Book Foundation, we believe that access to books is not just about reading—it is about intellectual curiosity and expanding horizons. The stories of individual growth that emerge from our community library projects are powerful evidence of this belief.</p>
-      <blockquote>"We may never know which child will become the next great writer, teacher, scientist or leader. But we can help make sure they have the opportunity to learn."</blockquote>
-      <p>Grace is a quiet junior secondary student who lives in the local community of Ogbunike. Before the Azu-Ogbunike Community Library was commissioned by ABF, she had very limited access to books beyond her basic school textbooks. The opening of the library provided a new, quiet, supervised space right in her neighborhood.</p>
-      <p>Grace began visiting the library regularly after school. Page by page, she began exploring different sections, moving from simple children's storybooks to more advanced historical novels and reference books. The librarians noticed her quiet dedication as she spent hours absorbed in reading.</p>
-      <p>This consistent access unlocked something new. She began asking questions, discussing ideas, and writing down her thoughts. Eventually, this curiosity turned into creation: Grace started writing her own short, imaginative stories. A library did not just give her a space to read; it gave her a voice to write.</p>
-      <div class="abf-highlight-box" style="background: #f0f7f0; padding: 1.5rem 1.75rem; border-left: 4px solid #2d6a2d; border-radius: 12px; margin: 2rem 0;">
-        <h4 style="margin: 0 0 0.5rem; color: #2d6a2d; font-weight: 800; font-size: 1.0625rem;">The Power of Quiet Impact</h4>
-        <p style="margin: 0; font-size: 0.9375rem; color: #4a5a44; line-height: 1.6;">Sometimes the most lasting changes don't happen with loud announcements. They happen quietly at a study desk, where a child discovers a new word, a new idea, and a new possibility.</p>
-      </div>
-    `,
-    coverImage: ASSETS.ig13,
-    date: "July 2025",
-    projectId: "azu-ogbunike-community-library",
-    projectTitle: "Azu-Ogbunike Community Library",
-    author: "Akhere Book Foundation",
-    featured: true,
-  },
-  {
-    id: "library-one-year-later",
-    title: "One Year Later: The Library Is Still Growing",
-    slug: "one-year-later",
-    category: "PROJECTS",
-    excerpt: "A year after the commissioning of the Azu-Ogbunike Community Library, the space remains in excellent physical condition, clean, and actively used by local students.",
-    contentHtml: `
-      <p>One year ago, ABF commissioned its first major project: the Azu-Ogbunike Community Library. The goal was simple but ambitious: to build a lasting, functional community study space that would remain active and useful for years to come.</p>
-      <p>Today, we are proud to report that the library is still fully functional, clean, and regularly used by students from multiple primary and secondary schools in the local government area. The desks are full, the shelves are supervised, and children are actively reading, preparing for WAEC/NECO exams, and doing homework.</p>
-      <p>A key focus of ABF's operational strategy is optimization on the ground. We work closely with community representatives to ensure that books are well cared for, reference materials remain complete, and the space remains a safe, encouraging environment for all visitors.</p>
-    `,
-    coverImage: ASSETS.ig12,
-    date: "August 2025",
-    projectId: "azu-ogbunike-community-library",
-    projectTitle: "Azu-Ogbunike Community Library",
-    author: "Akhere Book Foundation",
-    featured: false,
-  },
-  {
-    id: "when-schools-are-attacked-post",
-    title: "When Schools Are Attacked, The Future Is Attacked Too",
-    slug: "when-schools-are-attacked",
-    category: "NEWS & IMPACT",
-    excerpt: "Schools must remain safe zones. ABF stands in solidarity with teachers and children affected by attacks on educational institutions.",
-    contentHtml: `
-      <p>Education is a fundamental right, and schools should be safe sanctuaries for growth, hope, and learning. When educational institutions are attacked, it is not just buildings that are damaged—the future of children and communities is attacked as well.</p>
-      <p>ABF stands in firm solidarity with every child, teacher, and family affected by attacks on schools. We believe that protecting access to learning requires protecting the safety of the spaces where learning happens.</p>
-      <p>Our advocacy focus remains on raising awareness of school safety, supporting local educational resilience, and ensuring that children have safe, stable pathways to continue their reading and development without fear.</p>
-    `,
-    coverImage: ASSETS.schoolAttacks1,
-    date: "June 2025",
-    author: "Akhere Book Foundation",
-    featured: false,
-  },
-  {
-    id: "we-need-story-books-post",
-    title: "We Need Story Books: Expanding Our Collections",
-    slug: "we-need-story-books",
-    category: "NEWS & IMPACT",
-    excerpt: "As reading habits grow, so does the demand for fresh content. We are seeking donations of children's storybooks and novels to stock our shelves.",
-    contentHtml: `
-      <p>The success of the Azu-Ogbunike Library has created a wonderful challenge: our regular readers are consuming books faster than ever. Children who once had very little reading experience are now avid readers looking for new adventures and stories.</p>
-      <p>To keep this enthusiasm alive, ABF is launching a dedicated book collection effort focused on high-quality storybooks, children's literature, and local fiction. Fresh stories keep children returning to the library and help them continuously build their vocabulary and reading confidence.</p>
-      <p>If you have storybooks in good condition that you'd like to donate, please use our book donation modal to let us know. A small collection of books can open new worlds for dozens of children.</p>
-    `,
-    coverImage: ASSETS.ig7,
-    date: "May 2025",
-    projectId: "azu-ogbunike-community-library",
-    projectTitle: "Azu-Ogbunike Community Library",
-    author: "Akhere Book Foundation",
-    featured: false,
-  },
-  {
-    id: "celebrating-people-post",
-    title: "Celebrating the People Behind ABF",
-    slug: "celebrating-the-people",
-    category: "NEWS & IMPACT",
-    excerpt: "ABF's work is driven by a dedicated group of field organizers, community members, and volunteers who believe in the power of access.",
-    contentHtml: `
-      <p>Behind every desk built, every book sorted, and every library door opened is a team of passionate people who choose to devote their time and skills to this mission.</p>
-      <p>From our field representatives who supervise collections to the community volunteers who keep reading spaces organized, ABF relies on a network of people who share the belief that local support, when optimized, can create significant change.</p>
-      <p>We extend our deepest gratitude to everyone who makes this work happen on the ground. Your efforts ensure that books aren't just sitting on shelves, but are actively helping children learn and grow.</p>
-    `,
-    coverImage: ASSETS.ig15,
-    date: "April 2025",
-    author: "Akhere Book Foundation",
-    featured: false,
-  }
-];
 
 // ─── ROUTING HELPER ──────────────────────────────────────────
 function parsePostSlug(): string | null {
@@ -146,6 +51,36 @@ export default function ABFLatest() {
 
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<"ALL" | "PROJECTS" | "EVENTS" | "NEWS & IMPACT">("ALL");
+
+  // Query live Supabase CMS posts (published = true enforced)
+  const { data: dbPosts, loading: postsLoading } = usePublicPosts();
+
+  const mappedPosts: Post[] = dbPosts.map((p) => {
+    let cat: "PROJECTS" | "EVENTS" | "NEWS & IMPACT" = "NEWS & IMPACT";
+    if (p.category === "projects") cat = "PROJECTS";
+    if (p.category === "events") cat = "EVENTS";
+
+    let dateStr = "";
+    try {
+      const d = new Date(p.published_at);
+      dateStr = d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    } catch {
+      dateStr = p.published_at || "";
+    }
+
+    return {
+      id: p.id,
+      title: p.title,
+      slug: p.slug,
+      category: cat,
+      excerpt: p.excerpt,
+      contentHtml: p.content,
+      coverImage: p.cover_image || ASSETS.ig13,
+      date: dateStr,
+      author: p.author || "Akhere Book Foundation",
+      featured: p.featured,
+    };
+  });
 
   // Sync state on load and popstates
   useEffect(() => {
@@ -188,7 +123,7 @@ export default function ABFLatest() {
   };
 
   // Resolve current active post
-  const activePost = POSTS_DATA.find((p) => p.slug === activeSlug);
+  const activePost = mappedPosts.find((p) => p.slug === activeSlug);
 
   useEffect(() => {
     if (activePost) {
@@ -199,17 +134,17 @@ export default function ABFLatest() {
   }, [activePost]);
 
   // Filter posts list
-  const filteredPosts = POSTS_DATA.filter((p) => {
+  const filteredPosts = mappedPosts.filter((p) => {
     // Exclude the featured post from the list view so it's not duplicated on category: ALL
     if (activeCategory === "ALL") return !p.featured;
     return p.category === activeCategory;
   });
 
   // Featured post
-  const featuredPost = POSTS_DATA.find((p) => p.featured);
+  const featuredPost = mappedPosts.find((p) => p.featured);
 
   // Related posts (same category or same project, limit 3, exclude active post)
-  const relatedPosts = POSTS_DATA.filter(
+  const relatedPosts = mappedPosts.filter(
     (p) => p.slug !== activeSlug && (p.category === activePost?.category || p.projectId === activePost?.projectId)
   ).slice(0, 3);
 
@@ -692,6 +627,19 @@ export default function ABFLatest() {
                   boxShadow: "0 4px 20px rgba(0,0,0,0.01)"
                 }}>
                   <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🌱</div>
+
+                  {activeCategory === "ALL" && (
+                    <>
+                      <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", marginBottom: "0.5rem" }}>
+                        {postsLoading ? "Loading stories..." : "No stories published yet"}
+                      </h3>
+                      <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.6, margin: 0 }}>
+                        {postsLoading
+                          ? "Please wait while we load foundation updates."
+                          : "Stories published through the Admin CMS will appear here."}
+                      </p>
+                    </>
+                  )}
                   
                   {activeCategory === "PROJECTS" && (
                     <>

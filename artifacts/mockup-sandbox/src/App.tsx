@@ -5,6 +5,8 @@ import ABFProjects from "./components/mockups/ABFProjects";
 import ABFLatest from "./components/mockups/ABFLatest";
 import ABFTeam from "./components/mockups/ABFTeam";
 import ABFGetInvolved from "./components/mockups/ABFGetInvolved";
+import { AdminAuthProvider } from "./components/admin/AdminAuthContext";
+import AdminLayout from "./components/admin/AdminLayout";
 
 // Production client-side router for the Akhere Book Foundation website.
 // Workflow: Antigravity → GitHub → Netlify
@@ -16,6 +18,7 @@ import ABFGetInvolved from "./components/mockups/ABFGetInvolved";
 //   /latest-from-abf   → Latest from ABF
 //   /meet-the-team     → Meet the Team
 //   /get-involved      → Get Involved / Volunteer
+//   /admin             → Unified Admin Dashboard & CMS
 //
 // SPA fallback: Netlify serves index.html for all paths (netlify.toml [[redirects]])
 // so hard refreshes and direct URL access work on all routes.
@@ -41,6 +44,17 @@ function App() {
   }, []);
 
   const path = currentPath.toLowerCase().replace(/\/+$/, "") || "/";
+
+  // Admin routes
+  if (path.startsWith("/admin")) {
+    const sub = path.replace(/^\/admin\/?/, "");
+    const initialTab = sub || "overview";
+    return (
+      <AdminAuthProvider>
+        <AdminLayout initialTab={initialTab} />
+      </AdminAuthProvider>
+    );
+  }
 
   if (path === "/") return <ABFHomepage />;
   if (path.startsWith("/about")) return <ABFAboutUs />;

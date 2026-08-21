@@ -12,6 +12,7 @@ import {
   BASE,
   VolunteerModal
 } from "./_shared";
+import { usePublicProjects, DbProject } from "../../hooks/useCmsData";
 
 // ─── DATA SYSTEM / INTERFACES ────────────────────────────────
 interface Project {
@@ -24,7 +25,7 @@ interface Project {
   location: string;
   coverImage: string;
   gallery: string[];
-  youtubeVideoId?: string; // e.g. "dQw4w9WgXcQ" for YouTube embed
+  youtubeVideoId?: string;
   impactStats?: Array<{ label: string; value: string; labelSuffix?: string }>;
   whoItServes: string[];
   whatWeBuiltHtml: string;
@@ -42,77 +43,6 @@ interface Project {
     image: string;
   }>;
 }
-
-// ─── PROJECTS LIST MOCK ──────────────────────────────────────
-const PROJECTS_DATA: Project[] = [
-  {
-    id: "azu-ogbunike-library",
-    title: "Azu-Ogbunike Community Library",
-    slug: "azu-ogbunike-community-library",
-    status: "FINISHED",
-    statusText: "Completed project",
-    shortDescription: "A community library created to give children, students and community members greater access to books, learning resources and a place to read, research and study.",
-    location: "Ogbunike, Anambra State",
-    coverImage: ASSETS.library,
-    gallery: [ASSETS.library, ASSETS.ig12, ASSETS.ig15],
-    youtubeVideoId: undefined, // ABF TO PROVIDE
-    impactStats: [
-      { label: "Schools & Communities Reached", value: "[XX]", labelSuffix: "ABF TO PROVIDE VERIFIED FIGURES" },
-      { label: "Estimated Users Reached", value: "[XX]", labelSuffix: "ABF TO PROVIDE VERIFIED FIGURES" },
-      { label: "Books & Resources Available", value: "[XX]", labelSuffix: "ABF TO PROVIDE VERIFIED FIGURES" },
-      { label: "Weekly/Monthly Usage Hours", value: "[XX]", labelSuffix: "ABF TO PROVIDE VERIFIED FIGURES" },
-      { label: "WAEC/NECO Preparations", value: "[XX]", labelSuffix: "ABF TO PROVIDE VERIFIED FIGURES" },
-      { label: "Adult Literacy Users", value: "[XX]", labelSuffix: "ABF TO PROVIDE VERIFIED FIGURES" },
-    ],
-    whoItServes: [
-      "Students from multiple primary and secondary schools in the area",
-      "Children looking for storybooks, educational reading and creative inspiration",
-      "Adults in the local government area seeking reference and research materials",
-      "Candidates preparing for school exams and national public examinations (WAEC/NECO)",
-      "Community members completing homework, self-study, and literacy exercises"
-    ],
-    whatWeBuiltHtml: `
-      <p>ABF commissioned and completed the Azu-Ogbunike Community Library to serve as a functional, clean, and inspiring hub for study and literacy. The project transformed a local space into a structured environment filled with books, homework desks, research tables, and reference materials.</p>
-      <p>ABF ensures the library remains in excellent physical condition and is actively stocked with diverse reading books, textbooks, dictionaries, and novels. Field representatives verify that the space continues to be supervised, accessible, and functional for daily readers.</p>
-    `,
-    whyItMattersHtml: `
-      <p>Access to structured learning resources is a critical bridge to opportunity. Many children grow up in homes without textbooks or leisure reading materials, and attend schools without functional libraries. A community library solves this by placing books directly in their hands and providing a quiet, safe space to study.</p>
-      <p>By creating a community space, ABF helps children discover subjects, ideas, stories, and educational paths that they might otherwise never encounter. This access fosters self-learning, builds confidence, and supports academic performance in local schools.</p>
-    `,
-    humanImpactStory: {
-      title: "One Child. One Library. A New Possibility.",
-      paragraphs: [
-        "Grace was a quiet junior secondary student who began visiting the Azu-Ogbunike Community Library shortly after it opened.",
-        "Having a designated study desk and a library full of books made a quiet but profound difference. Step by step, Grace grew increasingly interested in reading, exploring shelves and spending hours diving into new stories.",
-        "Through this consistent access, she began developing new vocabulary, encountering new ideas, and exploring writing. Inspired by the books she read, Grace eventually found the confidence to start writing her own creative stories.",
-      ],
-      quote: "Sometimes impact begins quietly."
-    },
-    relatedPosts: [
-      {
-        title: "One Year Later: The Library Is Still Growing",
-        slug: "/latest/one-year-later",
-        category: "PROJECT / IMPACT",
-        categoryColor: "#2d6a2d",
-        image: ASSETS.ig12,
-      },
-      {
-        title: "We Need Story Books for Anambra Readers",
-        slug: "/latest/we-need-story-books",
-        category: "BOOK DRIVE",
-        categoryColor: "#8dc63f",
-        image: ASSETS.ig7,
-      },
-      {
-        title: "Celebrating the People Behind ABF",
-        slug: "/latest/celebrating-the-people",
-        category: "COMMUNITY",
-        categoryColor: "#f5a623",
-        image: ASSETS.ig15,
-      }
-    ]
-  }
-];
 
 // ─── HELPER FOR ROUTING ──────────────────────────────────────
 function parseSlug(): string | null {
@@ -136,6 +66,40 @@ export default function ABFProjects() {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<"ALL" | "PENDING" | "IN PROGRESS" | "FINISHED">("ALL");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Query live Supabase CMS data (with strict fallback logic)
+  const { data: dbProjects, loading: projectsLoading } = usePublicProjects();
+
+  const mappedProjects: Project[] = dbProjects.map((p) => ({
+    id: p.id,
+    title: p.title,
+    slug: p.slug,
+    status: (p.status === "finished" ? "FINISHED" : p.status === "in_progress" ? "IN PROGRESS" : "PENDING") as any,
+    statusText: p.status === "finished" ? "Completed project" : p.status === "in_progress" ? "In Progress" : "Planned",
+    shortDescription: p.short_description,
+    location: p.location,
+    coverImage: p.cover_image || ASSETS.library,
+    gallery: [p.cover_image || ASSETS.library, ASSETS.ig12, ASSETS.ig15],
+    youtubeVideoId: p.youtube_url ? p.youtube_url.replace(/.*(v=|\/)/, "") : undefined,
+    whoItServes: [
+      "Students from multiple primary and secondary schools in the area",
+      "Children looking for storybooks, educational reading and creative inspiration",
+      "Adults in the local government area seeking reference and research materials",
+      "Candidates preparing for school exams and national public examinations (WAEC/NECO)",
+      "Community members completing homework, self-study, and literacy exercises"
+    ],
+    whatWeBuiltHtml: p.full_description || `<p>${p.short_description}</p>`,
+    whyItMattersHtml: `<p>Access to structured learning resources is a critical bridge to opportunity. Many children grow up in homes without textbooks or leisure reading materials, and attend schools without functional libraries. A community library solves this by placing books directly in their hands and providing a quiet, safe space to study.</p>`,
+    humanImpactStory: {
+      title: "One Child. One Library. A New Possibility.",
+      paragraphs: [
+        "Grace was a quiet junior secondary student who began visiting the library shortly after it opened.",
+        "Having a designated study desk and a library full of books made a quiet but profound difference.",
+        "Through this consistent access, she began developing new vocabulary, encountering new ideas, and exploring writing."
+      ],
+      quote: "Sometimes impact begins quietly."
+    }
+  }));
 
   // Sync state on mount and URL popstates (back/forward browser buttons)
   useEffect(() => {
@@ -175,7 +139,9 @@ export default function ABFProjects() {
   };
 
   // Find the selected project
-  const selectedProject = PROJECTS_DATA.find((p) => p.slug === activeSlug);
+  const selectedProject = activeSlug
+    ? mappedProjects.find((p) => p.slug === activeSlug || p.id === activeSlug)
+    : null;
 
   useEffect(() => {
     if (selectedProject) {
@@ -186,7 +152,7 @@ export default function ABFProjects() {
   }, [selectedProject]);
 
   // Filter project cards
-  const filteredProjects = PROJECTS_DATA.filter((p) => {
+  const filteredProjects = mappedProjects.filter((p) => {
     if (activeFilter === "ALL") return true;
     return p.status === activeFilter;
   });
@@ -897,6 +863,19 @@ export default function ABFProjects() {
                   boxShadow: "0 4px 20px rgba(0,0,0,0.01)"
                 }}>
                   <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🌱</div>
+
+                  {activeFilter === "ALL" && (
+                    <>
+                      <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", marginBottom: "0.5rem" }}>
+                        {projectsLoading ? "Loading projects..." : "No Projects Published Yet"}
+                      </h3>
+                      <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.6, margin: 0 }}>
+                        {projectsLoading
+                          ? "Please wait while we load our community initiatives."
+                          : "Projects created and published in the Admin CMS will appear here."}
+                      </p>
+                    </>
+                  )}
                   
                   {activeFilter === "PENDING" && (
                     <>

@@ -9,9 +9,9 @@ import {
   Header,
   Footer,
   BASE,
-  TEAM_MEMBERS,
   SharedTeamMember
 } from "./_shared";
+import { usePublicTeam, DbTeamMember } from "../../hooks/useCmsData";
 
 // ─── ROUTING HELPER ──────────────────────────────────────────
 function parseMemberSlug(): string | null {
@@ -32,6 +32,19 @@ export default function ABFTeam() {
   const [donateBookOpen, setDonateBookOpen] = useState(false);
 
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+
+  // Query live Supabase CMS team members
+  const { data: dbTeam, loading: teamLoading } = usePublicTeam();
+
+  const mappedTeam: SharedTeamMember[] = dbTeam.map((m) => ({
+    id: m.id,
+    name: m.name,
+    slug: m.slug,
+    role: m.role,
+    description: m.short_bio,
+    fullStory: m.full_story || m.short_bio,
+    image: m.image_url || ASSETS.tosinAina,
+  }));
 
   useEffect(() => {
     document.title = "Meet the Team | Akhere Book Foundation";
@@ -71,7 +84,7 @@ export default function ABFTeam() {
     setActiveSlug(null);
   };
 
-  const selectedMember = TEAM_MEMBERS.find((m) => m.slug === activeSlug);
+  const selectedMember = mappedTeam.find((m) => m.slug === activeSlug);
 
   return (
     <div style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', system-ui, sans-serif", minHeight: "100vh", background: "#fafaf7" }}>
@@ -158,62 +171,84 @@ export default function ABFTeam() {
         {/* Team Grid */}
         <section style={{ padding: "0 1.5rem 6rem", background: "white" }}>
           <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(290px, 360px))",
-              gap: "2.5rem 2rem",
-              justifyContent: "center"
-            }}>
-              {TEAM_MEMBERS.map((member) => (
-                <div
-                  key={member.id}
-                  className="abf-content-card"
-                  onClick={() => handleOpenProfile(member.slug)}
-                  style={{ cursor: "pointer" }}
-                >
-                  {/* Photo */}
-                  <div style={{ position: "relative", height: 320, overflow: "hidden" }}>
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
-                    />
-                    <div style={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      height: "50%",
-                      background: "linear-gradient(to top, rgba(26,34,24,0.6), transparent)",
-                    }} />
-                    <div style={{ position: "absolute", bottom: "1.25rem", left: "1.25rem" }}>
-                      <CategoryBadge label={member.role} color="#8dc63f" />
+            {mappedTeam.length > 0 ? (
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(290px, 360px))",
+                gap: "2.5rem 2rem",
+                justifyContent: "center"
+              }}>
+                {mappedTeam.map((member) => (
+                  <div
+                    key={member.id}
+                    className="abf-content-card"
+                    onClick={() => handleOpenProfile(member.slug)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {/* Photo */}
+                    <div style={{ position: "relative", height: 320, overflow: "hidden" }}>
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+                      />
+                      <div style={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: "50%",
+                        background: "linear-gradient(to top, rgba(26,34,24,0.6), transparent)",
+                      }} />
+                      <div style={{ position: "absolute", bottom: "1.25rem", left: "1.25rem" }}>
+                        <CategoryBadge label={member.role} color="#8dc63f" />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Info */}
-                  <div style={{ padding: "1.75rem" }}>
-                    <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", marginBottom: "0.5rem" }}>
-                      {member.name}
-                    </h3>
-                    <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.65, margin: "0 0 1.5rem" }}>
-                      {member.description}
-                    </p>
-                    
-                    <div style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.375rem",
-                      color: "#2d6a2d",
-                      fontWeight: 700,
-                      fontSize: "0.9375rem"
-                    }}>
-                      Meet {member.name.split(" ")[0]} <Icon.ArrowRight />
+                    {/* Info */}
+                    <div style={{ padding: "1.75rem" }}>
+                      <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", marginBottom: "0.5rem" }}>
+                        {member.name}
+                      </h3>
+                      <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.65, margin: "0 0 1.5rem" }}>
+                        {member.description}
+                      </p>
+                      
+                      <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.375rem",
+                        color: "#2d6a2d",
+                        fontWeight: 700,
+                        fontSize: "0.9375rem"
+                      }}>
+                        Meet {member.name.split(" ")[0]} <Icon.ArrowRight />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{
+                maxWidth: 540,
+                margin: "0 auto",
+                textAlign: "center",
+                padding: "4rem 2rem",
+                background: "#fdfdfa",
+                borderRadius: 24,
+                border: "1px solid #e8f0e8",
+              }}>
+                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🧑‍🤝‍🧑</div>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", marginBottom: "0.5rem" }}>
+                  {teamLoading ? "Loading team profiles..." : "No Team Profiles Published"}
+                </h3>
+                <p style={{ fontSize: "0.9375rem", color: "#6a7a64", lineHeight: 1.6, margin: 0 }}>
+                  {teamLoading
+                    ? "Please wait while we load our foundation team."
+                    : "Profiles published through the Admin CMS will appear here."}
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
@@ -310,7 +345,7 @@ export default function ABFTeam() {
 
       {/* Expanded Profile Dialog Modal */}
       {selectedMember && (
-        <div className="abf-modal-overlay" onClick={handleCloseModal} style={{ zIndex: 250 }}>
+        <div className="abf-modal-overlay" onClick={handleCloseModal}>
           <div
             className="abf-animate-slide-up"
             onClick={(e) => e.stopPropagation()}
@@ -319,12 +354,13 @@ export default function ABFTeam() {
               borderRadius: 24,
               width: "100%",
               maxWidth: 680,
-              maxHeight: "90vh",
+              maxHeight: "min(90vh, calc(100dvh - 2rem))",
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",
               boxShadow: "0 32px 80px rgba(0,0,0,0.25)",
               border: "1px solid #dde8dd",
+              margin: "auto",
             }}
           >
             {/* Modal Header */}

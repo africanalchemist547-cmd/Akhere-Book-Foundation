@@ -22,6 +22,7 @@ import {
   PartnerWithABFModal,
   VolunteerModal
 } from "./_shared";
+import { usePublicPosts, usePublicTeam, usePublicPartners } from "../../hooks/useCmsData";
 
 // â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface LatestCard {
@@ -477,12 +478,20 @@ function LatestCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
 
+  const { data: dbPosts, loading: postsLoading } = usePublicPosts();
+
+  const latestCards = dbPosts.map((p, idx) => ({
+    id: idx + 1,
+    category: p.category === "projects" ? "PROJECT" : p.category === "events" ? "EVENT" : "NEWS & IMPACT",
+    categoryColor: p.category === "projects" ? "#2d6a2d" : p.category === "events" ? "#f5a623" : "#8dc63f",
+    title: p.title,
+    excerpt: p.excerpt,
+    image: p.cover_image || ASSETS.ig13,
+    slug: `/latest-from-abf/${p.slug}`,
+  }));
+
   const getPostUrl = (slug: string) => {
-    const postSlug = slug.replace(/^\/latest\//, "");
-    if (postSlug === "azu-ogbunike-community-library") {
-      return `/projects/${postSlug}`;
-    }
-    return `/latest-from-abf/${postSlug}`;
+    return slug;
   };
 
   const scroll = useCallback((dir: "left" | "right") => {
@@ -536,72 +545,82 @@ function LatestCarousel() {
         </div>
 
         {/* Scroll container */}
-        <div
-          ref={scrollRef}
-          className="abf-carousel hide-scrollbar"
-          style={{
-            display: "flex",
-            gap: "1.25rem",
-            overflowX: "auto",
-            paddingBottom: "1rem",
-            cursor: "grab",
-            scrollSnapType: "x mandatory",
-          }}
-        >
-          {LATEST_CARDS.map((card) => (
-            <a
-              key={card.id}
-              href={getPostUrl(card.slug)}
-              style={{ textDecoration: "none", scrollSnapAlign: "start" }}
-            >
-              <div
-                className="abf-content-card"
-                style={{ width: 300, flexShrink: 0 }}
-              >
-                {/* Image */}
-                <div style={{ position: "relative", height: 200, overflow: "hidden" }}>
-                  <img
-                    src={card.image}
-                    alt={card.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.4s ease" }}
-                    loading="lazy"
-                  />
-                </div>
-
-                {/* Content */}
-                <div style={{ padding: "1.25rem" }}>
-                  <CategoryBadge label={card.category} color={card.categoryColor} />
-                  <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a2218", margin: "0.75rem 0 0.5rem", lineHeight: 1.35 }}>
-                    {card.title}
-                  </h3>
-                  <p style={{ fontSize: "0.875rem", color: "#6a7a64", lineHeight: 1.6, margin: "0 0 1rem" }}>
-                    {card.excerpt}
-                  </p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", color: "#2d6a2d", fontWeight: 700, fontSize: "0.875rem" }}>
-                    Read more <Icon.ArrowRight />
-                  </div>
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-
-        {/* Dot indicators */}
-        <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", marginTop: "1.5rem" }}>
-          {LATEST_CARDS.map((_, i) => (
-            <button
-              key={i}
-              className={`abf-dot${i === activeIdx ? " active" : ""}`}
-              onClick={() => {
-                const el = scrollRef.current;
-                if (!el) return;
-                const cardW = el.firstElementChild?.clientWidth ?? 320;
-                el.scrollTo({ left: i * (cardW + 20), behavior: "smooth" });
+        {latestCards.length > 0 ? (
+          <>
+            <div
+              ref={scrollRef}
+              className="abf-carousel hide-scrollbar"
+              style={{
+                display: "flex",
+                gap: "1.25rem",
+                overflowX: "auto",
+                paddingBottom: "1rem",
+                cursor: "grab",
+                scrollSnapType: "x mandatory",
               }}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
-        </div>
+            >
+              {latestCards.map((card) => (
+                <a
+                  key={card.id}
+                  href={getPostUrl(card.slug)}
+                  style={{ textDecoration: "none", scrollSnapAlign: "start" }}
+                >
+                  <div
+                    className="abf-content-card"
+                    style={{ width: 300, flexShrink: 0 }}
+                  >
+                    {/* Image */}
+                    <div style={{ position: "relative", height: 200, overflow: "hidden" }}>
+                      <img
+                        src={card.image}
+                        alt={card.title}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.4s ease" }}
+                        loading="lazy"
+                      />
+                    </div>
+
+                    {/* Content */}
+                    <div style={{ padding: "1.25rem" }}>
+                      <CategoryBadge label={card.category} color={card.categoryColor} />
+                      <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a2218", margin: "0.75rem 0 0.5rem", lineHeight: 1.35 }}>
+                        {card.title}
+                      </h3>
+                      <p style={{ fontSize: "0.875rem", color: "#6a7a64", lineHeight: 1.6, margin: "0 0 1rem" }}>
+                        {card.excerpt}
+                      </p>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", color: "#2d6a2d", fontWeight: 700, fontSize: "0.875rem" }}>
+                        Read more <Icon.ArrowRight />
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+
+            {/* Dot indicators */}
+            <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", marginTop: "1.5rem" }}>
+              {latestCards.map((_, i) => (
+                <button
+                  key={i}
+                  className={`abf-dot${i === activeIdx ? " active" : ""}`}
+                  onClick={() => {
+                    const el = scrollRef.current;
+                    if (!el) return;
+                    const cardW = el.firstElementChild?.clientWidth ?? 320;
+                    el.scrollTo({ left: i * (cardW + 20), behavior: "smooth" });
+                  }}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div style={{ textAlign: "center", padding: "3rem", background: "white", borderRadius: 16, border: "1px solid #e8f0e8" }}>
+            <p style={{ color: "#6a7a64", margin: 0 }}>
+              {postsLoading ? "Loading stories..." : "No stories published yet."}
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -612,6 +631,15 @@ function LatestCarousel() {
 function TeamTeaser() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
+
+  const { data: dbTeam, loading: teamLoading } = usePublicTeam();
+
+  const teamList = dbTeam.map((m, idx) => ({
+    id: idx + 1,
+    name: m.name,
+    description: m.short_bio,
+    image: m.image_url || ASSETS.tosinAina,
+  }));
 
   const scroll = useCallback((dir: "left" | "right") => {
     const el = scrollRef.current;
@@ -631,7 +659,7 @@ function TeamTeaser() {
     return () => el.removeEventListener("scroll", handler);
   }, []);
 
-  const TeamCard = ({ member }: { member: typeof TEAM_MEMBERS[number] }) => (
+  const TeamCard = ({ member }: { member: { id: number; name: string; description: string; image: string } }) => (
     <div className="abf-team-card" style={{ display: "flex", flexDirection: "column" }}>
       {/* Photo */}
       <div style={{ position: "relative", height: 280, overflow: "hidden" }}>
@@ -672,86 +700,94 @@ function TeamTeaser() {
           </h2>
         </div>
 
-        {/* Desktop grid — hidden on mobile via CSS */}
-        <div
-          className="abf-team-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 360px))",
-            gap: "1.5rem",
-            justifyContent: "center",
-            marginBottom: "2.5rem",
-          }}
-        >
-          {TEAM_MEMBERS.map((member) => (
-            <TeamCard key={member.id} member={member} />
-          ))}
-        </div>
-
-        {/* Mobile carousel — hidden on desktop via CSS */}
-        <div className="abf-team-carousel-wrap" style={{ display: "none", flexDirection: "column", marginBottom: "1rem" }}>
-          {/* Carousel controls header */}
-          <div
-            className="abf-carousel-controls"
-            style={{
-              display: "none",
-              justifyContent: "flex-end",
-              gap: "0.625rem",
-              marginBottom: "1.25rem",
-            }}
-          >
-            <button
-              onClick={() => scroll("left")}
-              aria-label="Previous person"
-              style={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
+        {teamList.length > 0 ? (
+          <>
+            {/* Desktop grid — hidden on mobile via CSS */}
+            <div
+              className="abf-team-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 360px))",
+                gap: "1.5rem",
+                justifyContent: "center",
+                marginBottom: "2.5rem",
+              }}
             >
-              <Icon.ChevronLeft />
-            </button>
-            <button
-              onClick={() => scroll("right")}
-              aria-label="Next person"
-              style={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
-            >
-              <Icon.ChevronRight />
-            </button>
-          </div>
+              {teamList.map((member) => (
+                <TeamCard key={member.id} member={member} />
+              ))}
+            </div>
 
-          {/* Scroll container */}
-          <div
-            ref={scrollRef}
-            className="abf-mobile-carousel-wrap"
-            style={{ gap: "1.25rem" }}
-          >
-            {TEAM_MEMBERS.map((member) => (
+            {/* Mobile carousel — hidden on desktop via CSS */}
+            <div className="abf-team-carousel-wrap" style={{ display: "none", flexDirection: "column", marginBottom: "1rem" }}>
+              {/* Carousel controls header */}
               <div
-                key={member.id}
-                className="abf-mobile-carousel-slide"
-                style={{ width: "calc(85vw - 2rem)", maxWidth: 360, minWidth: 260 }}
-              >
-                <TeamCard member={member} />
-              </div>
-            ))}
-          </div>
-
-          {/* Dot indicators */}
-          <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", marginTop: "1.25rem" }}>
-            {TEAM_MEMBERS.map((_, i) => (
-              <button
-                key={i}
-                className={`abf-dot${i === activeIdx ? " active" : ""}`}
-                onClick={() => {
-                  const el = scrollRef.current;
-                  if (!el) return;
-                  const cardW = el.firstElementChild?.clientWidth ?? 300;
-                  el.scrollTo({ left: i * (cardW + 20), behavior: "smooth" });
+                className="abf-carousel-controls"
+                style={{
+                  display: "none",
+                  justifyContent: "flex-end",
+                  gap: "0.625rem",
+                  marginBottom: "1.25rem",
                 }}
-                aria-label={`Go to person ${i + 1}`}
-              />
-            ))}
-          </div>
-        </div>
+              >
+                <button
+                  onClick={() => scroll("left")}
+                  aria-label="Previous person"
+                  style={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
+                >
+                  <Icon.ChevronLeft />
+                </button>
+                <button
+                  onClick={() => scroll("right")}
+                  aria-label="Next person"
+                  style={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
+                >
+                  <Icon.ChevronRight />
+                </button>
+              </div>
 
-        <div style={{ textAlign: "center" }}>
+              {/* Scroll container */}
+              <div
+                ref={scrollRef}
+                className="abf-mobile-carousel-wrap"
+                style={{ gap: "1.25rem" }}
+              >
+                {teamList.map((member) => (
+                  <div
+                    key={member.id}
+                    className="abf-mobile-carousel-slide"
+                    style={{ width: "calc(85vw - 2rem)", maxWidth: 360, minWidth: 260 }}
+                  >
+                    <TeamCard member={member} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Dot indicators */}
+              <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", marginTop: "1.25rem" }}>
+                {teamList.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`abf-dot${i === activeIdx ? " active" : ""}`}
+                    onClick={() => {
+                      const el = scrollRef.current;
+                      if (!el) return;
+                      const cardW = el.firstElementChild?.clientWidth ?? 300;
+                      el.scrollTo({ left: i * (cardW + 20), behavior: "smooth" });
+                    }}
+                    aria-label={`Go to person ${i + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div style={{ textAlign: "center", padding: "2rem", color: "#6a7a64" }}>
+            {teamLoading ? "Loading team profiles..." : "No team profiles published yet."}
+          </div>
+        )}
+
+        <div style={{ textAlign: "center", marginTop: "2rem" }}>
           <a href="/meet-the-team" style={{ textDecoration: "none" }}>
             <button className="abf-btn-primary">
               Meet the Team <Icon.ArrowRight />
@@ -764,11 +800,23 @@ function TeamTeaser() {
 }
 
 
-// â”€â”€â”€ PARTNERS SECTION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── PARTNERS SECTION ──────────────────────────────────────────
 
 function PartnersSection({ onPartnerOpen }: { onPartnerOpen: () => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
+
+  const { data: dbPartners, loading: partnersLoading } = usePublicPartners();
+
+  const partnersList = dbPartners.map((p, idx) => ({
+    id: idx + 1,
+    name: p.name,
+    description: "Official partner",
+    initials: p.name.slice(0, 3).toUpperCase(),
+    color: "#2d6a2d",
+    logo_url: p.logo_url,
+    website_url: p.website_url,
+  }));
 
   const scroll = useCallback((dir: "left" | "right") => {
     const el = scrollRef.current;
@@ -788,26 +836,34 @@ function PartnersSection({ onPartnerOpen }: { onPartnerOpen: () => void }) {
     return () => el.removeEventListener("scroll", handler);
   }, []);
 
-  const PartnerCard = ({ p }: { p: typeof PARTNERS[number] }) => (
+  const PartnerCard = ({ p }: { p: { id: number; name: string; description: string; initials: string; color: string; logo_url?: string; website_url?: string | null } }) => (
     <div className="abf-partner-card" style={{ minWidth: 0, width: "100%" }}>
-      <div style={{
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        background: p.id === 3 ? "#f0f0f0" : `${p.color}18`,
-        border: `1px solid ${p.color}30`,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontWeight: 800,
-        fontSize: "0.875rem",
-        color: p.id === 3 ? "#aaa" : p.color,
-        flexShrink: 0,
-      }}>
-        {p.initials}
-      </div>
+      {p.logo_url ? (
+        <img
+          src={p.logo_url}
+          alt={p.name}
+          style={{ width: 44, height: 44, borderRadius: 12, objectFit: "contain", border: "1px solid #e8f0e8", padding: 2, flexShrink: 0 }}
+        />
+      ) : (
+        <div style={{
+          width: 44,
+          height: 44,
+          borderRadius: 12,
+          background: `${p.color}18`,
+          border: `1px solid ${p.color}30`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontWeight: 800,
+          fontSize: "0.875rem",
+          color: p.color,
+          flexShrink: 0,
+        }}>
+          {p.initials}
+        </div>
+      )}
       <div>
-        <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: p.id === 3 ? "#aaa" : "#1a2218", whiteSpace: "normal", lineHeight: 1.3 }}>
+        <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#1a2218", whiteSpace: "normal", lineHeight: 1.3 }}>
           {p.name}
         </div>
         <div style={{ fontSize: "0.8125rem", color: "#8a9a84" }}>{p.description}</div>
@@ -828,107 +884,94 @@ function PartnersSection({ onPartnerOpen }: { onPartnerOpen: () => void }) {
           </p>
         </div>
 
-        {/* Desktop flex-wrap grid — hidden on mobile via CSS */}
-        <div
-          className="abf-partners-grid"
-          style={{
-            display: "flex",
-            gap: "1.25rem",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            marginBottom: "2.5rem",
-          }}
-        >
-          {PARTNERS.map((p) => (
-            <div key={p.id} className="abf-partner-card">
-              <div style={{
-                width: 44,
-                height: 44,
-                borderRadius: 12,
-                background: p.id === 3 ? "#f0f0f0" : `${p.color}18`,
-                border: `1px solid ${p.color}30`,
+        {partnersList.length > 0 ? (
+          <>
+            {/* Desktop flex-wrap grid — hidden on mobile via CSS */}
+            <div
+              className="abf-partners-grid"
+              style={{
                 display: "flex",
-                alignItems: "center",
+                gap: "1.25rem",
+                flexWrap: "wrap",
                 justifyContent: "center",
-                fontWeight: 800,
-                fontSize: "0.875rem",
-                color: p.id === 3 ? "#aaa" : p.color,
-                flexShrink: 0,
-              }}>
-                {p.initials}
-              </div>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: p.id === 3 ? "#aaa" : "#1a2218" }}>
-                  {p.name}
+                marginBottom: "2.5rem",
+              }}
+            >
+              {partnersList.map((p) => (
+                <div key={p.id} className="abf-partner-card">
+                  <PartnerCard p={p} />
                 </div>
-                <div style={{ fontSize: "0.8125rem", color: "#8a9a84" }}>{p.description}</div>
+              ))}
+            </div>
+
+            {/* Mobile carousel — hidden on desktop via CSS */}
+            <div className="abf-partners-carousel-wrap" style={{ display: "none", flexDirection: "column", marginBottom: "1.5rem" }}>
+              {/* Controls */}
+              <div
+                className="abf-partners-carousel-controls"
+                style={{
+                  display: "none",
+                  justifyContent: "flex-end",
+                  gap: "0.625rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                <button
+                  onClick={() => scroll("left")}
+                  aria-label="Previous partner"
+                  style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
+                >
+                  <Icon.ChevronLeft />
+                </button>
+                <button
+                  onClick={() => scroll("right")}
+                  aria-label="Next partner"
+                  style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
+                >
+                  <Icon.ChevronRight />
+                </button>
+              </div>
+
+              {/* Scroll container */}
+              <div
+                ref={scrollRef}
+                className="abf-mobile-carousel-wrap"
+                style={{ gap: "1rem" }}
+              >
+                {partnersList.map((p) => (
+                  <div
+                    key={p.id}
+                    className="abf-mobile-carousel-slide"
+                    style={{ width: "calc(85vw - 2rem)", maxWidth: 340, minWidth: 240 }}
+                  >
+                    <PartnerCard p={p} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Dots */}
+              <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", marginTop: "1rem" }}>
+                {partnersList.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`abf-dot${i === activeIdx ? " active" : ""}`}
+                    onClick={() => {
+                      const el = scrollRef.current;
+                      if (!el) return;
+                      const cardW = el.firstElementChild?.clientWidth ?? 280;
+                      el.scrollTo({ left: i * (cardW + 16), behavior: "smooth" });
+                    }}
+                    aria-label={`Go to partner ${i + 1}`}
+                  />
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Mobile carousel — hidden on desktop via CSS */}
-        <div className="abf-partners-carousel-wrap" style={{ display: "none", flexDirection: "column", marginBottom: "1.5rem" }}>
-          {/* Controls */}
-          <div
-            className="abf-partners-carousel-controls"
-            style={{
-              display: "none",
-              justifyContent: "flex-end",
-              gap: "0.625rem",
-              marginBottom: "1rem",
-            }}
-          >
-            <button
-              onClick={() => scroll("left")}
-              aria-label="Previous partner"
-              style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
-            >
-              <Icon.ChevronLeft />
-            </button>
-            <button
-              onClick={() => scroll("right")}
-              aria-label="Next partner"
-              style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid #dde8dd", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#2c3424" }}
-            >
-              <Icon.ChevronRight />
-            </button>
+          </>
+        ) : (
+          <div style={{ textAlign: "center", padding: "2rem", color: "#6a7a64" }}>
+            {partnersLoading ? "Loading partners..." : "No partners published yet."}
           </div>
-
-          {/* Scroll container */}
-          <div
-            ref={scrollRef}
-            className="abf-mobile-carousel-wrap"
-            style={{ gap: "1rem" }}
-          >
-            {PARTNERS.map((p) => (
-              <div
-                key={p.id}
-                className="abf-mobile-carousel-slide"
-                style={{ width: "calc(85vw - 2rem)", maxWidth: 340, minWidth: 240 }}
-              >
-                <PartnerCard p={p} />
-              </div>
-            ))}
-          </div>
-
-          {/* Dots */}
-          <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", marginTop: "1rem" }}>
-            {PARTNERS.map((_, i) => (
-              <button
-                key={i}
-                className={`abf-dot${i === activeIdx ? " active" : ""}`}
-                onClick={() => {
-                  const el = scrollRef.current;
-                  if (!el) return;
-                  const cardW = el.firstElementChild?.clientWidth ?? 280;
-                  el.scrollTo({ left: i * (cardW + 16), behavior: "smooth" });
-                }}
-                aria-label={`Go to partner ${i + 1}`}
-              />
-            ))}
-          </div>
-        </div>
+        )}
 
         <div style={{ textAlign: "center" }}>
           <p style={{ fontSize: "1rem", color: "#4a5a44", marginBottom: "1rem" }}>
