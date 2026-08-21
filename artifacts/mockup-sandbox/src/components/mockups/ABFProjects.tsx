@@ -79,7 +79,9 @@ export default function ABFProjects() {
     shortDescription: p.short_description,
     location: p.location,
     coverImage: p.cover_image || ASSETS.library,
-    gallery: [p.cover_image || ASSETS.library, ASSETS.ig12, ASSETS.ig15],
+    gallery: p.project_images && p.project_images.length > 0
+      ? p.project_images.map((img) => img.image_url)
+      : [p.cover_image || ASSETS.library],
     youtubeVideoId: p.youtube_url ? p.youtube_url.replace(/.*(v=|\/)/, "") : undefined,
     whoItServes: [
       "Students from multiple primary and secondary schools in the area",
@@ -88,7 +90,7 @@ export default function ABFProjects() {
       "Candidates preparing for school exams and national public examinations (WAEC/NECO)",
       "Community members completing homework, self-study, and literacy exercises"
     ],
-    whatWeBuiltHtml: p.full_description || `<p>${p.short_description}</p>`,
+    whatWeBuiltHtml: p.full_description || p.short_description,
     whyItMattersHtml: `<p>Access to structured learning resources is a critical bridge to opportunity. Many children grow up in homes without textbooks or leisure reading materials, and attend schools without functional libraries. A community library solves this by placing books directly in their hands and providing a quiet, safe space to study.</p>`,
     humanImpactStory: {
       title: "One Child. One Library. A New Possibility.",
@@ -270,8 +272,17 @@ export default function ABFProjects() {
                   </h2>
                   <div
                     style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.8, display: "flex", flexDirection: "column", gap: "1rem" }}
-                    dangerouslySetInnerHTML={{ __html: selectedProject.whatWeBuiltHtml }}
-                  />
+                  >
+                    {/<[a-z][\s\S]*>/i.test(selectedProject.whatWeBuiltHtml) ? (
+                      <div dangerouslySetInnerHTML={{ __html: selectedProject.whatWeBuiltHtml }} />
+                    ) : (
+                      selectedProject.whatWeBuiltHtml.split(/\n\s*\n/).map((para, i) => (
+                        <p key={i} style={{ margin: 0, lineHeight: 1.8 }}>
+                          {para}
+                        </p>
+                      ))
+                    )}
+                  </div>
                 </div>
 
               </div>

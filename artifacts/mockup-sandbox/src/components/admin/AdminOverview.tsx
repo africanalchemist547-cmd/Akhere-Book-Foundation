@@ -17,6 +17,7 @@ interface CountsState {
   postsTotal: number;
   teamTotal: number;
   partnersTotal: number;
+  statsTotal: number;
 }
 
 export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: string) => void }) {
@@ -34,6 +35,7 @@ export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: strin
     postsTotal: 0,
     teamTotal: 0,
     partnersTotal: 0,
+    statsTotal: 0,
   });
 
   const [recentSubmissions, setRecentSubmissions] = useState<any[]>([]);
@@ -57,6 +59,7 @@ export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: strin
         { count: postCount },
         { count: teamCount },
         { count: partnerCount },
+        { count: statCount },
       ] = await Promise.all([
         supabase.from("volunteer_submissions").select("*").order("created_at", { ascending: false }),
         supabase.from("donation_inquiries").select("*").order("created_at", { ascending: false }),
@@ -65,6 +68,7 @@ export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: strin
         supabase.from("posts").select("*", { count: "exact", head: true }),
         supabase.from("team_members").select("*", { count: "exact", head: true }),
         supabase.from("partners").select("*", { count: "exact", head: true }),
+        supabase.from("library_statistics").select("*", { count: "exact", head: true }),
       ]);
 
       const volunteers = volData || [];
@@ -90,6 +94,7 @@ export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: strin
         postsTotal: postCount || 0,
         teamTotal: teamCount || 0,
         partnersTotal: partnerCount || 0,
+        statsTotal: statCount || 0,
       });
 
       // Combine and sort recent 10 submissions
@@ -183,7 +188,7 @@ export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: strin
               Volunteer Applications
             </div>
             <div style={{ fontSize: "0.75rem", color: "#8a9a84", marginTop: "0.25rem" }}>
-              Click to inspect applicants →
+              Click to view all applicants →
             </div>
           </div>
 
@@ -288,7 +293,7 @@ export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: strin
         <h2 style={{ fontSize: "1.125rem", fontWeight: 800, color: "#1a2218", marginBottom: "1rem" }}>
           📝 Live Website Content (CMS)
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem" }}>
           <div
             onClick={() => handleNav("cms-projects")}
             style={{ background: "#fdfdfa", border: "1px solid #eef3ee", padding: "1.25rem", borderRadius: 14, cursor: "pointer" }}
@@ -323,6 +328,15 @@ export default function AdminOverview({ onNavigate }: { onNavigate?: (tab: strin
             <div style={{ fontSize: "1.25rem", marginBottom: "0.375rem" }}>🏢</div>
             <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#1a2218" }}>{counts.partnersTotal}</div>
             <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4a5a44" }}>Official Partners</div>
+          </div>
+
+          <div
+            onClick={() => handleNav("cms-statistics")}
+            style={{ background: "#fdfdfa", border: "1px solid #eef3ee", padding: "1.25rem", borderRadius: 14, cursor: "pointer" }}
+          >
+            <div style={{ fontSize: "1.25rem", marginBottom: "0.375rem" }}>📈</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#1a2218" }}>{counts.statsTotal}</div>
+            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#4a5a44" }}>Impact Statistics</div>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { DbPartner } from "../../../hooks/useCmsData";
+import ImageUploadField from "../ImageUploadField";
 
 interface PartnerEditorModalProps {
   partner: DbPartner | null;
@@ -24,7 +25,7 @@ export default function PartnerEditorModal({ partner, onClose, onSaved }: Partne
     setError(null);
 
     if (!name.trim()) {
-      setError("Partner name is required.");
+      setError("Partner organization name is required.");
       return;
     }
 
@@ -62,6 +63,11 @@ export default function PartnerEditorModal({ partner, onClose, onSaved }: Partne
     }
   };
 
+  const partnerSlug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "") || "partner";
+
   return (
     <div className="abf-modal-overlay" onClick={onClose} style={{ zIndex: 360 }}>
       <div
@@ -71,7 +77,7 @@ export default function PartnerEditorModal({ partner, onClose, onSaved }: Partne
           background: "white",
           borderRadius: 24,
           width: "100%",
-          maxWidth: 540,
+          maxWidth: 600,
           maxHeight: "min(90vh, calc(100dvh - 2rem))",
           display: "flex",
           flexDirection: "column",
@@ -96,7 +102,7 @@ export default function PartnerEditorModal({ partner, onClose, onSaved }: Partne
         >
           <div>
             <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#8dc63f", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              PARTNER CMS EDITOR
+              PARTNER CMS
             </div>
             <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", margin: 0 }}>
               {isEditing ? `Edit: ${partner.name}` : "Add Partner Organization"}
@@ -141,22 +147,20 @@ export default function PartnerEditorModal({ partner, onClose, onSaved }: Partne
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Azu-Ogbunike Library Project"
                 required
-                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
+                style={{ width: "100%", padding: "0.75rem 0.875rem", borderRadius: 10, border: "1.5px solid #dde8dd", fontSize: "0.9375rem" }}
               />
             </div>
 
-            <div>
-              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                Logo URL (Optional)
-              </label>
-              <input
-                type="text"
-                value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
-                placeholder="https://... logo image URL"
-                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-              />
-            </div>
+            {/* Direct Logo Upload */}
+            <ImageUploadField
+              label="Partner Logo (Optional)"
+              value={logoUrl}
+              onChange={setLogoUrl}
+              folder="partners"
+              slug={partnerSlug}
+              aspectRatio="logo"
+              helperText="Upload the organization's logo (PNG with transparent background recommended)."
+            />
 
             <div>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
@@ -208,7 +212,7 @@ export default function PartnerEditorModal({ partner, onClose, onSaved }: Partne
               className="abf-btn-primary"
               style={{ fontSize: "0.875rem", padding: "0.6rem 1.75rem" }}
             >
-              {saving ? "Saving to Supabase..." : isEditing ? "Save Partner Changes" : "Add Partner"}
+              {saving ? "Saving to Database..." : isEditing ? "Save Partner Changes" : "Add Partner"}
             </button>
           </div>
         </form>

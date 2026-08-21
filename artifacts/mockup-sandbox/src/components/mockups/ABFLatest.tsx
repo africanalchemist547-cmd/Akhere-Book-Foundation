@@ -223,7 +223,7 @@ export default function ABFLatest() {
           <section style={{ padding: "0 1.5rem 6rem", background: "white" }}>
             <div style={{ maxWidth: 680, margin: "0 auto" }}>
               
-              {/* Main Body HTML */}
+              {/* Main Body Content */}
               <div
                 className="abf-editorial-body"
                 style={{
@@ -234,8 +234,17 @@ export default function ABFLatest() {
                   flexDirection: "column",
                   gap: "1.5rem"
                 }}
-                dangerouslySetInnerHTML={{ __html: activePost.contentHtml }}
-              />
+              >
+                {/<[a-z][\s\S]*>/i.test(activePost.contentHtml) ? (
+                  <div dangerouslySetInnerHTML={{ __html: activePost.contentHtml }} />
+                ) : (
+                  activePost.contentHtml.split(/\n\s*\n/).map((para, i) => (
+                    <p key={i} style={{ margin: 0, lineHeight: 1.85 }}>
+                      {para}
+                    </p>
+                  ))
+                )}
+              </div>
 
               {/* pullquote styles placeholder inside component */}
               <style>{`

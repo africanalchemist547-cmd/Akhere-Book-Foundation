@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
-import { DbProject } from "../../../hooks/useCmsData";
+import { DbProject, DbProjectImage } from "../../../hooks/useCmsData";
+import ImageUploadField from "../ImageUploadField";
 
 interface ProjectEditorModalProps {
   project: DbProject | null; // null for creating new
@@ -13,6 +14,9 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
 
   const [title, setTitle] = useState(project?.title || "");
   const [slug, setSlug] = useState(project?.slug || "");
+  const [isSlugCustomized, setIsSlugCustomized] = useState(false);
+  const [showSlugControl, setShowSlugControl] = useState(false);
+
   const [status, setStatus] = useState<"pending" | "in_progress" | "finished">(project?.status || "finished");
   const [location, setLocation] = useState(project?.location || "");
   const [shortDescription, setShortDescription] = useState(project?.short_description || "");
@@ -22,19 +26,37 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
   const [featured, setFeatured] = useState(project?.featured || false);
   const [displayOrder, setDisplayOrder] = useState(project?.display_order || 0);
 
+  // Gallery state (up to 6 images)
+  const [galleryImages, setGalleryImages] = useState<Array<{ id?: string; image_url: string; caption?: string }>>(
+    project?.project_images?.map((img) => ({ id: img.id, image_url: img.image_url, caption: img.caption || "" })) || []
+  );
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Auto-generate slug from title if creating new and slug hasn't been manually set
+  // Auto-generate slug from title unless manually customized
   useEffect(() => {
-    if (!isEditing && title) {
+    if (!isSlugCustomized && title) {
       const generated = title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)+/g, "");
       setSlug(generated);
     }
-  }, [title, isEditing]);
+  }, [title, isSlugCustomized]);
+
+  const handleAddGalleryImage = (url: string) => {
+    if (!url) return;
+    if (galleryImages.length >= 6) {
+      setError("Maximum 6 gallery photos permitted per project.");
+      return;
+    }
+    setGalleryImages([...galleryImages, { image_url: url, caption: "" }]);
+  };
+
+  const handleRemoveGalleryImage = (index: number) => {
+    setGalleryImages(galleryImages.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,17 +74,21 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
       setError("Location is required.");
       return;
     }
+    if (!coverImage.trim()) {
+      setError("Project cover image is required.");
+      return;
+    }
 
     setSaving(true);
 
-    const payload = {
+    const projectPayload = {
       title: title.trim(),
       slug: slug.trim(),
       status,
       location: location.trim(),
       short_description: shortDescription.trim(),
       full_description: fullDescription.trim(),
-      cover_image: coverImage.trim() || "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1200&q=80",
+      cover_image: coverImage.trim(),
       youtube_url: youtubeUrl.trim() || null,
       featured,
       display_order: Number(displayOrder) || 0,
@@ -70,19 +96,45 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
     };
 
     try {
+      let savedProjectId = project?.id;
+
       if (isEditing && project?.id) {
         const { error: updateError } = await supabase
           .from("projects")
-          .update(payload)
+          .update(projectPayload)
           .eq("id", project.id);
 
         if (updateError) throw updateError;
       } else {
-        const { error: insertError } = await supabase
+        const { data: newProject, error: insertError } = await supabase
           .from("projects")
-          .insert([payload]);
+          .insert([projectPayload])
+          .select("id")
+          .single();
 
         if (insertError) throw insertError;
+        savedProjectId = newProject?.id;
+      }
+
+      // Save gallery images if project ID is available
+      if (savedProjectId) {
+        try {
+          // Delete old gallery images and re-insert updated list
+          await supabase.from("project_images").delete().eq("project_id", savedProjectId);
+
+          if (galleryImages.length > 0) {
+            const galleryPayload = galleryImages.map((img, idx) => ({
+              project_id: savedProjectId,
+              image_url: img.image_url,
+              caption: img.caption || null,
+              display_order: idx + 1,
+            }));
+
+            await supabase.from("project_images").insert(galleryPayload);
+          }
+        } catch {
+          // Ignore if project_images table not yet created
+        }
       }
 
       onSaved();
@@ -102,7 +154,7 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
           background: "white",
           borderRadius: 24,
           width: "100%",
-          maxWidth: 680,
+          maxWidth: 720,
           maxHeight: "min(90vh, calc(100dvh - 2rem))",
           display: "flex",
           flexDirection: "column",
@@ -127,7 +179,7 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
         >
           <div>
             <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#8dc63f", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              PROJECT CMS EDITOR
+              PROJECT MANAGER
             </div>
             <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", margin: 0 }}>
               {isEditing ? `Edit: ${project.title}` : "Create New ABF Project"}
@@ -163,32 +215,46 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
             )}
 
             {/* Title & Slug */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  Project Title *
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Azu-Ogbunike Community Library"
-                  required
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  URL Slug *
-                </label>
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  placeholder="azu-ogbunike-community-library"
-                  required
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
+            <div>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
+                Project Title *
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Azu-Ogbunike Community Library"
+                required
+                style={{ width: "100%", padding: "0.75rem 0.875rem", borderRadius: 10, border: "1.5px solid #dde8dd", fontSize: "0.9375rem" }}
+              />
+
+              {/* Collapsible Slug Control */}
+              <div style={{ marginTop: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowSlugControl(!showSlugControl)}
+                  style={{ background: "none", border: "none", color: "#6a7a64", fontSize: "0.75rem", cursor: "pointer", fontWeight: 600, padding: 0 }}
+                >
+                  ⚙️ {showSlugControl ? "Hide URL Slug" : "Customize URL Slug"} (Current: <code style={{ color: "#2d6a2d" }}>/{slug || "auto-generated"}</code>)
+                </button>
+
+                {showSlugControl && (
+                  <div style={{ marginTop: "0.375rem", background: "#f8faf6", padding: "0.75rem", borderRadius: 8, border: "1px solid #e0e8e0" }}>
+                    <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "#4a5a44", marginBottom: "0.25rem" }}>
+                      URL Slug
+                    </label>
+                    <input
+                      type="text"
+                      value={slug}
+                      onChange={(e) => {
+                        setSlug(e.target.value);
+                        setIsSlugCustomized(true);
+                      }}
+                      placeholder="azu-ogbunike-community-library"
+                      style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: 6, border: "1px solid #dde8dd", fontSize: "0.8125rem" }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -196,7 +262,7 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
               <div>
                 <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  Status
+                  Project Status
                 </label>
                 <select
                   value={status}
@@ -204,8 +270,8 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
                   style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem", background: "white" }}
                 >
                   <option value="finished">Finished / Commissioned</option>
-                  <option value="in_progress">In Progress / Construction</option>
-                  <option value="pending">Pending / Planned</option>
+                  <option value="in_progress">In Progress / Active Build</option>
+                  <option value="pending">Pending / In Planning</option>
                 </select>
               </div>
               <div>
@@ -223,35 +289,93 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
               </div>
             </div>
 
-            {/* Cover Image & YouTube Embed */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  Cover Image URL
-                </label>
-                <input
-                  type="text"
-                  value={coverImage}
-                  onChange={(e) => setCoverImage(e.target.value)}
-                  placeholder="https://... image URL"
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
+            {/* Direct Cover Image Upload */}
+            <ImageUploadField
+              label="Primary Cover Image"
+              value={coverImage}
+              onChange={setCoverImage}
+              folder="projects"
+              slug={slug || "project"}
+              required
+              aspectRatio="cover"
+              helperText="Upload the main hero photo that will appear on the project card and header."
+            />
+
+            {/* Project Multi-Image Gallery */}
+            <div style={{ background: "#f8faf8", padding: "1rem 1.25rem", borderRadius: 12, border: "1px solid #e8f0e8" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                <div>
+                  <label style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", display: "block" }}>
+                    Project Photo Gallery ({galleryImages.length}/6 photos)
+                  </label>
+                  <span style={{ fontSize: "0.75rem", color: "#6a7a64" }}>
+                    Additional photos of the reading room, bookshelves, and community events.
+                  </span>
+                </div>
               </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  YouTube Video Link (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={youtubeUrl}
-                  onChange={(e) => setYoutubeUrl(e.target.value)}
-                  placeholder="https://youtube.com/watch?v=..."
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
-              </div>
+
+              {/* Gallery Thumbnails List */}
+              {galleryImages.length > 0 && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: "0.75rem", marginBottom: "1rem", marginTop: "0.5rem" }}>
+                  {galleryImages.map((img, idx) => (
+                    <div key={idx} style={{ position: "relative", borderRadius: 8, overflow: "hidden", border: "1.5px solid #dde8dd", height: 80, background: "#1a2218" }}>
+                      <img src={img.image_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveGalleryImage(idx)}
+                        style={{
+                          position: "absolute",
+                          top: 4,
+                          right: 4,
+                          background: "rgba(0,0,0,0.7)",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "50%",
+                          width: 22,
+                          height: 22,
+                          fontSize: "0.75rem",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {galleryImages.length < 6 && (
+                <div style={{ marginTop: "0.5rem" }}>
+                  <ImageUploadField
+                    label="Add a Gallery Photo"
+                    value=""
+                    onChange={handleAddGalleryImage}
+                    folder="projects"
+                    slug={`${slug || "project"}-gallery-${galleryImages.length + 1}`}
+                    aspectRatio="cover"
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Short Description */}
+            {/* Video Link */}
+            <div>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
+                YouTube Video Link (Optional)
+              </label>
+              <input
+                type="text"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+                placeholder="https://youtube.com/watch?v=..."
+                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
+              />
+            </div>
+
+            {/* Short Summary */}
             <div>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
                 Short Summary (Card preview)
@@ -260,22 +384,22 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
                 rows={2}
                 value={shortDescription}
                 onChange={(e) => setShortDescription(e.target.value)}
-                placeholder="A concise summary of what this project accomplished..."
-                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
+                placeholder="Write a brief overview of what this project accomplished..."
+                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem", lineHeight: 1.5 }}
               />
             </div>
 
-            {/* Full Story Description (HTML/Rich content) */}
+            {/* Full Project Description */}
             <div>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                Full Project Description (Detail page content)
+                Full Project Story & Details
               </label>
               <textarea
                 rows={6}
                 value={fullDescription}
                 onChange={(e) => setFullDescription(e.target.value)}
-                placeholder="Full story and what we built (supports HTML paragraphs <p>...</p>)..."
-                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem", fontFamily: "monospace" }}
+                placeholder="Describe the project, community background, activities, and achievements here. Separate paragraphs with a blank line."
+                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem", lineHeight: 1.6 }}
               />
             </div>
 
@@ -327,7 +451,7 @@ export default function ProjectEditorModal({ project, onClose, onSaved }: Projec
               className="abf-btn-primary"
               style={{ fontSize: "0.875rem", padding: "0.6rem 1.75rem" }}
             >
-              {saving ? "Saving to Supabase..." : isEditing ? "Save Project Changes" : "Create Project"}
+              {saving ? "Saving to Database..." : isEditing ? "Save Project Changes" : "Create Project"}
             </button>
           </div>
         </form>

@@ -12,11 +12,39 @@ import {
   BASE,
   VolunteerModal
 } from "./_shared";
+import { usePublicStatistics } from "../../hooks/useCmsData";
 
 export default function ABFAboutUs() {
   const [donateMoneyOpen, setDonateMoneyOpen] = useState(false);
   const [donateBookOpen, setDonateBookOpen] = useState(false);
   const [volunteerOpen, setVolunteerOpen] = useState(false);
+
+  const { data: dbStats } = usePublicStatistics();
+
+  const getStat = (key: string, defaultLabel: string, defaultVal: string) => {
+    const found = dbStats.find((s) => s.metric_key === key);
+    if (found) {
+      return {
+        label: found.label,
+        value: found.value,
+        tag: found.description || "ABF TO PROVIDE VERIFIED FIGURES",
+        isPending: found.value.includes("[") || found.value.toLowerCase().includes("pending"),
+      };
+    }
+    return {
+      label: defaultLabel,
+      value: defaultVal,
+      tag: "ABF TO PROVIDE VERIFIED FIGURES",
+      isPending: true,
+    };
+  };
+
+  const aboutStats = [
+    getStat("schools_reached", "Schools & Communities", "[XX]"),
+    getStat("library_users", "Estimated Users", "[XX]"),
+    getStat("books_available", "Books & Resources", "[XX]"),
+    getStat("monthly_hours", "Monthly Usage Hours", "[XX]"),
+  ];
 
   useEffect(() => {
     document.title = "About Us | Akhere Book Foundation";
@@ -412,12 +440,7 @@ export default function ABFAboutUs() {
                     marginBottom: "2rem"
                   }}
                 >
-                  {[
-                    { label: "Schools & Communities", tag: "ABF TO PROVIDE VERIFIED FIGURES" },
-                    { label: "Estimated Users", tag: "ABF TO PROVIDE VERIFIED FIGURES" },
-                    { label: "Books & Resources", tag: "ABF TO PROVIDE VERIFIED FIGURES" },
-                    { label: "Monthly Usage Hours", tag: "ABF TO PROVIDE VERIFIED FIGURES" },
-                  ].map((stat, idx) => (
+                  {aboutStats.map((stat, idx) => (
                     <div key={idx} style={{
                       background: "white",
                       padding: "1.25rem",
@@ -426,8 +449,10 @@ export default function ABFAboutUs() {
                       boxShadow: "0 2px 12px rgba(45,106,45,0.02)"
                     }}>
                       <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#2d6a2d", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                        [XX]
-                        <span style={{ fontSize: "0.625rem", fontWeight: 700, color: "#aab8a4", background: "#f0f4f0", padding: "0.15rem 0.4rem", borderRadius: 4, textTransform: "uppercase" }}>Pending</span>
+                        {stat.value}
+                        {stat.isPending && (
+                          <span style={{ fontSize: "0.625rem", fontWeight: 700, color: "#aab8a4", background: "#f0f4f0", padding: "0.15rem 0.4rem", borderRadius: 4, textTransform: "uppercase" }}>Pending</span>
+                        )}
                       </div>
                       <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#1a2218", marginTop: "0.375rem" }}>
                         {stat.label}

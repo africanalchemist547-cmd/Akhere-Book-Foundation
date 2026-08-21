@@ -4,6 +4,15 @@ import { ASSETS } from "../components/mockups/_shared";
 
 // ─── STATIC SEED FALLBACK DATA (For offline/network failure ONLY) ───
 
+export interface DbProjectImage {
+  id: string;
+  project_id: string;
+  image_url: string;
+  caption?: string | null;
+  display_order: number;
+  created_at?: string;
+}
+
 export interface DbProject {
   id: string;
   title: string;
@@ -18,6 +27,7 @@ export interface DbProject {
   youtube_url?: string | null;
   featured: boolean;
   display_order: number;
+  project_images?: DbProjectImage[];
   created_at?: string;
   updated_at?: string;
 }
@@ -64,6 +74,16 @@ export interface DbPartner {
   updated_at?: string;
 }
 
+export interface DbStatistic {
+  id: string;
+  metric_key: string;
+  label: string;
+  value: string;
+  description?: string | null;
+  display_order: number;
+  updated_at?: string;
+}
+
 // Static Seed Fallbacks
 export const STATIC_SEED_PROJECTS: DbProject[] = [
   {
@@ -72,12 +92,35 @@ export const STATIC_SEED_PROJECTS: DbProject[] = [
     slug: "azu-ogbunike-community-library",
     status: "finished",
     short_description: "A community library created to give children, students and community members greater access to books, learning resources and a place to read, research and study.",
-    full_description: "<p>ABF commissioned and completed the Azu-Ogbunike Community Library to serve as a functional, clean, and inspiring hub for study and literacy. The project transformed a local space into a structured environment filled with books, homework desks, research tables, and reference materials.</p><p>ABF ensures the library remains in excellent physical condition and is actively stocked with diverse reading books, textbooks, dictionaries, and novels. Field representatives verify that the space continues to be supervised, accessible, and functional for daily readers.</p>",
+    full_description: "ABF commissioned and completed the Azu-Ogbunike Community Library to serve as a functional, clean, and inspiring hub for study and literacy. The project transformed a local space into a structured environment filled with books, homework desks, research tables, and reference materials.\n\nABF ensures the library remains in excellent physical condition and is actively stocked with diverse reading books, textbooks, dictionaries, and novels. Field representatives verify that the space continues to be supervised, accessible, and functional for daily readers.",
     location: "Ogbunike, Anambra State",
     cover_image: ASSETS.library,
     youtube_url: null,
     featured: true,
     display_order: 1,
+    project_images: [
+      {
+        id: "img-1",
+        project_id: "azu-ogbunike-library",
+        image_url: ASSETS.library,
+        caption: "Main Reading Room & Study Tables",
+        display_order: 1,
+      },
+      {
+        id: "img-2",
+        project_id: "azu-ogbunike-library",
+        image_url: ASSETS.ig1,
+        caption: "Library Bookshelf Collections",
+        display_order: 2,
+      },
+      {
+        id: "img-3",
+        project_id: "azu-ogbunike-library",
+        image_url: ASSETS.ig2,
+        caption: "Students Reading & Homework Session",
+        display_order: 3,
+      }
+    ]
   }
 ];
 
@@ -88,7 +131,7 @@ export const STATIC_SEED_POSTS: DbPost[] = [
     slug: "a-child-a-book-a-new-possibility",
     category: "news_impact",
     excerpt: "Grace was a quiet junior secondary student who discovered the library. Through access to books, her curiosity grew, leading her to write her own stories.",
-    content: "<p>At Akhere Book Foundation, we believe that access to books is not just about reading—it is about intellectual curiosity and expanding horizons. The stories of individual growth that emerge from our community library projects are powerful evidence of this belief.</p><blockquote>\"We may never know which child will become the next great writer, teacher, scientist or leader. But we can help make sure they have the opportunity to learn.\"</blockquote><p>Grace is a quiet junior secondary student who lives in the local community of Ogbunike. Before the Azu-Ogbunike Community Library was commissioned by ABF, she had very limited access to books beyond her basic school textbooks. The opening of the library provided a new, quiet, supervised space right in her neighborhood.</p><p>Grace began visiting the library regularly after school. Page by page, she began exploring different sections, moving from simple children's storybooks to more advanced historical novels and reference books. The librarians noticed her quiet dedication as she spent hours absorbed in reading.</p><p>This consistent access unlocked something new. She began asking questions, discussing ideas, and writing down her thoughts. Eventually, this curiosity turned into creation: Grace started writing her own short, imaginative stories. A library did not just give her a space to read; it gave her a voice to write.</p>",
+    content: "At Akhere Book Foundation, we believe that access to books is not just about reading—it is about intellectual curiosity and expanding horizons. The stories of individual growth that emerge from our community library projects are powerful evidence of this belief.\n\nGrace is a quiet junior secondary student who lives in the local community of Ogbunike. Before the Azu-Ogbunike Community Library was commissioned by ABF, she had very limited access to books beyond her basic school textbooks. The opening of the library provided a new, quiet, supervised space right in her neighborhood.\n\nGrace began visiting the library regularly after school. Page by page, she began exploring different sections, moving from simple children's storybooks to more advanced historical novels and reference books. The librarians noticed her quiet dedication as she spent hours absorbed in reading.\n\nThis consistent access unlocked something new. She began asking questions, discussing ideas, and writing down her thoughts. Eventually, this curiosity turned into creation: Grace started writing her own short, imaginative stories. A library did not just give her a space to read; it gave her a voice to write.",
     cover_image: ASSETS.ig13,
     published_at: "2025-07-15T10:00:00Z",
     published: true,
@@ -101,7 +144,7 @@ export const STATIC_SEED_POSTS: DbPost[] = [
     slug: "one-year-later",
     category: "projects",
     excerpt: "A year after the commissioning of the Azu-Ogbunike Community Library, the space remains in excellent physical condition, clean, and actively used by local students.",
-    content: "<p>One year ago, ABF commissioned its first major project: the Azu-Ogbunike Community Library. The goal was simple but ambitious: to build a lasting, functional community study space that would remain active and useful for years to come.</p><p>Today, we are proud to report that the library is still fully functional, clean, and regularly used by students from multiple primary and secondary schools in the local government area. The desks are full, the shelves are supervised, and children are actively reading, preparing for WAEC/NECO exams, and doing homework.</p><p>A key focus of ABF's operational strategy is optimization on the ground. We work closely with community representatives to ensure that books are well cared for, reference materials remain complete, and the space remains a safe, encouraging environment for all visitors.</p>",
+    content: "One year ago, ABF commissioned its first major project: the Azu-Ogbunike Community Library. The goal was simple but ambitious: to build a lasting, functional community study space that would remain active and useful for years to come.\n\nToday, we are proud to report that the library is still fully functional, clean, and regularly used by students from multiple primary and secondary schools in the local government area. The desks are full, the shelves are supervised, and children are actively reading, preparing for WAEC/NECO exams, and doing homework.\n\nA key focus of ABF's operational strategy is optimization on the ground. We work closely with community representatives to ensure that books are well cared for, reference materials remain complete, and the space remains a safe, encouraging environment for all visitors.",
     cover_image: ASSETS.ig12,
     published_at: "2025-08-01T10:00:00Z",
     published: true,
@@ -114,7 +157,7 @@ export const STATIC_SEED_POSTS: DbPost[] = [
     slug: "when-schools-are-attacked",
     category: "news_impact",
     excerpt: "Schools must remain safe zones. ABF stands in solidarity with teachers and children affected by attacks on educational institutions.",
-    content: "<p>Education is a fundamental right, and schools should be safe sanctuaries for growth, hope, and learning. When educational institutions are attacked, it is not just buildings that are damaged—the future of children and communities is attacked as well.</p><p>ABF stands in firm solidarity with every child, teacher, and family affected by attacks on schools. We believe that protecting access to learning requires protecting the safety of the spaces where learning happens.</p><p>Our advocacy focus remains on raising awareness of school safety, supporting local educational resilience, and ensuring that children have safe, stable pathways to continue their reading and development without fear.</p>",
+    content: "Education is a fundamental right, and schools should be safe sanctuaries for growth, hope, and learning. When educational institutions are attacked, it is not just buildings that are damaged—the future of children and communities is attacked as well.\n\nABF stands in firm solidarity with every child, teacher, and family affected by attacks on schools. We believe that protecting access to learning requires protecting the safety of the spaces where learning happens.\n\nOur advocacy focus remains on raising awareness of school safety, supporting local educational resilience, and ensuring that children have safe, stable pathways to continue their reading and development without fear.",
     cover_image: ASSETS.schoolAttacks1,
     published_at: "2025-06-10T10:00:00Z",
     published: true,
@@ -127,7 +170,7 @@ export const STATIC_SEED_POSTS: DbPost[] = [
     slug: "we-need-story-books",
     category: "news_impact",
     excerpt: "As reading habits grow, so does the demand for fresh content. We are seeking donations of children's storybooks and novels to stock our shelves.",
-    content: "<p>The success of the Azu-Ogbunike Library has created a wonderful challenge: our regular readers are consuming books faster than ever. Children who once had very little reading experience are now avid readers looking for new adventures and stories.</p><p>To keep this enthusiasm alive, ABF is launching a dedicated book collection effort focused on high-quality storybooks, children's literature, and local fiction. Fresh stories keep children returning to the library and help them continuously build their vocabulary and reading confidence.</p><p>If you have storybooks in good condition that you'd like to donate, please use our book donation modal to let us know. A small collection of books can open new worlds for dozens of children.</p>",
+    content: "The success of the Azu-Ogbunike Library has created a wonderful challenge: our regular readers are consuming books faster than ever. Children who once had very little reading experience are now avid readers looking for new adventures and stories.\n\nTo keep this enthusiasm alive, ABF is launching a dedicated book collection effort focused on high-quality storybooks, children's literature, and local fiction. Fresh stories keep children returning to the library and help them continuously build their vocabulary and reading confidence.\n\nIf you have storybooks in good condition that you'd like to donate, please use our book donation modal to let us know. A small collection of books can open new worlds for dozens of children.",
     cover_image: ASSETS.ig7,
     published_at: "2025-05-20T10:00:00Z",
     published: true,
@@ -178,6 +221,49 @@ export const STATIC_SEED_PARTNERS: DbPartner[] = [
   }
 ];
 
+export const STATIC_SEED_STATISTICS: DbStatistic[] = [
+  {
+    id: "stat-schools",
+    metric_key: "schools_reached",
+    label: "Schools / Communities Reached",
+    value: "[XX+]",
+    description: "figures to be confirmed",
+    display_order: 1,
+  },
+  {
+    id: "stat-books",
+    metric_key: "books_available",
+    label: "Books Made Available",
+    value: "[XX+]",
+    description: "figures to be confirmed",
+    display_order: 2,
+  },
+  {
+    id: "stat-people",
+    metric_key: "people_reached",
+    label: "Children & Community Members Reached",
+    value: "[XX+]",
+    description: "figures to be confirmed",
+    display_order: 3,
+  },
+  {
+    id: "stat-users",
+    metric_key: "library_users",
+    label: "Library Users",
+    value: "[XX+]",
+    description: "figures to be confirmed",
+    display_order: 4,
+  },
+  {
+    id: "stat-monthly-hours",
+    metric_key: "monthly_hours",
+    label: "Monthly Usage Hours",
+    value: "[XX]",
+    description: "figures to be confirmed",
+    display_order: 5,
+  },
+];
+
 // ─── CMS STATE INTERFACE ─────────────────────────────────────
 export interface CmsState<T> {
   data: T[];
@@ -199,7 +285,6 @@ export function usePublicProjects(): CmsState<DbProject> {
     setError(null);
 
     if (!isSupabaseConfigured()) {
-      // Offline / unconfigured -> fallback only
       setData(STATIC_SEED_PROJECTS);
       setIsFallback(true);
       setLoading(false);
@@ -207,17 +292,29 @@ export function usePublicProjects(): CmsState<DbProject> {
     }
 
     try {
+      // Query projects and their related gallery images
       const { data: rows, error: queryError } = await supabase
         .from("projects")
-        .select("*")
+        .select("*, project_images(*)")
         .order("display_order", { ascending: true })
         .order("created_at", { ascending: false });
 
       if (queryError) {
-        // Genuine query error -> fallback
-        setData(STATIC_SEED_PROJECTS);
-        setError(new Error(queryError.message));
-        setIsFallback(true);
+        // Fallback to basic projects query if project_images table is not yet migrated
+        const { data: fallbackRows, error: fallbackError } = await supabase
+          .from("projects")
+          .select("*")
+          .order("display_order", { ascending: true })
+          .order("created_at", { ascending: false });
+
+        if (fallbackError) {
+          setData(STATIC_SEED_PROJECTS);
+          setError(new Error(fallbackError.message));
+          setIsFallback(true);
+        } else {
+          setData(fallbackRows || []);
+          setIsFallback(false);
+        }
       } else {
         // Successful query! (Even if rows is empty [])
         setData(rows || []);
@@ -282,7 +379,6 @@ export function usePublicPosts(categoryFilter?: string): CmsState<DbPost> {
       const { data: rows, error: queryError } = await query;
 
       if (queryError) {
-        // Genuine query error -> fallback
         let filtered = STATIC_SEED_POSTS.filter((p) => p.published);
         setData(filtered);
         setError(new Error(queryError.message));
@@ -404,4 +500,67 @@ export function usePublicPartners(): CmsState<DbPartner> {
   }, [fetchPartners]);
 
   return { data, loading, error, isFallback, refetch: fetchPartners };
+}
+
+// ─── 5. PUBLIC STATISTICS HOOK ───────────────────────────────
+export function usePublicStatistics(): CmsState<DbStatistic> {
+  const [data, setData] = useState<DbStatistic[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [isFallback, setIsFallback] = useState(false);
+
+  const fetchStats = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    if (!isSupabaseConfigured()) {
+      setData(STATIC_SEED_STATISTICS);
+      setIsFallback(true);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data: rows, error: queryError } = await supabase
+        .from("library_statistics")
+        .select("*")
+        .order("display_order", { ascending: true });
+
+      if (queryError) {
+        setData(STATIC_SEED_STATISTICS);
+        setError(new Error(queryError.message));
+        setIsFallback(true);
+      } else {
+        setData(rows || []);
+        setIsFallback(false);
+      }
+    } catch (err: any) {
+      setData(STATIC_SEED_STATISTICS);
+      setError(err instanceof Error ? err : new Error(String(err)));
+      setIsFallback(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  return { data, loading, error, isFallback, refetch: fetchStats };
+}
+
+/**
+ * Splits plain text content with blank lines into paragraphs, or preserves existing HTML tags.
+ */
+export function formatCmsParagraphs(content: string): string[] {
+  if (!content) return [];
+  // If content contains standard HTML tags, return as single block for safe rendering
+  if (/<[a-z][\s\S]*>/i.test(content)) {
+    return [content];
+  }
+  return content
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
 }

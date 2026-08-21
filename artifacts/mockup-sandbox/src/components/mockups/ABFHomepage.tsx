@@ -21,8 +21,7 @@ import {
   TEAM_MEMBERS,
   PartnerWithABFModal,
   VolunteerModal
-} from "./_shared";
-import { usePublicPosts, usePublicTeam, usePublicPartners } from "../../hooks/useCmsData";
+import { usePublicPosts, usePublicTeam, usePublicPartners, usePublicStatistics } from "../../hooks/useCmsData";
 
 // â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface LatestCard {
@@ -298,11 +297,29 @@ function TrustBadges() {
 // â”€â”€â”€ YOUR SUPPORT GOES FAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function SupportSection() {
+  const { data: dbStats, loading: statsLoading } = usePublicStatistics();
+
+  const getStat = (key: string, defaultLabel: string, defaultVal: string) => {
+    const found = dbStats.find((s) => s.metric_key === key);
+    if (found) {
+      return {
+        label: found.label,
+        value: found.value,
+        description: found.description || "(figures to be confirmed)",
+      };
+    }
+    return {
+      label: defaultLabel,
+      value: defaultVal,
+      description: "(figures to be confirmed)",
+    };
+  };
+
   const stats = [
-    { label: "Schools / Communities Reached", value: "[XX+]" },
-    { label: "Books Made Available", value: "[XX+]" },
-    { label: "Children & Community Members Reached", value: "[XX+]" },
-    { label: "Library Users", value: "[XX+]" },
+    getStat("schools_reached", "Schools / Communities Reached", "[XX+]"),
+    getStat("books_available", "Books Made Available", "[XX+]"),
+    getStat("people_reached", "Children & Community Members Reached", "[XX+]"),
+    getStat("library_users", "Library Users", "[XX+]"),
   ];
 
   return (
@@ -387,7 +404,7 @@ function SupportSection() {
                 {s.label}
               </p>
               <p style={{ fontSize: "0.7rem", color: "#aab8a4", marginTop: "0.375rem", fontStyle: "italic" }}>
-                (figures to be confirmed)
+                {s.description}
               </p>
             </div>
           ))}

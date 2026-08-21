@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import { DbPost } from "../../../hooks/useCmsData";
+import ImageUploadField from "../ImageUploadField";
 
 interface PostEditorModalProps {
   post: DbPost | null;
@@ -13,6 +14,9 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
 
   const [title, setTitle] = useState(post?.title || "");
   const [slug, setSlug] = useState(post?.slug || "");
+  const [isSlugCustomized, setIsSlugCustomized] = useState(false);
+  const [showSlugControl, setShowSlugControl] = useState(false);
+
   const [category, setCategory] = useState<"projects" | "events" | "news_impact">(post?.category || "news_impact");
   const [author, setAuthor] = useState(post?.author || "Akhere Book Foundation");
   const [excerpt, setExcerpt] = useState(post?.excerpt || "");
@@ -26,25 +30,29 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isEditing && title) {
+    if (!isSlugCustomized && title) {
       const generated = title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)+/g, "");
       setSlug(generated);
     }
-  }, [title, isEditing]);
+  }, [title, isSlugCustomized]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     if (!title.trim()) {
-      setError("Post title is required.");
+      setError("Article title is required.");
       return;
     }
     if (!slug.trim()) {
-      setError("Post URL slug is required.");
+      setError("Article URL slug is required.");
+      return;
+    }
+    if (!coverImage.trim()) {
+      setError("Cover image is required.");
       return;
     }
 
@@ -57,7 +65,7 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
       author: author.trim() || "Akhere Book Foundation",
       excerpt: excerpt.trim(),
       content: content.trim(),
-      cover_image: coverImage.trim() || "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=1200&q=80",
+      cover_image: coverImage.trim(),
       youtube_url: youtubeUrl.trim() || null,
       published,
       featured,
@@ -83,7 +91,7 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
 
       onSaved();
     } catch (err: any) {
-      setError(err.message || "Failed to save post.");
+      setError(err.message || "Failed to save article.");
     } finally {
       setSaving(false);
     }
@@ -98,7 +106,7 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
           background: "white",
           borderRadius: 24,
           width: "100%",
-          maxWidth: 680,
+          maxWidth: 720,
           maxHeight: "min(90vh, calc(100dvh - 2rem))",
           display: "flex",
           flexDirection: "column",
@@ -123,10 +131,10 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
         >
           <div>
             <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#8dc63f", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              BLOG & STORIES CMS EDITOR
+              BLOG & STORIES CMS
             </div>
             <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", margin: 0 }}>
-              {isEditing ? `Edit Post: ${post.title}` : "Write New Post / Story"}
+              {isEditing ? `Edit: ${post.title}` : "Write New Story / Article"}
             </h2>
           </div>
           <button
@@ -159,32 +167,46 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
             )}
 
             {/* Title & Slug */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  Article Title *
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. A Child, A Book, A New Possibility"
-                  required
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  URL Slug *
-                </label>
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  placeholder="a-child-a-book-a-new-possibility"
-                  required
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
+            <div>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
+                Article Title *
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. A Child, A Book, A New Possibility"
+                required
+                style={{ width: "100%", padding: "0.75rem 0.875rem", borderRadius: 10, border: "1.5px solid #dde8dd", fontSize: "0.9375rem" }}
+              />
+
+              {/* Collapsible Slug Control */}
+              <div style={{ marginTop: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowSlugControl(!showSlugControl)}
+                  style={{ background: "none", border: "none", color: "#6a7a64", fontSize: "0.75rem", cursor: "pointer", fontWeight: 600, padding: 0 }}
+                >
+                  ⚙️ {showSlugControl ? "Hide URL Slug" : "Customize URL Slug"} (Current: <code style={{ color: "#2d6a2d" }}>/{slug || "auto-generated"}</code>)
+                </button>
+
+                {showSlugControl && (
+                  <div style={{ marginTop: "0.375rem", background: "#f8faf6", padding: "0.75rem", borderRadius: 8, border: "1px solid #e0e8e0" }}>
+                    <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "#4a5a44", marginBottom: "0.25rem" }}>
+                      URL Slug
+                    </label>
+                    <input
+                      type="text"
+                      value={slug}
+                      onChange={(e) => {
+                        setSlug(e.target.value);
+                        setIsSlugCustomized(true);
+                      }}
+                      placeholder="a-child-a-book-a-new-possibility"
+                      style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: 6, border: "1px solid #dde8dd", fontSize: "0.8125rem" }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -206,7 +228,7 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  Author
+                  Author / Byline
                 </label>
                 <input
                   type="text"
@@ -218,59 +240,57 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
               </div>
             </div>
 
-            {/* Cover Image & Video */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  Cover Image URL
-                </label>
-                <input
-                  type="text"
-                  value={coverImage}
-                  onChange={(e) => setCoverImage(e.target.value)}
-                  placeholder="https://... image URL"
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  YouTube Video Link (Optional)
-                </label>
-                <input
-                  type="text"
-                  value={youtubeUrl}
-                  onChange={(e) => setYoutubeUrl(e.target.value)}
-                  placeholder="https://youtube.com/watch?v=..."
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
-              </div>
+            {/* Direct Cover Image Upload */}
+            <ImageUploadField
+              label="Article Cover Image"
+              value={coverImage}
+              onChange={setCoverImage}
+              folder="posts"
+              slug={slug || "post"}
+              required
+              aspectRatio="cover"
+              helperText="Upload the header image for this article."
+            />
+
+            {/* Video Link */}
+            <div>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
+                YouTube Video Link (Optional)
+              </label>
+              <input
+                type="text"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+                placeholder="https://youtube.com/watch?v=..."
+                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
+              />
             </div>
 
             {/* Excerpt */}
             <div>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                Summary / Excerpt (Card preview)
+                Short Summary (Card preview)
               </label>
               <textarea
                 rows={2}
                 value={excerpt}
                 onChange={(e) => setExcerpt(e.target.value)}
-                placeholder="A short teaser of what this article is about..."
-                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
+                placeholder="Write a brief teaser summarizing what this article is about..."
+                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem", lineHeight: 1.5 }}
               />
             </div>
 
-            {/* Content (HTML) */}
+            {/* Full Story Content */}
             <div>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                Full Article Content (HTML paragraphs & blockquotes)
+                Full Article Content
               </label>
               <textarea
                 rows={7}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="<p>Write your story here...</p><blockquote>Quote</blockquote>"
-                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem", fontFamily: "monospace" }}
+                placeholder="Write the full story or article here. Separate paragraphs with a blank line."
+                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem", lineHeight: 1.6 }}
               />
             </div>
 
@@ -322,7 +342,7 @@ export default function PostEditorModal({ post, onClose, onSaved }: PostEditorMo
               className="abf-btn-primary"
               style={{ fontSize: "0.875rem", padding: "0.6rem 1.75rem" }}
             >
-              {saving ? "Saving to Supabase..." : isEditing ? "Save Post Changes" : "Publish / Save Post"}
+              {saving ? "Saving to Database..." : isEditing ? "Save Post Changes" : "Publish / Save Post"}
             </button>
           </div>
         </form>

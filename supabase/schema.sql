@@ -227,6 +227,44 @@ CREATE POLICY "Admins can delete projects"
   USING (public.abf_is_admin());
 
 
+-- ─── PROJECT IMAGES (GALLERY) ───────────────────────────────
+CREATE TABLE public.project_images (
+  id            uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id    uuid        NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
+  image_url     text        NOT NULL,
+  caption       text,
+  display_order integer     NOT NULL DEFAULT 0,
+  created_at    timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX idx_project_images_project ON public.project_images(project_id);
+CREATE INDEX idx_project_images_order   ON public.project_images(display_order);
+
+ALTER TABLE public.project_images ENABLE ROW LEVEL SECURITY;
+
+-- Public visitors can view project images
+CREATE POLICY "Public can read project images"
+  ON public.project_images FOR SELECT
+  USING (true);
+
+-- Only verified ABF admins can mutate project images
+CREATE POLICY "Admins can insert project images"
+  ON public.project_images FOR INSERT
+  TO authenticated
+  WITH CHECK (public.abf_is_admin());
+
+CREATE POLICY "Admins can update project images"
+  ON public.project_images FOR UPDATE
+  TO authenticated
+  USING (public.abf_is_admin())
+  WITH CHECK (public.abf_is_admin());
+
+CREATE POLICY "Admins can delete project images"
+  ON public.project_images FOR DELETE
+  TO authenticated
+  USING (public.abf_is_admin());
+
+
 -- ─── POSTS (LATEST FROM ABF / BLOG) ─────────────────────────
 -- category values: 'projects' | 'events' | 'news_impact'
 --

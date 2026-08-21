@@ -10,6 +10,7 @@ import ProjectsManager from "./cms/ProjectsManager";
 import PostsManager from "./cms/PostsManager";
 import TeamManager from "./cms/TeamManager";
 import PartnersManager from "./cms/PartnersManager";
+import StatisticsManager from "./cms/StatisticsManager";
 import { ASSETS } from "../mockups/_shared";
 
 export default function AdminLayout({ initialTab }: { initialTab?: string }) {
@@ -47,6 +48,7 @@ export default function AdminLayout({ initialTab }: { initialTab?: string }) {
     { id: "cms-posts", label: "Blog & Stories", icon: "📰" },
     { id: "cms-team", label: "Team Members", icon: "🧑‍🤝‍🧑" },
     { id: "cms-partners", label: "Official Partners", icon: "🏢" },
+    { id: "cms-statistics", label: "Impact Statistics", icon: "📈" },
   ];
 
   return (
@@ -259,6 +261,7 @@ export default function AdminLayout({ initialTab }: { initialTab?: string }) {
           {activeTab === "cms-posts" && <PostsManager />}
           {activeTab === "cms-team" && <TeamManager />}
           {activeTab === "cms-partners" && <PartnersManager />}
+          {activeTab === "cms-statistics" && <StatisticsManager />}
         </main>
       </div>
 

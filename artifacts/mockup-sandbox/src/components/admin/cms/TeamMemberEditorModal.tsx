@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../../lib/supabase";
 import { DbTeamMember } from "../../../hooks/useCmsData";
+import ImageUploadField from "../ImageUploadField";
 
 interface TeamMemberEditorModalProps {
   member: DbTeamMember | null;
@@ -13,6 +14,9 @@ export default function TeamMemberEditorModal({ member, onClose, onSaved }: Team
 
   const [name, setName] = useState(member?.name || "");
   const [slug, setSlug] = useState(member?.slug || "");
+  const [isSlugCustomized, setIsSlugCustomized] = useState(false);
+  const [showSlugControl, setShowSlugControl] = useState(false);
+
   const [role, setRole] = useState(member?.role || "ABF Team Member");
   const [shortBio, setShortBio] = useState(member?.short_bio || "");
   const [fullStory, setFullStory] = useState(member?.full_story || "");
@@ -24,14 +28,14 @@ export default function TeamMemberEditorModal({ member, onClose, onSaved }: Team
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isEditing && name) {
+    if (!isSlugCustomized && name) {
       const generated = name
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)+/g, "");
       setSlug(generated);
     }
-  }, [name, isEditing]);
+  }, [name, isSlugCustomized]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,11 +46,15 @@ export default function TeamMemberEditorModal({ member, onClose, onSaved }: Team
       return;
     }
     if (!slug.trim()) {
-      setError("Slug is required.");
+      setError("URL slug is required.");
       return;
     }
     if (!role.trim()) {
       setError("Role is required.");
+      return;
+    }
+    if (!imageUrl.trim()) {
+      setError("Profile photo is required.");
       return;
     }
 
@@ -58,7 +66,7 @@ export default function TeamMemberEditorModal({ member, onClose, onSaved }: Team
       role: role.trim(),
       short_bio: shortBio.trim(),
       full_story: fullStory.trim() || shortBio.trim(),
-      image_url: imageUrl.trim() || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&q=80",
+      image_url: imageUrl.trim(),
       featured,
       display_order: Number(displayOrder) || 0,
       updated_at: new Date().toISOString(),
@@ -97,7 +105,7 @@ export default function TeamMemberEditorModal({ member, onClose, onSaved }: Team
           background: "white",
           borderRadius: 24,
           width: "100%",
-          maxWidth: 620,
+          maxWidth: 680,
           maxHeight: "min(90vh, calc(100dvh - 2rem))",
           display: "flex",
           flexDirection: "column",
@@ -122,7 +130,7 @@ export default function TeamMemberEditorModal({ member, onClose, onSaved }: Team
         >
           <div>
             <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#8dc63f", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              TEAM CMS EDITOR
+              TEAM MANAGER
             </div>
             <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#1a2218", margin: 0 }}>
               {isEditing ? `Edit: ${member.name}` : "Add New Team Member"}
@@ -158,63 +166,75 @@ export default function TeamMemberEditorModal({ member, onClose, onSaved }: Team
             )}
 
             {/* Name & Slug */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Oluwatosin Aina"
-                  required
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  URL Slug *
-                </label>
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  placeholder="oluwatosin-aina"
-                  required
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
+            <div>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
+                Full Name *
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Oluwatosin Aina"
+                required
+                style={{ width: "100%", padding: "0.75rem 0.875rem", borderRadius: 10, border: "1.5px solid #dde8dd", fontSize: "0.9375rem" }}
+              />
+
+              {/* Collapsible Slug Control */}
+              <div style={{ marginTop: "0.5rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowSlugControl(!showSlugControl)}
+                  style={{ background: "none", border: "none", color: "#6a7a64", fontSize: "0.75rem", cursor: "pointer", fontWeight: 600, padding: 0 }}
+                >
+                  ⚙️ {showSlugControl ? "Hide URL Slug" : "Customize URL Slug"} (Current: <code style={{ color: "#2d6a2d" }}>/{slug || "auto-generated"}</code>)
+                </button>
+
+                {showSlugControl && (
+                  <div style={{ marginTop: "0.375rem", background: "#f8faf6", padding: "0.75rem", borderRadius: 8, border: "1px solid #e0e8e0" }}>
+                    <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "#4a5a44", marginBottom: "0.25rem" }}>
+                      URL Slug
+                    </label>
+                    <input
+                      type="text"
+                      value={slug}
+                      onChange={(e) => {
+                        setSlug(e.target.value);
+                        setIsSlugCustomized(true);
+                      }}
+                      placeholder="oluwatosin-aina"
+                      style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: 6, border: "1px solid #dde8dd", fontSize: "0.8125rem" }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Role & Photo */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  Role / Title *
-                </label>
-                <input
-                  type="text"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  placeholder="e.g. ABF Team Member"
-                  required
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                  Photo URL
-                </label>
-                <input
-                  type="text"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://... photo URL"
-                  style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
-                />
-              </div>
+            {/* Role */}
+            <div>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
+                Role / Title *
+              </label>
+              <input
+                type="text"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                placeholder="e.g. ABF Team Member / Program Coordinator"
+                required
+                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
+              />
             </div>
+
+            {/* Direct Photo Upload */}
+            <ImageUploadField
+              label="Profile Photo"
+              value={imageUrl}
+              onChange={setImageUrl}
+              folder="team"
+              slug={slug || "team"}
+              required
+              aspectRatio="portrait"
+              helperText="Upload a portrait photo of the team member."
+            />
 
             {/* Short Bio */}
             <div>
@@ -225,22 +245,22 @@ export default function TeamMemberEditorModal({ member, onClose, onSaved }: Team
                 rows={2}
                 value={shortBio}
                 onChange={(e) => setShortBio(e.target.value)}
-                placeholder="A concise summary of their role and contribution..."
-                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
+                placeholder="Write a concise overview of their role and contribution..."
+                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem", lineHeight: 1.5 }}
               />
             </div>
 
             {/* Full Story Biography */}
             <div>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#2c3424", marginBottom: "0.375rem" }}>
-                Full Story Biography (Expanded modal dialog)
+                Full Biography (Modal view)
               </label>
               <textarea
                 rows={4}
                 value={fullStory}
                 onChange={(e) => setFullStory(e.target.value)}
-                placeholder="Detailed story of their background, connection to ABF, and vision..."
-                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem" }}
+                placeholder="Write their full background, connection to ABF, and vision for the mission..."
+                style={{ width: "100%", padding: "0.65rem 0.875rem", borderRadius: 8, border: "1.5px solid #dde8dd", fontSize: "0.875rem", lineHeight: 1.6 }}
               />
             </div>
 
@@ -292,7 +312,7 @@ export default function TeamMemberEditorModal({ member, onClose, onSaved }: Team
               className="abf-btn-primary"
               style={{ fontSize: "0.875rem", padding: "0.6rem 1.75rem" }}
             >
-              {saving ? "Saving to Supabase..." : isEditing ? "Save Member Changes" : "Add Team Member"}
+              {saving ? "Saving to Database..." : isEditing ? "Save Member Changes" : "Add Team Member"}
             </button>
           </div>
         </form>
