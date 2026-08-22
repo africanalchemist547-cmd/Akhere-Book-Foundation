@@ -340,21 +340,37 @@ export function usePublicProjects(): CmsState<DbProject> {
   return { data, loading, error, isFallback, refetch: fetchProjects };
 }
 
-// ─── 2. PUBLIC POSTS HOOK (With Multiple Images Parsing) ─────
+// ─── 2. PUBLIC POSTS HOOK (With Multiple Images & Clean Content) ─────
+
+/**
+ * Strips all internal metadata, gallery JSON comments, and raw storage URLs from post content text.
+ */
+export function cleanPostContent(content: string): string {
+  if (!content) return "";
+  let text = content;
+  // 1. Remove <!-- GALLERY: ... --> comment (single or multiline)
+  text = text.replace(/<!--\s*GALLERY:[\s\S]*?-->/gi, "");
+  // 2. Remove any other HTML comments
+  text = text.replace(/<!--[\s\S]*?-->/g, "");
+  // 3. Remove raw Supabase Storage URLs that might appear as text
+  text = text.replace(/https?:\/\/[^\s]+supabase\.co\/storage\/v1\/object\/public\/[^\s"')]+/gi, "");
+  // 4. Clean leading/trailing whitespace
+  return text.trim();
+}
 
 // Helper to extract embedded gallery from post content
 export function parsePostGallery(post: DbPost): string[] {
-  if (post.gallery_images && post.gallery_images.length > 0) {
-    return post.gallery_images;
+  if (post.gallery_images && Array.isArray(post.gallery_images) && post.gallery_images.length > 0) {
+    return post.gallery_images.filter((img) => typeof img === "string" && img.startsWith("http"));
   }
   if (!post.content) return [post.cover_image].filter(Boolean);
 
-  const match = post.content.match(/<!-- GALLERY:([\s\S]*?) -->/);
+  const match = post.content.match(/<!--\s*GALLERY:([\s\S]*?)-->/i);
   if (match && match[1]) {
     try {
-      const parsed = JSON.parse(match[1]);
+      const parsed = JSON.parse(match[1].trim());
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return parsed.filter((img) => typeof img === "string" && img.startsWith("http"));
       }
     } catch {
       // ignore parse errors
@@ -365,8 +381,7 @@ export function parsePostGallery(post: DbPost): string[] {
 
 // Helper to strip gallery marker from displayed text
 export function stripGalleryMarker(content: string): string {
-  if (!content) return "";
-  return content.replace(/<!-- GALLERY:[\s\S]*? -->/, "").trim();
+  return cleanPostContent(content);
 }
 
 export function usePublicPosts(categoryFilter?: string): CmsState<DbPost> {
@@ -665,8 +680,7 @@ export function findMatchingStatistic(
  */
 export function formatCmsParagraphs(content: string): string[] {
   if (!content) return [];
-  // Strip gallery marker if present
-  const cleanContent = stripGalleryMarker(content);
+  const cleanContent = cleanPostContent(content);
   // If content contains standard HTML tags, return as single block for safe rendering
   if (/<[a-z][\s\S]*>/i.test(cleanContent)) {
     return [cleanContent];
@@ -674,5 +688,5 @@ export function formatCmsParagraphs(content: string): string[] {
   return cleanContent
     .split(/\n\s*\n/)
     .map((p) => p.trim())
-    .filter(Boolean);
+    .filter((p) => p.length > 0 && !p.startsWith("http://") && !p.startsWith("https://"));
 }

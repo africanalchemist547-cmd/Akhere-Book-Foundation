@@ -11,7 +11,7 @@ import {
   Footer,
   BASE
 } from "./_shared";
-import { usePublicPosts, DbPost } from "../../hooks/useCmsData";
+import { usePublicPosts, DbPost, cleanPostContent, parsePostGallery, formatCmsParagraphs } from "../../hooks/useCmsData";
 
 // ─── TYPES & INTERFACES ──────────────────────────────────────
 interface Post {
@@ -70,15 +70,18 @@ export default function ABFLatest() {
       dateStr = p.published_at || "";
     }
 
+    const cleanContent = cleanPostContent(p.content);
+    const cleanExcerpt = cleanPostContent(p.excerpt) || (cleanContent.slice(0, 160) + (cleanContent.length > 160 ? "..." : ""));
+
     return {
       id: p.id,
       title: p.title,
       slug: p.slug,
       category: cat,
-      excerpt: p.excerpt,
-      contentHtml: p.content,
+      excerpt: cleanExcerpt,
+      contentHtml: cleanContent,
       coverImage: p.cover_image || ASSETS.ig13,
-      gallery: p.gallery_images && p.gallery_images.length > 0 ? p.gallery_images : [p.cover_image || ASSETS.ig13],
+      gallery: parsePostGallery(p),
       date: dateStr,
       author: p.author || "Akhere Book Foundation",
       featured: p.featured,
@@ -137,15 +140,20 @@ export default function ABFLatest() {
     }
   }, [activePost]);
 
-  // Filter posts list
-  const filteredPosts = mappedPosts.filter((p) => {
-    // Exclude the featured post from the list view so it's not duplicated on category: ALL
-    if (activeCategory === "ALL") return !p.featured;
-    return p.category === activeCategory;
-  });
-
   // Featured post
   const featuredPost = mappedPosts.find((p) => p.featured);
+
+  // Filter posts list
+  const filteredPosts = mappedPosts.filter((p) => {
+    if (activeCategory === "ALL") {
+      // If there's a featured banner and multiple posts, exclude featured from grid to prevent duplicate
+      if (featuredPost && mappedPosts.length > 1) {
+        return p.id !== featuredPost.id;
+      }
+      return true;
+    }
+    return p.category === activeCategory;
+  });
 
   // Related posts (same category or same project, limit 3, exclude active post)
   const relatedPosts = mappedPosts.filter(
@@ -239,10 +247,10 @@ export default function ABFLatest() {
                   gap: "1.5rem"
                 }}
               >
-                {/<[a-z][\s\S]*>/i.test(activePost.contentHtml) ? (
-                  <div dangerouslySetInnerHTML={{ __html: activePost.contentHtml }} />
+                {/<[a-z][\s\S]*>/i.test(cleanPostContent(activePost.contentHtml)) ? (
+                  <div dangerouslySetInnerHTML={{ __html: cleanPostContent(activePost.contentHtml) }} />
                 ) : (
-                  activePost.contentHtml.split(/\n\s*\n/).map((para, i) => (
+                  formatCmsParagraphs(activePost.contentHtml).map((para, i) => (
                     <p key={i} style={{ margin: 0, lineHeight: 1.85 }}>
                       {para}
                     </p>
@@ -779,7 +787,7 @@ export default function ABFLatest() {
                     </div>
                   ))}
                 </div>
-              ) : (
+              ) : !(activeCategory === "ALL" && featuredPost) ? (
                 // ─── EMPTY STATES ──────────────────────────────────────────
                 <div style={{
                   maxWidth: 540,

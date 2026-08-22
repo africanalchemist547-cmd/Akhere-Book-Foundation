@@ -407,98 +407,61 @@ export default function ABFAboutUs() {
 
         {/* Section 5 — The Azu-Ogbunike Community Library */}
         <section style={{ padding: "6rem 1.5rem", background: "#f8faf6", borderTop: "1px solid #e8f0e8", borderBottom: "1px solid #e8f0e8" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              gap: "4rem",
-              alignItems: "center"
-            }}>
-              {/* Left Column: Image */}
-              <div style={{
-                position: "relative",
-                borderRadius: 24,
-                overflow: "hidden",
-                boxShadow: "0 20px 48px rgba(26, 34, 24, 0.08)",
-                border: "1px solid #e8f0e8"
-              }}>
-                <img
-                  src={libraryImage}
-                  alt="Azu-Ogbunike Public Library"
-                  style={{ width: "100%", height: "auto", display: "block", maxHeight: 480, objectFit: "cover" }}
-                />
-                <div style={{
-                  position: "absolute",
-                  bottom: "1rem",
-                  left: "1rem",
-                  background: "rgba(26,34,24,0.85)",
-                  backdropFilter: "blur(8px)",
-                  padding: "0.5rem 1rem",
-                  borderRadius: 12,
-                  color: "#8dc63f",
-                  fontWeight: 700,
-                  fontSize: "0.8125rem",
-                  border: "1px solid rgba(255,255,255,0.1)"
+          <div style={{ maxWidth: 880, margin: "0 auto", textAlign: "center" }}>
+            <SectionLabel text="Flagship Project Story" />
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 2.75rem)", fontWeight: 900, color: "#1a2218", lineHeight: 1.2, marginBottom: "1.25rem" }}>
+              A Place to Learn
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", textAlign: "left", maxWidth: 780, margin: "0 auto 3rem" }}>
+              <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.75, margin: 0 }}>
+                The newly completed public library is ABF's current flagship example of impact. This space stands as a physical proof point demonstrating how local support can be optimized to build something lasting.
+              </p>
+              <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.75, margin: 0 }}>
+                Used regularly by students from multiple local schools and adults across the local government area, the library provides a safe, quiet space for reference work, homework, research, and preparation for public school examinations like WAEC and NECO.
+              </p>
+            </div>
+
+            {/* Grid of live statistics */}
+            <div
+              className="abf-about-stats-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                gap: "1.25rem",
+                marginBottom: "2.5rem",
+                textAlign: "left",
+              }}
+            >
+              {aboutStats.map((stat, idx) => (
+                <div key={idx} style={{
+                  background: "white",
+                  padding: "1.5rem 1.25rem",
+                  borderRadius: 16,
+                  border: "1px solid #e8f0e8",
+                  boxShadow: "0 2px 12px rgba(45,106,45,0.02)"
                 }}>
-                  📍 {libraryLocation}
+                  <div style={{ fontSize: "1.625rem", fontWeight: 900, color: "#2d6a2d", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                    {stat.value}
+                    {stat.isPending && (
+                      <span style={{ fontSize: "0.625rem", fontWeight: 700, color: "#aab8a4", background: "#f0f4f0", padding: "0.15rem 0.4rem", borderRadius: 4, textTransform: "uppercase" }}>Pending</span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#1a2218", marginTop: "0.375rem" }}>
+                    {stat.label}
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "#8a9a84", fontStyle: "italic", marginTop: "0.25rem", lineHeight: 1.3 }}>
+                    {stat.description || "ABF TO PROVIDE VERIFIED FIGURES"}
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {/* Right Column: Story */}
-              <div>
-                <SectionLabel text="Flagship Project Story" />
-                <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, color: "#1a2218", lineHeight: 1.2, marginBottom: "1.25rem" }}>
-                  A Place to Learn
-                </h2>
-                <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.75, marginBottom: "1.25rem" }}>
-                  The newly completed public library is ABF's current flagship example of impact. This space stands as a physical proof point demonstrating how local support can be optimized to build something lasting.
-                </p>
-                <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.75, marginBottom: "2rem" }}>
-                  Used regularly by students from multiple local schools and adults across the local government area, the library provides a safe, quiet space for reference work, homework, research, and preparation for public school examinations like WAEC and NECO.
-                </p>
-
-                {/* Grid of placeholders */}
-                <div
-                  className="abf-about-stats-grid"
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "1.25rem",
-                    marginBottom: "2rem"
-                  }}
-                >
-                  {aboutStats.map((stat, idx) => (
-                    <div key={idx} style={{
-                      background: "white",
-                      padding: "1.25rem",
-                      borderRadius: 16,
-                      border: "1px solid #e8f0e8",
-                      boxShadow: "0 2px 12px rgba(45,106,45,0.02)"
-                    }}>
-                      <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#2d6a2d", display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                        {stat.value}
-                        {stat.isPending && (
-                          <span style={{ fontSize: "0.625rem", fontWeight: 700, color: "#aab8a4", background: "#f0f4f0", padding: "0.15rem 0.4rem", borderRadius: 4, textTransform: "uppercase" }}>Pending</span>
-                        )}
-                      </div>
-                      <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#1a2218", marginTop: "0.375rem" }}>
-                        {stat.label}
-                      </div>
-                      <div style={{ fontSize: "0.6875rem", color: "#8a9a84", fontStyle: "italic", marginTop: "0.25rem", lineHeight: 1.2 }}>
-                        {stat.description || "ABF TO PROVIDE VERIFIED FIGURES"}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div>
-                  <a href="/projects" style={{ textDecoration: "none" }}>
-                    <button className="abf-btn-primary">
-                      Explore Our Projects <Icon.ChevronRight />
-                    </button>
-                  </a>
-                </div>
-              </div>
+            <div>
+              <a href="/projects" style={{ textDecoration: "none" }}>
+                <button className="abf-btn-primary" style={{ padding: "0.875rem 2rem", fontSize: "0.9375rem" }}>
+                  Explore Our Projects <Icon.ChevronRight />
+                </button>
+              </a>
             </div>
           </div>
         </section>
@@ -519,8 +482,7 @@ export default function ABFAboutUs() {
             <div style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-              gap: "1.5rem",
-              marginBottom: "3rem"
+              gap: "1.5rem"
             }}>
               {[
                 { title: "Academic Prep", text: "Tracking the number of students using the library to study and prepare for WAEC, NECO, and other public examinations." },
@@ -541,19 +503,6 @@ export default function ABFAboutUs() {
                   <p style={{ fontSize: "0.875rem", color: "#6a7a64", lineHeight: 1.6, margin: 0 }}>{metric.text}</p>
                 </div>
               ))}
-            </div>
-
-            <div style={{
-              background: "#fdfbfa",
-              padding: "1.5rem",
-              borderRadius: 16,
-              border: "1px dashed #e6c89c",
-              textAlign: "center"
-            }}>
-              <span style={{ fontSize: "0.875rem", color: "#c98f3b", fontWeight: 700 }}>⚠️ NOTE ON STATISTICS:</span>
-              <span style={{ fontSize: "0.875rem", color: "#6a5a44", marginLeft: "0.5rem" }}>
-                We are currently establishing monitoring frameworks in our active libraries. Verified operational figures will be published as soon as they are fully audited by the ABF field team.
-              </span>
             </div>
           </div>
         </section>
@@ -579,46 +528,34 @@ export default function ABFAboutUs() {
           </div>
         </section>
 
-        {/* Section 8 — Our Story Is Still Growing */}
+        {/* Section 8 — What Lies Ahead */}
         <section style={{ padding: "6rem 1.5rem", background: "white", borderBottom: "1px solid #e8f0e8" }}>
-          <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              gap: "4rem",
-              alignItems: "center"
-            }}>
-              <div>
-                <SectionLabel text="What Lies Ahead" />
-                <h2 style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", fontWeight: 900, color: "#1a2218", lineHeight: 1.2, marginBottom: "1.25rem" }}>
-                  We're Building, Learning and Growing.
-                </h2>
-                <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.75, marginBottom: "1.25rem" }}>
-                  ABF is still in its early chapters. Our story is growing step-by-step alongside the communities we serve. We will continue to expand our reach by establishing more public collections, procuring more books, and offering more structured learning opportunities.
-                </p>
-                <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.75, marginBottom: "0" }}>
-                  We do not seek to do this alone. The success of this work depends on community participation, local partnership, and individuals sharing their unique skills, time, resources, and ideas.
-                </p>
-              </div>
-
-              {/* Carousel Teaser */}
+          <div style={{ maxWidth: 880, margin: "0 auto", textAlign: "center" }}>
+            <SectionLabel text="What Lies Ahead" />
+            <h2 style={{ fontSize: "clamp(2rem, 4vw, 2.75rem)", fontWeight: 900, color: "#1a2218", lineHeight: 1.2, marginBottom: "1.5rem" }}>
+              We're Building, Learning and Growing.
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", textAlign: "left", maxWidth: 780, margin: "0 auto" }}>
+              <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.8, margin: 0 }}>
+                ABF is still in its early chapters. Our story is growing step-by-step alongside the communities we serve. We will continue to expand our reach by establishing more public collections, procuring more books, and offering more structured learning opportunities.
+              </p>
+              <p style={{ fontSize: "1.0625rem", color: "#4a5a44", lineHeight: 1.8, margin: 0 }}>
+                We do not seek to do this alone. The success of this work depends on community participation, local partnership, and individuals sharing their unique skills, time, resources, and ideas.
+              </p>
               <div style={{
+                marginTop: "1rem",
+                padding: "1.75rem 2rem",
+                background: "#f8faf6",
                 borderRadius: 20,
-                overflow: "hidden",
                 border: "1px solid #e8f0e8",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.04)"
+                borderLeft: "4px solid #2d6a2d"
               }}>
-                <img
-                  src={ASSETS.ig12}
-                  alt="A library still functional, still growing"
-                  style={{ width: "100%", height: "auto", display: "block", maxHeight: 380, objectFit: "cover" }}
-                />
-                <div style={{ padding: "1.5rem", background: "#f8faf6" }}>
-                  <span style={{ fontSize: "0.6875rem", fontWeight: 700, color: "#2d6a2d", background: "#e8f5e8", padding: "0.25rem 0.625rem", borderRadius: 9999, display: "inline-block", marginBottom: "0.75rem" }}>PROGRESS SUMMARY</span>
-                  <p style={{ fontSize: "0.875rem", color: "#4a5a44", lineHeight: 1.6, margin: 0 }}>
-                    Our very first library project continues to remain fully functional, in excellent condition, and actively utilized by local students every week.
-                  </p>
-                </div>
+                <span style={{ fontSize: "0.6875rem", fontWeight: 800, color: "#2d6a2d", background: "#e8f5e8", padding: "0.25rem 0.625rem", borderRadius: 9999, display: "inline-block", marginBottom: "0.625rem", letterSpacing: "0.06em" }}>
+                  PROGRESS & COMMITMENT
+                </span>
+                <p style={{ fontSize: "1rem", color: "#2c3424", lineHeight: 1.7, margin: 0, fontWeight: 500 }}>
+                  Our very first library project continues to remain fully functional, in excellent condition, and actively utilized by local students every week. We build with longevity and verified community utility in mind.
+                </p>
               </div>
             </div>
           </div>

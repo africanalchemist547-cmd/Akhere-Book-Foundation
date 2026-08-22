@@ -22,7 +22,7 @@ import {
   PartnerWithABFModal,
   VolunteerModal
 } from "./_shared";
-import { usePublicPosts, usePublicTeam, usePublicPartners, usePublicStatistics, findMatchingStatistic } from "../../hooks/useCmsData";
+import { usePublicPosts, usePublicTeam, usePublicPartners, usePublicStatistics, findMatchingStatistic, cleanPostContent } from "../../hooks/useCmsData";
 
 // â”€â”€â”€ TYPES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface LatestCard {
@@ -518,15 +518,18 @@ function LatestCarousel() {
 
   const { data: dbPosts, loading: postsLoading } = usePublicPosts();
 
-  const latestCards = dbPosts.map((p, idx) => ({
-    id: idx + 1,
-    category: p.category === "projects" ? "PROJECT" : p.category === "events" ? "EVENT" : "NEWS & IMPACT",
-    categoryColor: p.category === "projects" ? "#2d6a2d" : p.category === "events" ? "#f5a623" : "#8dc63f",
-    title: p.title,
-    excerpt: p.excerpt,
-    image: p.cover_image || ASSETS.ig13,
-    slug: `/latest-from-abf/${p.slug}`,
-  }));
+  const latestCards = dbPosts.map((p, idx) => {
+    const cleanExcerpt = cleanPostContent(p.excerpt) || (cleanPostContent(p.content).slice(0, 140) + (cleanPostContent(p.content).length > 140 ? "..." : ""));
+    return {
+      id: idx + 1,
+      category: p.category === "projects" ? "PROJECT" : p.category === "events" ? "EVENT" : "NEWS & IMPACT",
+      categoryColor: p.category === "projects" ? "#2d6a2d" : p.category === "events" ? "#f5a623" : "#8dc63f",
+      title: p.title,
+      excerpt: cleanExcerpt,
+      image: p.cover_image || ASSETS.ig13,
+      slug: `/latest-from-abf/${p.slug}`,
+    };
+  });
 
   const getPostUrl = (slug: string) => {
     return slug;
